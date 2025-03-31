@@ -27,6 +27,10 @@ public class Board {
     private Integer boardLikes;
     private Integer boardUnlikes;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_idx")
+    private User user;
+
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @BatchSize(size = 10)  // 한 번에 최대 10개의 이미지 조회
     private List<BoardImage> imageList = new ArrayList<>();
