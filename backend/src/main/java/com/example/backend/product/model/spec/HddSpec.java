@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class HddSpec {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer hddIdx;
+    private Long hddIdx;
     private Integer hddCapacity;
     private Integer hddRpm;
     private Integer hddBuffer;

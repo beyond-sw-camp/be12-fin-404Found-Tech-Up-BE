@@ -20,7 +20,7 @@ import java.util.List;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer productIdx;
+    private Long productIdx;
     private String name;
     private double price;
     private String brand;

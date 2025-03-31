@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class ProductResponseDto {
-    private int idx;
+    private Long idx;
     private String name;
     private double price;
     private String brand;
-    private int stock;
+    private Integer stock;
     private String description;
     private String category;
 

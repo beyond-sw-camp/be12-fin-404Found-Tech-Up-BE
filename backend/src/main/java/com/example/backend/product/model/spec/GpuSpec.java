@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class GpuSpec {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer gpuIdx;
+    private Long gpuIdx;
     private String gpuChip;
     private Integer gpuMemory;
     private Integer gpuLength;

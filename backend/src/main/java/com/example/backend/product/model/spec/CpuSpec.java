@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class CpuSpec {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer cpuIdx;
+    private Long cpuIdx;
     private String cpuType;
     private Integer cpuCore;
     private Integer cpuThreads;
