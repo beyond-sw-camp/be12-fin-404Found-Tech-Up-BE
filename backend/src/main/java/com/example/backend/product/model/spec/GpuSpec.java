@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 public class GpuSpec {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idx;
+    private Integer gpuIdx;
     private String gpuChip;
-    private int gpuMemory;
-    private int gpuLength;
+    private Integer gpuMemory;
+    private Integer gpuLength;
 
     @OneToOne
     @JoinColumn(name="product_idx")

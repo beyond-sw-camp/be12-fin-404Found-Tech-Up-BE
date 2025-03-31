@@ -21,7 +21,7 @@ public class ProductResponseDto {
 
     public static ProductResponseDto from(Product product) {
         return ProductResponseDto.builder()
-                .idx(product.getIdx())
+                .idx(product.getProductIdx())
                 .name(product.getName())
                 .price(product.getPrice())
                 .brand(product.getBrand())
