@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class UserProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer usersProductIdx;
+    private Long usersProductIdx;
 
     @ManyToOne
     @JoinColumn(name="user_idx")
