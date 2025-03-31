@@ -42,4 +42,16 @@ public class Product {
 
     @OneToOne(mappedBy = "product")
     private HddSpec hddSpec;
+
+    // 리뷰와 일대다 맵핑
+
+    // 사용자의 제품과 일대다 맵핑
+
+    // 쿠폰과 일대다 맵핑
+
+    // 장바구니와 일대다 맵핑
+
+    // 주문 상세 정보와 일대다 맵핑
+
+    // 위시리스트와 일대다 맵핑
 }
