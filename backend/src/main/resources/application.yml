@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    url: ${DB_URL}
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+server:
+  port: 8080
