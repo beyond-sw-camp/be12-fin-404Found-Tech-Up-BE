@@ -36,6 +36,8 @@ public class User implements UserDetails {
     private Boolean likeEnabled;
     private Boolean newEnabled;
     private Boolean upgradeEnabled;
+    private Boolean allowSms;
+    private Boolean allowEmail;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
