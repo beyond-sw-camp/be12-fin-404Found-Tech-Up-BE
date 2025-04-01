@@ -1,6 +1,7 @@
 package com.example.backend.board.model.dto;
 
 import com.example.backend.board.model.Board;
+import com.example.backend.user.model.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +23,7 @@ public class BoardRequestDto {
     @Schema(description = "게시글 첨부파일", example = "")
     private List<String> files;
 
-    public Board toEntity() {
+    public Board toEntity(User loginUser) {
         return Board.builder()
                 .boardTitle(boardTitle)
                 .boardContent(boardContent)
@@ -30,6 +31,7 @@ public class BoardRequestDto {
                 .boardCreated(LocalDateTime.now())
                 // 수정 시간은 null
                 .boardModified(null)
+                .user(loginUser)
                 .build();
     }
 }
