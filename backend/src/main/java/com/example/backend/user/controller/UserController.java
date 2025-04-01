@@ -2,8 +2,8 @@ package com.example.backend.user.controller;
 
 
 import com.example.backend.user.model.User;
-import com.example.backend.user.model.dto.SignupRequest;
-import com.example.backend.user.model.dto.UserUpdateRequest;
+import com.example.backend.user.model.dto.request.SignupRequest;
+import com.example.backend.user.model.dto.request.UserUpdateRequest;
 import com.example.backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
