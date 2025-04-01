@@ -44,39 +44,46 @@ public class ProductService {
                 .filter(product -> dto.getMaxPrice() == null || product.getPrice() <= dto.getMaxPrice())
                 .filter(product -> dto.getNameKeyword() == null || product.getName().toLowerCase().contains(dto.getNameKeyword().toLowerCase()))
                 .filter(product -> {
-                    if (product.getCategory() == null) return true;
-                    switch (product.getCategory().toUpperCase()) {
+                    String category = product.getCategory() == null ? "" : product.getCategory().toUpperCase();
+
+                    return switch (category) {
                         case "CPU" -> {
-                            return dto.getCpuCore() == null || (
-                                    product.getCpuSpec() != null &&
-                                            product.getCpuSpec().getCpuCore().equals(dto.getCpuCore())
-                            );
+                            if (product.getCpuSpec() == null) yield false;
+                            yield (dto.getCpuType() == null || product.getCpuSpec().getCpuType().equalsIgnoreCase(dto.getCpuType())) &&
+                                    (dto.getCpuCore() == null || product.getCpuSpec().getCpuCore().equals(dto.getCpuCore())) &&
+                                    (dto.getCpuThreads() == null || product.getCpuSpec().getCpuThreads().equals(dto.getCpuThreads()));
+                        }
+                        case "GPU" -> {
+                            if (product.getGpuSpec() == null) yield false;
+                            yield (dto.getGpuChip() == null || product.getGpuSpec().getGpuChip().equalsIgnoreCase(dto.getGpuChip())) &&
+                                    (dto.getGpuMemory() == null || product.getGpuSpec().getGpuMemory().equals(dto.getGpuMemory())) &&
+                                    (dto.getGpuLength() == null || product.getGpuSpec().getGpuLength().equals(dto.getGpuLength()));
                         }
                         case "RAM" -> {
-                            return dto.getRamSize() == null || (
-                                    product.getRamSpec() != null &&
-                                            product.getRamSpec().getRamSize().equals(dto.getRamSize())
-                            );
+                            if (product.getRamSpec() == null) yield false;
+                            yield (dto.getRamType() == null || product.getRamSpec().getRamType().equalsIgnoreCase(dto.getRamType())) &&
+                                    (dto.getRamSize() == null || product.getRamSpec().getRamSize().equals(dto.getRamSize())) &&
+                                    (dto.getRamNum() == null || product.getRamSpec().getRamNum().equals(dto.getRamNum())) &&
+                                    (dto.getRamUsage() == null || product.getRamSpec().getRamUsage().equalsIgnoreCase(dto.getRamUsage()));
                         }
                         case "SSD" -> {
-                            return dto.getSsdCapacity() == null || (
-                                    product.getSsdSpec() != null &&
-                                            product.getSsdSpec().getSsdCapacity().equals(dto.getSsdCapacity())
-                            );
+                            if (product.getSsdSpec() == null) yield false;
+                            yield (dto.getSsdCapacity() == null || product.getSsdSpec().getSsdCapacity().equals(dto.getSsdCapacity())) &&
+                                    (dto.getSsdRead() == null || product.getSsdSpec().getSsdRead().equals(dto.getSsdRead())) &&
+                                    (dto.getSsdWrite() == null || product.getSsdSpec().getSsdWrite().equals(dto.getSsdWrite()));
                         }
                         case "HDD" -> {
-                            return dto.getHddRpm() == null || (
-                                    product.getHddSpec() != null &&
-                                            product.getHddSpec().getHddRpm().equals(dto.getHddRpm())
-                            );
+                            if (product.getHddSpec() == null) yield false;
+                            yield (dto.getHddCapacity() == null || product.getHddSpec().getHddCapacity().equals(dto.getHddCapacity())) &&
+                                    (dto.getHddRpm() == null || product.getHddSpec().getHddRpm().equals(dto.getHddRpm())) &&
+                                    (dto.getHddBuffer() == null || product.getHddSpec().getHddBuffer().equals(dto.getHddBuffer()));
                         }
-                        default -> {
-                            return true;
-                        }
-                    }
+                        default -> true; // 그 외 카테고리 처리
+                    };
                 })
                 .map(ProductResponseDto::from)
                 .collect(Collectors.toList());
     }
+
 
 }
