@@ -1,5 +1,6 @@
 package com.example.backend.user.model;
 
+import com.example.backend.product.model.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,10 +18,10 @@ public class UserProduct {
     private Long usersProductIdx;
 
     @ManyToOne
-    @JoinColumn(name="user_idx")
+    @JoinColumn(name = "user_idx")
     private User user;
 
-    // @ManyToOne
-    // @JoinColumn(name="product_idx")
-    // private Product products;
+    @ManyToOne
+    @JoinColumn(name = "product_idx")
+    private Product products;
 }
