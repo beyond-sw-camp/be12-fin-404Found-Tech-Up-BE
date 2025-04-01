@@ -4,6 +4,7 @@ package com.example.backend.user.controller;
 import com.example.backend.user.model.User;
 import com.example.backend.user.model.dto.request.SignupRequest;
 import com.example.backend.user.model.dto.request.UserUpdateRequest;
+import com.example.backend.user.model.dto.response.UserInfoResponse;
 import com.example.backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,8 +39,9 @@ public class UserController {
     @ApiResponse(responseCode="400", description="요청이 이상하여 실패")
     @ApiResponse(responseCode="500", description="서버 내 오류")
     @GetMapping("/mypage")
-    private ResponseEntity<String> getMyPage(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok("Dummy Information");
+    private ResponseEntity<UserInfoResponse> getMyPage(@AuthenticationPrincipal User user) {
+        // TODO: 서비스에서 정보 가져오기
+        return ResponseEntity.ok(new UserInfoResponse());
     }
 
     @Operation(summary="회원 정보 수정", description = "회원 정보를 수정합니다")
