@@ -1,6 +1,7 @@
 package com.example.backend.product.service;
 
 import com.example.backend.product.model.Product;
+import com.example.backend.product.model.dto.ProductFilterRequestDto;
 import com.example.backend.product.model.dto.ProductResponseDto;
 import com.example.backend.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +36,47 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProductResponseDto> filterProduct() {
-        // TODO: 조건별 필터링 구현
-        return List.of(); // 빈 리스트 반환
+    public List<ProductResponseDto> filterProduct(ProductFilterRequestDto dto) {
+        return productRepository.findAll().stream()
+                .filter(product -> dto.getBrand() == null || product.getBrand().equalsIgnoreCase(dto.getBrand()))
+                .filter(product -> dto.getCategory() == null || product.getCategory().equalsIgnoreCase(dto.getCategory()))
+                .filter(product -> dto.getMinPrice() == null || product.getPrice() >= dto.getMinPrice())
+                .filter(product -> dto.getMaxPrice() == null || product.getPrice() <= dto.getMaxPrice())
+                .filter(product -> dto.getNameKeyword() == null || product.getName().toLowerCase().contains(dto.getNameKeyword().toLowerCase()))
+                .filter(product -> {
+                    if (product.getCategory() == null) return true;
+                    switch (product.getCategory().toUpperCase()) {
+                        case "CPU" -> {
+                            return dto.getCpuCore() == null || (
+                                    product.getCpuSpec() != null &&
+                                            product.getCpuSpec().getCpuCore().equals(dto.getCpuCore())
+                            );
+                        }
+                        case "RAM" -> {
+                            return dto.getRamSize() == null || (
+                                    product.getRamSpec() != null &&
+                                            product.getRamSpec().getRamSize().equals(dto.getRamSize())
+                            );
+                        }
+                        case "SSD" -> {
+                            return dto.getSsdCapacity() == null || (
+                                    product.getSsdSpec() != null &&
+                                            product.getSsdSpec().getSsdCapacity().equals(dto.getSsdCapacity())
+                            );
+                        }
+                        case "HDD" -> {
+                            return dto.getHddRpm() == null || (
+                                    product.getHddSpec() != null &&
+                                            product.getHddSpec().getHddRpm().equals(dto.getHddRpm())
+                            );
+                        }
+                        default -> {
+                            return true;
+                        }
+                    }
+                })
+                .map(ProductResponseDto::from)
+                .collect(Collectors.toList());
     }
+
 }
