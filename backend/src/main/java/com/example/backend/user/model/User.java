@@ -8,6 +8,8 @@ import com.example.backend.wishlist.model.Wishlist;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import org.springframework.security.core.GrantedAuthority;
