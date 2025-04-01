@@ -42,6 +42,7 @@ public class ProductService {
                 .filter(product -> dto.getCategory() == null || product.getCategory().equalsIgnoreCase(dto.getCategory()))
                 .filter(product -> dto.getMinPrice() == null || product.getPrice() >= dto.getMinPrice())
                 .filter(product -> dto.getMaxPrice() == null || product.getPrice() <= dto.getMaxPrice())
+                .filter(product -> dto.getNameKeyword() == null || product.getName().toLowerCase().contains(dto.getNameKeyword().toLowerCase()))
                 .filter(product -> {
                     if (product.getCategory() == null) return true;
                     switch (product.getCategory().toUpperCase()) {

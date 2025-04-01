@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class ProductFilterRequestDto {
+    private String nameKeyword;
     private String brand;
     private String category;
     private Double minPrice;
