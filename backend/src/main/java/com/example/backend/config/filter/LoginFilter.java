@@ -32,7 +32,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         UsernamePasswordAuthenticationToken token;
         try {
             LoginRequest user = new ObjectMapper().readValue(request.getInputStream(), LoginRequest.class);
-            // logger.info("로그인 유저: {}", user.getId());
             // logger.info("로그인 유저의 IP: {}", request.getRemoteAddr());
             token = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), null);
         } catch (IOException e) {
@@ -45,7 +44,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication auth) throws IOException, ServletException {
         User user = (User) auth.getPrincipal();
         String jwt = JwtUtility.generateToken(user.getUserIdx(), user.getUserEmail(), user.getIsAdmin());
-        // logger.info("{}({})님에게 {} JWT 토큰 부여",user.getIdx(), user.getEmail(), jwt);
+        // logger.info("{}님에게 {} JWT 토큰 부여", user.getEmail(), jwt);
         ResponseCookie cookie = ResponseCookie.from("ATOKEN", jwt)
                 .path("/")
                 .httpOnly(true)

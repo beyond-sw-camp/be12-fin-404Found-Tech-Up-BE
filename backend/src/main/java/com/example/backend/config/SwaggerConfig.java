@@ -1,6 +1,6 @@
 package com.example.backend.config;
 
-import com.example.atp_back.config.filter.LoginFilter;
+import com.example.backend.config.filter.LoginFilter;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
