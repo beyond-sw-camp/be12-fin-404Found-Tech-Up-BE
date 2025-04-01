@@ -31,6 +31,8 @@ public class BoardResponseDto {
     private Integer boardLikes;
     @Schema(description = "게시글의 싫어요 수", example = "3")
     private Integer boardUnlikes;
+    @Schema(description = "게시글의 댓글 수", example = "4")
+    private Integer boardComments;
     @Schema(description = "게시글 작성중 첨부한 파일을 저장하기 위한 preSignedUrl", example = "")
     private List<String> preSignedUrls;
     @Schema(description = "게시글이 s3에 저장된 파일의 이름", example = "")
@@ -41,7 +43,7 @@ public class BoardResponseDto {
                 .idx(board.getIdx())
                 .boardTitle(board.getBoardTitle())
                 .boardContent(board.getBoardContent())
-//                .writer(board.getUser().getName())
+                .writer(board.getUser().getUserNickname())
                 .boardCreated(board.getBoardCreated())
                 .boardModified(board.getBoardModified())
                 .preSignedUrls(null)

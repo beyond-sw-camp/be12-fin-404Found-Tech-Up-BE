@@ -25,6 +25,7 @@ public class Board {
     private LocalDateTime boardModified;
     private Integer boardLikes;
     private Integer boardUnlikes;
+    private Integer boardComments;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx")
