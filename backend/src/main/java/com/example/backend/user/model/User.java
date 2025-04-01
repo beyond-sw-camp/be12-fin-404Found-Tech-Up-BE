@@ -1,6 +1,7 @@
 package com.example.backend.user.model;
 
 import com.example.backend.cart.model.Cart;
+import com.example.backend.coupon.model.UserCoupon;
 import com.example.backend.order.model.Order;
 import com.example.backend.wishlist.model.Wishlist;
 import jakarta.persistence.*;
@@ -49,6 +50,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Order> orders;
 
+    // UserCoupon 과 일대다 맵핑
+    @OneToMany(mappedBy = "user")
+    private List<UserCoupon> userCoupons;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.isAdmin) {
