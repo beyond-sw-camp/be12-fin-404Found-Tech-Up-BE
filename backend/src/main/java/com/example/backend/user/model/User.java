@@ -1,9 +1,9 @@
 package com.example.backend.user.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.backend.cart.model.Cart;
+import com.example.backend.order.model.Order;
+import com.example.backend.wishlist.model.Wishlist;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,6 +36,18 @@ public class User implements UserDetails {
     private Boolean likeEnabled;
     private Boolean newEnabled;
     private Boolean upgradeEnabled;
+
+    // Cart와 일대일 맵핑
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
+
+    // WishList와 일대다 맵핑
+    @OneToMany(mappedBy = "user")
+    private List<Wishlist> wishlists;
+
+    // Order와 일대다 맵핑
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

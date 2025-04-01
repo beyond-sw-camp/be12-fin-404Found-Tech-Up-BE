@@ -1,6 +1,8 @@
 package com.example.backend.product.model;
 
+import com.example.backend.cart.model.CartItem;
 import com.example.backend.product.model.spec.*;
+import com.example.backend.wishlist.model.Wishlist;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,5 +55,11 @@ public class Product {
 
     // 주문 상세 정보와 일대다 맵핑
 
+    // 카트아이템과 일대다 맵핑
+    @OneToMany(mappedBy = "product")
+    private List<CartItem> cartItems;
+
     // 위시리스트와 일대다 맵핑
+    @OneToMany(mappedBy = "product")
+    private List<Wishlist> wishlists;
 }
