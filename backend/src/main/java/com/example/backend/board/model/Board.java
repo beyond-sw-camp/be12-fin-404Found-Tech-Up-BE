@@ -35,6 +35,16 @@ public class Board {
     @BatchSize(size = 10)  // 한 번에 최대 10개의 이미지 조회
     private List<BoardImage> imageList = new ArrayList<>();
 
+    public void addLikesCount() {
+        this.boardLikes = this.boardLikes + 1;
+    }
+    public void addUnlikesCount() {
+        this.boardUnlikes = this.boardUnlikes + 1;
+    }
+    public void addCommentsCount() {
+        this.boardComments = this.boardComments + 1;
+    }
+
     public void update(String boardTitle, String boardContent) {
         this.boardTitle = boardTitle;
         this.boardContent = boardContent;
