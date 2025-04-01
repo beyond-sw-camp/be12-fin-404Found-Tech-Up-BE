@@ -1,9 +1,7 @@
 package com.example.backend.noti.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.backend.user.model.User;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +20,12 @@ public class Noti {
     private Long idx;
     private String notiTitle;
     private String notiContent;
+    // True: 전체, False: 개인
+    private Boolean notiType;
     private LocalDateTime notiCreated;
     private LocalDateTime notiChecked;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_idx")
+    private User user;
 }
