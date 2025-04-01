@@ -4,6 +4,7 @@ package com.example.backend.user.controller;
 import com.example.backend.user.model.User;
 import com.example.backend.user.model.dto.request.SignupRequest;
 import com.example.backend.user.model.dto.request.UserUpdateRequest;
+import com.example.backend.user.model.dto.request.ValidateEmailRequest;
 import com.example.backend.user.model.dto.response.UserInfoResponse;
 import com.example.backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,13 +17,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name="회원 관련 기능", description="회원 가입/회원 정보 변경 등의 작업")
+import java.util.List;
+
+@Tag(name="회원 기능", description="회원 가입/회원 정보 변경 등의 작업")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
 
+    @Operation(summary="회원가입", description = "회원 가입을 합니다")
+    @ApiResponse(responseCode="200", description="정상가입, 성공 문자열을 반환합니다.")
+    @ApiResponse(responseCode="400", description="가입 실패")
+    @ApiResponse(responseCode="500", description="서버 내 오류")
+    @PostMapping("/verify")
+    private ResponseEntity<String> verifyEmail(
+            @Parameter(description="회원 가입시의 정보: User 테이블의 모든 정보를 채우지 않습니다.")
+            @Valid @RequestBody ValidateEmailRequest request) {
+        // TODO: Java Mail Sender 추가 후 메일 보내기
+        return ResponseEntity.ok("이메일을 보냈습니다. 메일함을 확인해주세요.");
+    }
+    
     @Operation(summary="회원가입", description = "회원 가입을 합니다")
     @ApiResponse(responseCode="200", description="정상가입, 성공 문자열을 반환합니다.")
     @ApiResponse(responseCode="400", description="가입 실패")
@@ -71,6 +86,28 @@ public class UserController {
     @PostMapping("/logout")
     private ResponseEntity<String> logout() {
         return ResponseEntity.ok("Bye and see you again!");
+    }
+
+    // --------------------- 여기서부터 관리자 전용 ----------------------------
+
+    @Operation(summary="전체 회원 정보 반환", description = "회원 정보를 30개 단위로 반환합니다")
+    @ApiResponse(responseCode="200", description="정상 정보 반환")
+    @ApiResponse(responseCode="400", description="요청이 이상하여 실패")
+    @ApiResponse(responseCode="500", description="서버 내 오류")
+    @GetMapping("/alluser")
+    private ResponseEntity<List<UserInfoResponse>> getAllUser(@AuthenticationPrincipal User user, Integer offset) {
+        // TODO: 서비스에서 페이징된 정보 가져오기
+        return ResponseEntity.ok(List.of());
+    }
+
+    @Operation(summary="검색한 회원 정보 반환", description = "키워드로 회원 정보를 30개 단위로 반환합니다")
+    @ApiResponse(responseCode="200", description="정상 정보 반환")
+    @ApiResponse(responseCode="400", description="요청이 이상하여 실패")
+    @ApiResponse(responseCode="500", description="서버 내 오류")
+    @GetMapping("/finduser")
+    private ResponseEntity<List<UserInfoResponse>> searchUser(@AuthenticationPrincipal User user, String keyword, Integer offset) {
+        // TODO: 서비스에서 페이징된 정보 가져오기
+        return ResponseEntity.ok(List.of());
     }
 
 }
