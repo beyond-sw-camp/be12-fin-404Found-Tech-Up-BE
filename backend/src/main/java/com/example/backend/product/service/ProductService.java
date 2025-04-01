@@ -29,10 +29,8 @@ public class ProductService {
     }
 
     public List<ProductResponseDto> searchProduct(String keyword) {
-        // 예시: 이름 포함 검색, 실제 구현 시 repository에 메서드 추가 필요
-        return productRepository.findAll()
+        return productRepository.findByNameContaining(keyword)
                 .stream()
-                .filter(p -> p.getName().contains(keyword))
                 .map(ProductResponseDto::from)
                 .collect(Collectors.toList());
     }
