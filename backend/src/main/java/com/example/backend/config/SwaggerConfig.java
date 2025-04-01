@@ -54,7 +54,7 @@ public class SwaggerConfig {
                 if (loginFilter.isPresent()) {
                     // 로그인 입력값 스키마
                     Schema<?> loginSchema = new ObjectSchema()
-                            .addProperty("id", new StringSchema().example("example@example.com"))
+                            .addProperty("email", new StringSchema().example("example@example.com"))
                             .addProperty("password", new StringSchema().example("asdf1234"));
 
                     // 로그인 API 추가
