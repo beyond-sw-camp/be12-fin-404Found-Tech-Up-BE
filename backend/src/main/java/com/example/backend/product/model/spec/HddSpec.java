@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 public class HddSpec {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idx;
-    private int hddCapacity;
-    private int hddRpm;
-    private int hddBuffer;
+    private Long hddIdx;
+    private Integer hddCapacity;
+    private Integer hddRpm;
+    private Integer hddBuffer;
 
     @OneToOne
     @JoinColumn(name="product_idx")
