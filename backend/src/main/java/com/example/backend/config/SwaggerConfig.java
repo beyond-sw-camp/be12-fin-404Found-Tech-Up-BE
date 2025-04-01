@@ -32,8 +32,8 @@ public class SwaggerConfig {
     @Bean
     protected Info apiInfo() {
         return new Info()
-                .title("TechUp API")
-                .description("TechUp API")
+                .title("Tech Up API")
+                .description("Tech Up API")
                 .version("0.0.1");
     }
 
@@ -55,7 +55,7 @@ public class SwaggerConfig {
                     // 로그인 입력값 스키마
                     Schema<?> loginSchema = new ObjectSchema()
                             .addProperty("id", new StringSchema().example("example@example.com"))
-                            .addProperty("password", new StringSchema().example("asdfasdfasdf"));
+                            .addProperty("password", new StringSchema().example("asdf1234"));
 
                     // 로그인 API 추가
                     addApiPath(openApi, "/login", "POST", "로그인", loginSchema);
