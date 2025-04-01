@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 public class RamSpec {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idx;
+    private Long ramIdx;
     private String ramType;
-    private int ramNum;
+    private Integer ramNum;
     private String ramUsage;
 
     @OneToOne

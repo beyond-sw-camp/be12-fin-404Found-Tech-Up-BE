@@ -22,11 +22,11 @@ import java.util.List;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idx;
+    private Long productIdx;
     private String name;
     private double price;
     private String brand;
-    private int stock;
+    private Integer stock;
     private String description;
     private String category;
 
@@ -53,6 +53,8 @@ public class Product {
     private List<Review> reviews;
 
     // 사용자의 제품과 일대다 맵핑
+    @OneToMany(mappedBy = "users_product")
+    private List<UserProduct> userProducts;
 
     // 쿠폰과 일대다 맵핑
     @OneToMany(mappedBy = "product")
@@ -70,5 +72,7 @@ public class Product {
 
     // 위시리스트와 일대다 맵핑
     @OneToMany(mappedBy = "product")
-    private List<Wishlist> wishlists;
+      private List<Wishlist> wishlists;
+
+
 }
