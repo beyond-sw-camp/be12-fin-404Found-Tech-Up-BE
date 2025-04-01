@@ -1,5 +1,6 @@
 package com.example.backend.product.controller;
 
+import com.example.backend.product.model.dto.ProductFilterRequestDto;
 import com.example.backend.product.model.dto.ProductResponseDto;
 import com.example.backend.product.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,8 +38,9 @@ public class ProductController {
 
     @Operation(summary = "상품 필터링", description = "가격, 브랜드, 용량 등으로 상품을 필터링합니다.")
     @PostMapping("/filter")
-    public List<ProductResponseDto> filterProduct() {
-        return productService.filterProduct();
+    public List<ProductResponseDto> filterProduct(@RequestBody ProductFilterRequestDto filterDto) {
+        return productService.filterProduct(filterDto);
     }
+
 
 }
