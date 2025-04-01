@@ -1,9 +1,8 @@
 package com.example.backend.coupon.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.backend.order.model.OrderDetail;
+import com.example.backend.user.model.User;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,5 +20,14 @@ public class UserCoupon {
     private Boolean couponUsed;
 
     // 쿠폰과 다대일 맵핑
+    @ManyToOne
+    @JoinColumn(name = "coupon_idx")
+    private Coupon coupon;
     // 유저와 다대일 맵핑
+    @ManyToOne
+    @JoinColumn(name = "user_idx")
+    private User user;
+    // 오더디테일과 일대일 맵핑
+    @OneToOne(mappedBy = "userCoupon")
+    private OrderDetail orderDetail;
 }

@@ -19,6 +19,12 @@ public class ProductResponseDto {
     private String description;
     private String category;
 
+    private CpuSpecDto cpuSpec;
+    private GpuSpecDto gpuSpec;
+    private HddSpecDto hddSpec;
+    private SsdSpecDto ssdSpec;
+    private RamSpecDto ramSpec;
+
     public static ProductResponseDto from(Product product) {
         return ProductResponseDto.builder()
                 .idx(product.getProductIdx())
@@ -28,6 +34,11 @@ public class ProductResponseDto {
                 .stock(product.getStock())
                 .description(product.getDescription())
                 .category(product.getCategory())
+                .cpuSpec(product.getCpuSpec() != null ? CpuSpecDto.from(product.getCpuSpec()) : null)
+                .gpuSpec(product.getGpuSpec() != null ? GpuSpecDto.from(product.getGpuSpec()) : null)
+                .hddSpec(product.getHddSpec() != null ? HddSpecDto.from(product.getHddSpec()) : null)
+                .ssdSpec(product.getSsdSpec() != null ? SsdSpecDto.from(product.getSsdSpec()) : null)
+                .ramSpec(product.getRamSpec() != null ? RamSpecDto.from(product.getRamSpec()) : null)
                 .build();
     }
 }

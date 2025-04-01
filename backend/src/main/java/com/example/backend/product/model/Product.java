@@ -1,8 +1,10 @@
 package com.example.backend.product.model;
 
+import com.example.backend.cart.model.CartItem;
+import com.example.backend.coupon.model.Coupon;
 import com.example.backend.order.model.OrderDetail;
 import com.example.backend.product.model.spec.*;
-import com.example.backend.user.model.UserProduct;
+import com.example.backend.review.model.Review;
 import com.example.backend.wishlist.model.Wishlist;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -47,20 +49,30 @@ public class Product {
     private HddSpec hddSpec;
 
     // 리뷰와 일대다 맵핑
+    @OneToMany(mappedBy = "product")
+    private List<Review> reviews;
 
     // 사용자의 제품과 일대다 맵핑
     @OneToMany(mappedBy = "users_product")
     private List<UserProduct> userProducts;
 
     // 쿠폰과 일대다 맵핑
+    @OneToMany(mappedBy = "product")
+    private List<Coupon> coupons;
 
     // 장바구니와 일대다 맵핑
 
     // 주문 상세 정보와 일대다 맵핑
-    @OneToMany(mappedBy = "order_detail")
+    @OneToMany(mappedBy = "product")
     private List<OrderDetail> orderDetails;
 
+    // 카트아이템과 일대다 맵핑
+    @OneToMany(mappedBy = "product")
+    private List<CartItem> cartItems;
+
     // 위시리스트와 일대다 맵핑
-    @OneToMany(mappedBy = "wishlist")
-    private List<Wishlist> wishlists;
+    @OneToMany(mappedBy = "product")
+      private List<Wishlist> wishlists;
+
+
 }
