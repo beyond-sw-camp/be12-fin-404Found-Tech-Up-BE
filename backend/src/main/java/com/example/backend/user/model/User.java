@@ -3,6 +3,7 @@ package com.example.backend.user.model;
 import com.example.backend.cart.model.Cart;
 import com.example.backend.coupon.model.UserCoupon;
 import com.example.backend.order.model.Order;
+import com.example.backend.review.model.Review;
 import com.example.backend.wishlist.model.Wishlist;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -37,6 +38,10 @@ public class User implements UserDetails {
     private Boolean likeEnabled;
     private Boolean newEnabled;
     private Boolean upgradeEnabled;
+
+    // review와 일대다 맵핑
+    @OneToMany(mappedBy = "user")
+    private List<Review> reviews;
 
     // Cart와 일대일 맵핑
     @OneToOne(mappedBy = "user")

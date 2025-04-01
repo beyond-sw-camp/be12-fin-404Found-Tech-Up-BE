@@ -4,6 +4,7 @@ import com.example.backend.cart.model.CartItem;
 import com.example.backend.coupon.model.Coupon;
 import com.example.backend.order.model.OrderDetail;
 import com.example.backend.product.model.spec.*;
+import com.example.backend.review.model.Review;
 import com.example.backend.wishlist.model.Wishlist;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -48,6 +49,8 @@ public class Product {
     private HddSpec hddSpec;
 
     // 리뷰와 일대다 맵핑
+    @OneToMany(mappedBy = "product")
+    private List<Review> reviews;
 
     // 사용자의 제품과 일대다 맵핑
 
