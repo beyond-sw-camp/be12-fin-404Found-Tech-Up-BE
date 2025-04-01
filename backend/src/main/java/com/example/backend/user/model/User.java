@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +21,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Entity
+@Builder
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +41,8 @@ public class User implements UserDetails {
     private Boolean likeEnabled;
     private Boolean newEnabled;
     private Boolean upgradeEnabled;
+    private Boolean allowSms;
+    private Boolean allowEmail;
 
     // review와 일대다 맵핑
     @OneToMany(mappedBy = "user")
@@ -96,7 +101,4 @@ public class User implements UserDetails {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
 }
