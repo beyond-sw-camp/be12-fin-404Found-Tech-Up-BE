@@ -1,4 +1,4 @@
-package com.example.backend.cart.model.dto;
+package com.example.backend.common.dto;
 
 import com.example.backend.product.model.Product;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// 카트에서 필요한 상품 정보만 담겨있는
+// 장바구니, 위시리스트에서 필요한 상품 정보만 담겨있는
 @Data
 @Builder
 @NoArgsConstructor

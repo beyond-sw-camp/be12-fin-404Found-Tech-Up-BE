@@ -1,6 +1,7 @@
 package com.example.backend.cart.model.dto;
 
 import com.example.backend.cart.model.CartItem;
+import com.example.backend.common.dto.ProductSummaryDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
