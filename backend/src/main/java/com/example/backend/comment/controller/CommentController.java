@@ -1,5 +1,6 @@
 package com.example.backend.comment.controller;
 
+import com.example.backend.comment.model.dto.CommentRegisterDto;
 import com.example.backend.comment.service.CommentService;
 import com.example.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
