@@ -21,12 +21,13 @@ public class OrderDetail {
     private int orderDetailPrice;
 
     // 유저쿠폰과 1대1 맵핑
-    @OneToOne(mappedBy = "orderDetail")
+    @OneToOne
+    @JoinColumn(name = "user_coupon_id")
     private UserCoupon userCoupon;
     // 주문과 다대일 맵핑
     @ManyToOne
     @JoinColumn(name = "order_idx")
-    private Order order;
+    private Orders orders;
     // 제품과 다대일 맵핑
     @ManyToOne
     @JoinColumn(name = "product_idx")

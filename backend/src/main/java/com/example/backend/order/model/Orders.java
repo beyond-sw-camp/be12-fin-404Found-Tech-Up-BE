@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Order {
+public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderIdx;
@@ -28,6 +28,6 @@ public class Order {
     @JoinColumn(name = "user_idx")
     private User user;
     // 주문상세정보와 일대다 맵핑
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "orders")
     private List<OrderDetail> orderDetails;
 }

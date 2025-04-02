@@ -31,7 +31,7 @@ public class Product {
     private String description;
     private String category;
 
-    @OneToMany(mappedBy = "product_image")
+    @OneToMany(mappedBy = "product")
     private List<ProductImage> images;
 
     @OneToOne(mappedBy = "product")
@@ -54,7 +54,7 @@ public class Product {
     private List<Review> reviews;
 
     // 사용자의 제품과 일대다 맵핑
-    @OneToMany(mappedBy = "users_product")
+    @OneToMany(mappedBy = "products")
     private List<UserProduct> userProducts;
 
     // 쿠폰과 일대다 맵핑
