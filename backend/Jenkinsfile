@@ -82,7 +82,7 @@ pipeline {
 
                     echo "CREATE .ENV"
                     sh """
-                        ssh ubuntu@www.techup-backend.kro.kr << EOF
+                        ssh -o StrictHostKeyChecking=no ubuntu@www.techup-backend.kro.kr << EOF
                         cat > /home/ubuntu/.env << EOL
                         DB_URL=${DB_URL}
                         DB_USER=${DB_USERNAME}
@@ -95,13 +95,13 @@ pipeline {
 
                     echo "SCP DOCKER-COMPOSE.YML"
                     sh """
-                        ssh ubuntu@www.techup-backend.kro.kr "[ -f /home/ubuntu/docker-compose.yml ] && echo 'File exists, overwriting' || echo 'File does not exist'"
-                        scp ${WORKSPACE}/backend/docker-compose.yml ubuntu@www.techup-backend.kro.kr:/home/ubuntu/docker-compose.yml
+                        ssh -o StrictHostKeyChecking=no ubuntu@www.techup-backend.kro.kr "[ -f /home/ubuntu/docker-compose.yml ] && echo 'File exists, overwriting' || echo 'File does not exist'"
+                        scp -o StrictHostKeyChecking=no ${WORKSPACE}/backend/docker-compose.yml ubuntu@www.techup-backend.kro.kr:/home/ubuntu/docker-compose.yml
                     """
 
                     echo "RUN DOCKER-COMPOSE"
                     sh """
-                        ssh ubuntu@www.techup-backend.kro.kr << EOF
+                        ssh -o StrictHostKeyChecking=no ubuntu@www.techup-backend.kro.kr << EOF
                         docker-compose -f /home/ubuntu/docker-compose.yml down  # 기존 컨테이너 중지 및 삭제
                         docker-compose -f /home/ubuntu/docker-compose.yml up -d  # 새 컨테이너 실행
                         EOF
