@@ -40,7 +40,9 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
                         // 나머지는 인증 필요
-                        .anyRequest().authenticated()
+                        //.anyRequest().authenticated()
+                        // Swagger 테스트 동안에는 전부 허용
+                        .anyRequest().permitAll()
                 )
                 .addFilterAt(new LoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)  // 로그인 필터 추가
                 .csrf(csrf -> csrf.disable());
