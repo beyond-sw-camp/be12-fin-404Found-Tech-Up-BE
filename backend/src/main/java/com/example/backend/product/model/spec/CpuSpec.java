@@ -22,5 +22,5 @@ public class CpuSpec {
 
     @OneToOne
     @JoinColumn(name="product_idx")
-    private Product productIdx;
+    private Product product;
 }
