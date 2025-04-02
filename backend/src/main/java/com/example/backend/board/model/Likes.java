@@ -1,4 +1,4 @@
-package com.example.backend.noti.model;
+package com.example.backend.board.model;
 
 import com.example.backend.user.model.User;
 import jakarta.persistence.*;
@@ -7,23 +7,20 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Getter
 @Entity
-public class Noti {
+public class Likes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
-    private String notiTitle;
-    private String notiContent;
-    // True: 전체, False: 개인
-    private Boolean notiType;
-    private LocalDateTime notiCreated;
-    private LocalDateTime notiChecked;
+    private Boolean likesType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_idx")
+    private Board board;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx")

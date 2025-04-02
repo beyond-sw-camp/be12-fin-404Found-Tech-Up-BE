@@ -18,9 +18,10 @@ public class RamSpec {
     private Long ramIdx;
     private String ramType;
     private Integer ramNum;
+    private Integer ramSize;
     private String ramUsage;
 
     @OneToOne
     @JoinColumn(name="product_idx")
-    private Product productIdx;
+    private Product product;
 }

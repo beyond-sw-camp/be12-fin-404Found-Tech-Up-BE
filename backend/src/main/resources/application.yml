@@ -1,1 +1,19 @@
-spring.application.name=backend
+spring:
+  application:
+    name: techup-backend
+  datasource:
+    url: ${DB_URL}
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+jwtData:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+server:
+  port: 8080
+
+
+

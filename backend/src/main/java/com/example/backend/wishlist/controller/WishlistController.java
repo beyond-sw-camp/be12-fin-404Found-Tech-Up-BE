@@ -24,11 +24,6 @@ public class WishlistController {
             summary = "위시리스트 토글 (추가/삭제)",
             description = "로그인한 사용자가 특정 상품(productIdx)을 위시리스트에 추가하거나, 이미 등록되어 있으면 삭제합니다. (토글 방식)"
     )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "위시리스트 상태 변경 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-            @ApiResponse(responseCode = "401", description = "인증 실패")
-    })
     @PostMapping("/toggle/{productIdx}")
     public ResponseEntity toggleWishlist(
             @Parameter(description = "로그인한 사용자 정보", required = true)
@@ -47,5 +42,6 @@ public class WishlistController {
             @Parameter(description = "로그인한 사용자 정보", required = true)
             @AuthenticationPrincipal User loginUser) {
         return null;
+
     }
 }
