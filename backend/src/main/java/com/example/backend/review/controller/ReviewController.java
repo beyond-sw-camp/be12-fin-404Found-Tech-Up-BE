@@ -2,6 +2,7 @@ package com.example.backend.review.controller;
 
 import com.example.backend.review.model.Review;
 import com.example.backend.review.model.dto.ReviewRequestDto;
+import com.example.backend.review.model.dto.ReviewResponseDto;
 import com.example.backend.review.service.ReviewService;
 import com.example.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,8 +27,8 @@ public class ReviewController {
             """
     )
     @PostMapping("/create/{productIdx}")
-    public void create() {
-
+    public ResponseEntity<ReviewResponseDto> create(@RequestBody ReviewRequestDto reviewRequestDto, @PathVariable Integer productIdx) {
+        return null;
     }
 
     @Operation(
@@ -38,7 +39,7 @@ public class ReviewController {
             """
     )
     @PatchMapping("/update/{reviewIdx}")
-    public void update() {
+    public void update(@AuthenticationPrincipal User loginUser, @PathVariable Long reviewIdx) {
 
     }
 
@@ -50,7 +51,7 @@ public class ReviewController {
             """
     )
     @DeleteMapping("/delete/{reviewIdx}")
-    public void delete() {
+    public void delete(@AuthenticationPrincipal User loginUser, @PathVariable Long reviewIdx) {
 
     }
 }
