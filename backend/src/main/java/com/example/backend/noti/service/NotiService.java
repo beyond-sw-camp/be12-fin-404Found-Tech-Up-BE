@@ -1,9 +1,5 @@
 package com.example.backend.noti.service;
 
-import com.example.backend.board.model.Board;
-import com.example.backend.board.model.dto.BoardRequestDto;
-import com.example.backend.board.model.dto.BoardResponseDto;
-import com.example.backend.board.repository.BoardRepository;
 import com.example.backend.noti.model.Noti;
 import com.example.backend.noti.model.dto.NotiRequestDto;
 import com.example.backend.noti.model.dto.NotiResponseDto;
