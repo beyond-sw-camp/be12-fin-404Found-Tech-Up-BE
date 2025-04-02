@@ -4,10 +4,12 @@ import com.example.backend.comment.model.dto.CommentRegisterDto;
 import com.example.backend.comment.service.CommentService;
 import com.example.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "댓글 기능", description = "게시판의 댓글 관련 기능을 제공합니다.")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/comment")
