@@ -1,15 +1,19 @@
 package com.example.backend.product.controller;
 
 import com.example.backend.product.model.dto.ProductFilterRequestDto;
+import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.dto.ProductResponseDto;
 import com.example.backend.product.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -90,4 +94,35 @@ public class ProductController {
     ) {
         return productService.filterProduct(filterDto);
     }
+
+    //-----------------------관리자 전용 상품 기능----------------
+
+    @Operation(summary = "상품 등록", description = "신규 상품을 등록합니다.")
+    @PostMapping("/register")
+    public ProductResponseDto registerProduct(@RequestBody ProductRequestDto requestDto) {
+        return productService.registerProduct(requestDto);
+    }
+
+
+    @Operation(summary = "상품 삭제", description = "상품 ID로 상품을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "상품 삭제 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 상품 ID"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 상품")
+    })
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
+        productService.deleteProduct(productId);
+        return ResponseEntity.ok("상품이 성공적으로 삭제되었습니다.");
+    }
+
+    @Operation(summary = "상품 수정", description = "상품 ID를 기준으로 상품 정보를 수정합니다.")
+    @PutMapping("/update/{productId}")
+    public ProductResponseDto updateProduct(
+            @PathVariable Long productId,
+            @RequestBody ProductRequestDto requestDto
+    ) {
+        return productService.updateProduct(productId, requestDto);
+    }
+
 }

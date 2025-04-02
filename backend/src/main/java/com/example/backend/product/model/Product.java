@@ -3,6 +3,7 @@ package com.example.backend.product.model;
 import com.example.backend.cart.model.CartItem;
 import com.example.backend.coupon.model.Coupon;
 import com.example.backend.order.model.OrderDetail;
+import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.spec.*;
 import com.example.backend.review.model.Review;
 import com.example.backend.user.model.UserProduct;
@@ -75,5 +76,13 @@ public class Product {
     @OneToMany(mappedBy = "product")
       private List<Wishlist> wishlists;
 
+    public void update(ProductRequestDto dto) {
+        this.name = dto.getName();
+        this.price = dto.getPrice();
+        this.brand = dto.getBrand();
+        this.stock = dto.getStock();
+        this.description = dto.getDescription();
+        this.category = dto.getCategory();
+    }
 
 }

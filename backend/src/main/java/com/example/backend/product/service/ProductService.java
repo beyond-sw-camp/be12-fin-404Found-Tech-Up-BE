@@ -2,6 +2,7 @@ package com.example.backend.product.service;
 
 import com.example.backend.product.model.Product;
 import com.example.backend.product.model.dto.ProductFilterRequestDto;
+import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.dto.ProductResponseDto;
 import com.example.backend.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -85,5 +86,23 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    public ProductResponseDto registerProduct(ProductRequestDto requestDto) {
+        Product savedProduct = productRepository.save(requestDto.toEntity());
+        return ProductResponseDto.from(savedProduct);
+    }
+
+    public void deleteProduct(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+        productRepository.delete(product);
+    }
+
+    public ProductResponseDto updateProduct(Long productId, ProductRequestDto requestDto) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+
+        product.update(requestDto);
+        return ProductResponseDto.from(product);
+    }
 
 }
