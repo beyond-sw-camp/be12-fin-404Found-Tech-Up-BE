@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 public class CpuSpec {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idx;
+    private Long cpuIdx;
     private String cpuType;
-    private int cpuCore;
-    private int cpuThreads;
+    private Integer cpuCore;
+    private Integer cpuThreads;
 
     @OneToOne
     @JoinColumn(name="product_idx")
-    private Product productIdx;
+    private Product product;
 }

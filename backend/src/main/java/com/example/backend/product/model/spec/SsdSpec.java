@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 public class SsdSpec {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idx;
-    private int ssdCapacity;
-    private int ssdRead;
-    private int ssdWrite;
+    private Long ssdIdx;
+    private Integer ssdCapacity;
+    private Integer ssdRead;
+    private Integer ssdWrite;
 
     @OneToOne
     @JoinColumn(name="product_idx")
-    private Product productIdx;
+    private Product product;
 }

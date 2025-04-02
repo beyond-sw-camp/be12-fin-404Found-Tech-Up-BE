@@ -1,9 +1,8 @@
 package com.example.backend.order.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.backend.coupon.model.UserCoupon;
+import com.example.backend.product.model.Product;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,8 +18,18 @@ public class OrderDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderDetailIdx;
     private int orderDetailQuantity;
+    private int orderDetailPrice;
 
-    // 쿠폰과 1대1 맵핑
+    // 유저쿠폰과 1대1 맵핑
+    @OneToOne
+    @JoinColumn(name = "user_coupon_id")
+    private UserCoupon userCoupon;
     // 주문과 다대일 맵핑
+    @ManyToOne
+    @JoinColumn(name = "order_idx")
+    private Orders orders;
     // 제품과 다대일 맵핑
+    @ManyToOne
+    @JoinColumn(name = "product_idx")
+    private Product product;
 }
