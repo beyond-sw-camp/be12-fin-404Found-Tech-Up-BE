@@ -61,5 +61,5 @@ public class CartController {
             @Parameter(description = "삭제할 카트 아이템 고유번호", required = true)
             @PathVariable Long cartItemIdx) {
         return null;
-
+    }
 }
