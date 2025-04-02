@@ -5,10 +5,12 @@ import com.example.backend.board.service.LikesService;
 import com.example.backend.comment.model.dto.CommentRegisterDto;
 import com.example.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "좋아요 기능", description = "게시글의 좋아요/실어요 관련 기능을 제공합니다.")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/likes")

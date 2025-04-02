@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "쿠폰 API", description = "쿠폰 관련 기능을 제공합니다.")
+@Tag(name = "쿠폰 기능", description = "쿠폰 관련 기능을 제공합니다.")
 @RestController
 @RequestMapping("/coupon")
 public class CouponController {

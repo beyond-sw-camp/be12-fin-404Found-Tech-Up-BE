@@ -1,9 +1,11 @@
 package com.example.backend.cart.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "장바구니 기능", description = "장바구니 관련 기능을 제공합니다.")
 @RestController
 @RequestMapping("/cart")
 @RequiredArgsConstructor
