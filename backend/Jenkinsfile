@@ -1,1 +1,119 @@
-sample
+pipeline {
+    agent any
+
+    options {
+        timestamps()
+    }
+
+    environment {
+        IMAGE_NAME = 'mstar228/techup-backend'
+        IMAGE_TAG = "1.0.${BUILD_NUMBER}"
+        PATH = "/usr/local/bin:${env.PATH}"
+    }
+
+    stages {
+        stage('Start Timer') {
+            steps {
+                script {
+                    startTime = System.currentTimeMillis()
+                }
+            }
+        }
+
+        stage('Git Clone') {
+            steps {
+                echo "Cloning Repository"
+                git url: 'https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE.git',
+                    branch: "${env.GIT_BRANCH.replace('origin/', '')}"
+            }
+        }
+
+        stage('Gradle Build') {
+            steps {
+                echo "Building Project"
+                sh '''
+                    echo "Add Permission"
+                    chmod +x ${WORKSPACE}/backend/gradlew
+                    echo "Cleaning previous build"
+                    rm -rf ${WORKSPACE}/backend/build
+                    echo "Running Gradle build"
+                    cd ${WORKSPACE}/backend && ./gradlew bootJar
+                '''
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo "Building Docker Image ${IMAGE_NAME}:${IMAGE_TAG}"
+                    docker.build("${IMAGE_NAME}:${IMAGE_TAG}", "${WORKSPACE}/backend")
+                }
+            }
+        }
+
+        stage('Push to Registry') {
+            steps {
+                script {
+                    echo "Pushing Docker Image ${IMAGE_NAME}:${IMAGE_TAG} to Registry"
+                    withDockerRegistry([credentialsId: 'DOCKER_HUB']) {
+                        docker.image("${IMAGE_NAME}:${IMAGE_TAG}").push()
+                        docker.image("${IMAGE_NAME}:${IMAGE_TAG}").push('latest')
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to EC2') {
+//             when {
+//                 expression { env.GIT_BRANCH == 'origin/main' }
+//             }
+            steps {
+                script {
+
+                }
+            }
+        }
+
+        stage('End Timer') {
+            steps {
+                script {
+                    def endTime = System.currentTimeMillis()
+                    def duration = (endTime - startTime) / 1000
+                    echo "⏱️ 전체 파이프라인 실행 시간: ${duration}초"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                def endTime = System.currentTimeMillis()
+                def duration = (endTime - startTime) / 1000
+                sendDiscordMessage("🎉 전체 파이프라인 성공!", "⏱️ 실행 시간: ${duration}초", "GREEN")
+            }
+        }
+        failure {
+            script {
+                def endTime = System.currentTimeMillis()
+                def duration = (endTime - startTime) / 1000
+                sendDiscordMessage("🚨 전체 파이프라인 실패!", "⏱️ 실행 시간: ${duration}초", "RED")
+            }
+        }
+    }
+}
+
+// 전역 함수 선언 (pipeline 외부)
+def sendDiscordMessage(String title, String description, String color) {
+    withCredentials([string(credentialsId: 'Discord-Webhook', variable: 'DISCORD')]) {
+        discordSend(
+            description: description,
+            footer: "Jenkins CI/CD",
+            link: env.BUILD_URL,
+            result: currentBuild.currentResult,
+            title: title,
+            color: color,
+            webhookURL: "$DISCORD"
+        )
+    }
+}
