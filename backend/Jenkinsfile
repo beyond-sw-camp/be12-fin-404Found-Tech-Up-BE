@@ -85,7 +85,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ubuntu@www.techup-backend.kro.kr << EOF
                         cat > /home/ubuntu/.env << EOL
                         DB_URL=${DB_URL}
-                        DB_USER=${DB_USERNAME}
+                        DB_USERNAME=${DB_USERNAME}
                         DB_PASSWORD=${DB_PASSWORD}
                         JWT_SECRET=${JWT_SECRET}
                         JWT_EXPIRATION=${JWT_EXPIRATION}
