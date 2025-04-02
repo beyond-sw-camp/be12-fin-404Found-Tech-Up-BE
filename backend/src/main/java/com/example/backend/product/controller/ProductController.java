@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "상품 API", description = "상품 관련 기능을 제공합니다.")
+@Tag(name = "상품 기능", description = "상품 관련 기능을 제공합니다.")
 @RestController
 @RequestMapping("/product")
 @RequiredArgsConstructor

@@ -1,9 +1,11 @@
 package com.example.backend.wishlist.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "위시리스트 기능", description = "위시리스트 관련 기능을 제공합니다.")
 @RestController
 @RequestMapping("/wishlist")
 @RequiredArgsConstructor
