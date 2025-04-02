@@ -13,7 +13,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/noti")
 @Tag(name = "알림 기능", description = "알림 관리 API")
 public class NotiController {
     private final NotiService notiService;

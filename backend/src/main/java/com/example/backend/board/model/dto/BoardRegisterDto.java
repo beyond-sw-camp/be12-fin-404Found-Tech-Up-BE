@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BoardRequestDto {
+public class BoardRegisterDto {
     @Schema(description = "게시글의 제목", example = "게시판 제목입니다.")
     private String boardTitle;
     @Schema(description = "게시글의 내용", example = "게시판 내용입니다.")

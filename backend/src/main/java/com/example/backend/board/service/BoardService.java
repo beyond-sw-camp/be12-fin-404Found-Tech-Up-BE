@@ -1,7 +1,7 @@
 package com.example.backend.board.service;
 
 import com.example.backend.board.model.Board;
-import com.example.backend.board.model.dto.BoardRequestDto;
+import com.example.backend.board.model.dto.BoardRegisterDto;
 import com.example.backend.board.model.dto.BoardResponseDto;
 import com.example.backend.board.repository.BoardImageRepository;
 import com.example.backend.board.repository.BoardRepository;
@@ -18,11 +18,11 @@ public class BoardService {
     private final BoardImageRepository boardImageRepository;
 //    private final S3Service s3Service;
 
-    public void create(User loginUser, BoardRequestDto dto) {
+    public void create(User loginUser, BoardRegisterDto dto) {
         boardRepository.save(dto.toEntity(loginUser));
     }
 
-    public void update(User loginUser, Long boardIdx, BoardRequestDto dto) {
+    public void update(User loginUser, Long boardIdx, BoardRegisterDto dto) {
         // 1. 기존 엔티티 조회
         Board board = boardRepository.findById(boardIdx).orElseThrow();
 
