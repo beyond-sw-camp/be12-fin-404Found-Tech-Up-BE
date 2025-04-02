@@ -63,16 +63,16 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2') {
+//         stage('Deploy to EC2') {
 //             when {
 //                 expression { env.GIT_BRANCH == 'origin/main' }
 //             }
-            steps {
-                script {
-
-                }
-            }
-        }
+//             steps {
+//                 script {
+//
+//                 }
+//             }
+//         }
 
         stage('End Timer') {
             steps {
