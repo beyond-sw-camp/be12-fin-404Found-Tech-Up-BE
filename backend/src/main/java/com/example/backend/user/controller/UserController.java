@@ -26,9 +26,9 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @Operation(summary="회원가입", description = "회원 가입을 합니다")
-    @ApiResponse(responseCode="200", description="정상가입, 성공 문자열을 반환합니다.")
-    @ApiResponse(responseCode="400", description="가입 실패")
+    @Operation(summary="이메일 인증", description = "회원 가입, 비밀번호 찾기 시 이메일 인증을 합니다")
+    @ApiResponse(responseCode="200", description="인증 성공, 성공 문자열을 반환합니다.")
+    @ApiResponse(responseCode="400", description="인증 실패")
     @ApiResponse(responseCode="500", description="서버 내 오류")
     @PostMapping("/verify")
     private ResponseEntity<String> verifyEmail(
