@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartItemRequestDto {
+    private int idx;
 }
