@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class UserUpdateRequest {
+public class UserUpdateRequestDto {
     @Schema(description="별명, 필수",required = true,  example = "Yippie20")
     @NotBlank
     private String nickname;

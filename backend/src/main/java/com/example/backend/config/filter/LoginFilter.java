@@ -1,7 +1,7 @@
 package com.example.backend.config.filter;
 
 import com.example.backend.user.model.User;
-import com.example.backend.user.model.dto.request.LoginRequest;
+import com.example.backend.user.model.dto.request.LoginRequestDto;
 import com.example.backend.util.JwtUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -31,7 +31,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // logger.info("누군가 로그인을 시도함");
         UsernamePasswordAuthenticationToken token;
         try {
-            LoginRequest user = new ObjectMapper().readValue(request.getInputStream(), LoginRequest.class);
+            LoginRequestDto user = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
             // logger.info("로그인 유저의 IP: {}", request.getRemoteAddr());
             token = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), null);
         } catch (IOException e) {
