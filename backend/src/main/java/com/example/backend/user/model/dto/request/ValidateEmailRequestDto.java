@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @Schema(description="이메일 인증 요청")
-public class ValidateEmailRequest {
+public class ValidateEmailRequestDto {
     @Schema(description="이메일, 필수",required = true,  example = "example@example.com")
     @Email
     @NotBlank
