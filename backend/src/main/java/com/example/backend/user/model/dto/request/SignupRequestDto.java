@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @Schema(description="회원가입 정보 Request")
-public class SignupRequest {
+public class SignupRequestDto {
     @Schema(description="별명, 필수",required = true,  example = "Yippie20")
     @NotBlank
     private String nickname;
