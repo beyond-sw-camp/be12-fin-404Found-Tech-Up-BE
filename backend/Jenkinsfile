@@ -8,7 +8,6 @@ pipeline {
     environment {
         IMAGE_NAME = 'mstar228/techup-backend'
         IMAGE_TAG = "1.0.${BUILD_NUMBER}"
-//         EC2_HOST = 'ubuntu@www.techup-backend.kro.kr'
         PATH = "/usr/local/bin:${env.PATH}"
         // 크리덴셜에서 환경 변수 가져오기
         DB_URL = credentials('DB_URL')
