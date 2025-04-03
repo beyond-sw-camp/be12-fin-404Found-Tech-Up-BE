@@ -8,14 +8,16 @@ pipeline {
     environment {
         IMAGE_NAME = 'mstar228/techup-backend'
         IMAGE_TAG = "1.0.${BUILD_NUMBER}"
-        EC2_HOST = 'ubuntu@www.techup-backend.kro.kr'
+//         EC2_HOST = 'ubuntu@www.techup-backend.kro.kr'
         PATH = "/usr/local/bin:${env.PATH}"
         // 크리덴셜에서 환경 변수 가져오기
-                DB_URL = credentials('DB_URL')
-                DB_USERNAME = credentials('DB_USERNAME')
-                DB_PASSWORD = credentials('DB_PASSWORD')
-                JWT_SECRET = credentials('JWT_SECRET')
-                JWT_EXPIRATION = credentials('JWT_EXPIRATION')
+        DB_URL = credentials('DB_URL')
+        DB_USERNAME = credentials('DB_USERNAME')
+        DB_PASSWORD = credentials('DB_PASSWORD')
+        JWT_SECRET = credentials('JWT_SECRET')
+        JWT_EXPIRATION = credentials('JWT_EXPIRATION')
+        BACKEND_URL = credentials('BACKEND_URL')
+        EC2_HOST = "ubuntu@${BACKEND_URL}"
     }
 
     stages {
