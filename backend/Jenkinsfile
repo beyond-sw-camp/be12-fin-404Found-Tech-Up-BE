@@ -90,8 +90,6 @@ pipeline {
                         DB_PASSWORD=${DB_PASSWORD}
                         JWT_SECRET=${JWT_SECRET}
                         JWT_EXPIRATION=${JWT_EXPIRATION}
-                    EOL
-                    EOF
                     """
 
                     echo "SCP DOCKER-COMPOSE.YML"
@@ -105,7 +103,6 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ${EC2_HOST} <<'EOF'
                         docker-compose -f /home/ubuntu/docker-compose.yml down  # 기존 컨테이너 중지 및 삭제
                         docker-compose -f /home/ubuntu/docker-compose.yml up -d  # 새 컨테이너 실행
-                    EOF
                     """
                 }
             }
