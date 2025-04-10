@@ -35,7 +35,7 @@ public class CouponService {
         // 요청이 잘못된 경우
         // TODO: 예외 처리를 다른 예외 클래스로...
         if (user == null || product == null) {
-            throw new RuntimeException("bad request");
+            throw new IllegalArgumentException("bad request");
         }
         Coupon coupon = couponRepository.findByCouponName(request.getCouponName()).orElse(null);
         if (coupon == null) { // 아직 한 번도 발급한 적 없는 종류의 쿠폰을 발급하는 경우
