@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "리뷰 응답 DTO")
 public class ReviewResponseDto {
     @Schema(description = "리뷰 내용", example = "정말 만족스러운 제품입니다.")
     private String reviewContent;
@@ -21,6 +22,10 @@ public class ReviewResponseDto {
 
     // 리뷰 작성후 결과 반환
     public static ReviewResponseDto from(Review review) {
-        return ReviewResponseDto.builder().reviewContent(review.getReviewContent()).build();
+        return ReviewResponseDto.builder()
+                .reviewContent(review.getReviewContent())
+                .reviewRating(review.getReviewRating())
+                .reviewImg(review.getReviewImg())
+                .build();
     }
 }

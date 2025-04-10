@@ -3,10 +3,7 @@ package com.example.backend.review.model;
 import com.example.backend.product.model.Product;
 import com.example.backend.user.model.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

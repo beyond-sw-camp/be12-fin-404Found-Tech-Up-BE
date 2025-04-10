@@ -62,8 +62,6 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<Coupon> coupons;
 
-    // 장바구니와 일대다 맵핑
-
     // 주문 상세 정보와 일대다 맵핑
     @OneToMany(mappedBy = "product")
     private List<OrderDetail> orderDetails;
