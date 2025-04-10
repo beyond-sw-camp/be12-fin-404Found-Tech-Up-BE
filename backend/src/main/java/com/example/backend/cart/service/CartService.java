@@ -36,7 +36,7 @@ public class CartService {
         Cart cart = getOrCreateCart(user);
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
-        int quantityToAdd = dto.getIdx();
+        int quantityToAdd = dto.getCartItemQuantity();
 
         // 이미 해당 상품이 장바구니에 있는지 확인
         Optional<CartItem> optionalItem = cart.getCartItems().stream()
