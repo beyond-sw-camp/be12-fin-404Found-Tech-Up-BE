@@ -22,13 +22,18 @@ public class ReviewController {
     @Operation(
             summary = "리뷰 작성하기",
             description = """
-                productIdx를 전달받아, 로그인한 유저 정보를 확인합니다.  
+                productIdx를 전달받아, 로그인한 유저 정보를 확인합니다.
                 유저가 해당 제품을 실제로 구매한 경우에만 리뷰를 작성할 수 있습니다.
             """
     )
     @PostMapping("/create/{productIdx}")
-    public ResponseEntity<ReviewResponseDto> create(@RequestBody ReviewRequestDto reviewRequestDto, @PathVariable Integer productIdx) {
-        return null;
+    public ResponseEntity<ReviewResponseDto> create(
+            @RequestBody ReviewRequestDto reviewRequestDto,
+            @PathVariable Integer productIdx,
+            @AuthenticationPrincipal User loginUser
+    ) {
+        ReviewResponseDto response = reviewService.createReview(loginUser, productIdx, reviewRequestDto);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(
@@ -39,8 +44,13 @@ public class ReviewController {
             """
     )
     @PatchMapping("/update/{reviewIdx}")
-    public void update(@AuthenticationPrincipal User loginUser, @PathVariable Long reviewIdx) {
-
+    public ResponseEntity<ReviewResponseDto> update(
+            @AuthenticationPrincipal User loginUser,
+            @PathVariable Long reviewIdx,
+            @RequestBody ReviewRequestDto reviewRequestDto
+    ) {
+        ReviewResponseDto response = reviewService.updateReview(loginUser, reviewIdx, reviewRequestDto);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(
@@ -51,7 +61,11 @@ public class ReviewController {
             """
     )
     @DeleteMapping("/delete/{reviewIdx}")
-    public void delete(@AuthenticationPrincipal User loginUser, @PathVariable Long reviewIdx) {
-
+    public ResponseEntity<String> delete(
+            @AuthenticationPrincipal User loginUser,
+            @PathVariable Long reviewIdx
+    ) {
+        reviewService.deleteReview(loginUser, reviewIdx);
+        return ResponseEntity.ok("리뷰가 삭제되었습니다.");
     }
 }

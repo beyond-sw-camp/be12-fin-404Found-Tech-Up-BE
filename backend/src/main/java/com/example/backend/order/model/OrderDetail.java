@@ -3,13 +3,11 @@ package com.example.backend.order.model;
 import com.example.backend.coupon.model.UserCoupon;
 import com.example.backend.product.model.Product;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

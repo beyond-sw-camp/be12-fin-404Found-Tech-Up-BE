@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "리뷰 등록/수정 요청 DTO")
 public class ReviewRequestDto {
     @Schema(description = "리뷰 내용", example = "정말 만족스러운 제품입니다.")
     private String reviewContent;
