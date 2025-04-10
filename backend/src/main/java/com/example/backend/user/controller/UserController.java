@@ -7,6 +7,7 @@ import com.example.backend.user.model.dto.request.SignupRequestDto;
 import com.example.backend.user.model.dto.request.UserUpdateRequestDto;
 import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
 import com.example.backend.user.model.dto.request.VerifyNickNameRequestDto;
+import com.example.backend.user.model.dto.response.SignupResponseDto;
 import com.example.backend.user.model.dto.response.UserInfoResponseDto;
 import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
 import com.example.backend.user.service.UserService;
@@ -39,8 +40,8 @@ public class UserController {
     public ResponseEntity<VerifyNickNameResponseDto> verifyNickName(
             @Parameter(description="회원 가입시 닉네임 중복 확인")
             @Valid @RequestBody VerifyNickNameRequestDto request) {
-        VerifyNickNameResponseDto dto = userService.verifyNickName(request);
-        return ResponseEntity.ok(dto);
+        VerifyNickNameResponseDto res = userService.verifyNickName(request);
+        return ResponseEntity.ok(res);
     }
 
     @Operation(summary="이메일 인증", description = "회원 가입, 비밀번호 찾기 시 이메일 인증을 합니다")
@@ -61,11 +62,11 @@ public class UserController {
     @ApiResponse(responseCode="400", description="가입 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(
+    public ResponseEntity<SignupResponseDto> signup(
             @Parameter(description="회원 가입시의 정보: User 테이블의 모든 정보를 채우지 않습니다.")
             @Valid @RequestBody SignupRequestDto request) {
-        userService.signup(request);
-        return ResponseEntity.ok("Signup success");
+        SignupResponseDto res = userService.signup(request);
+        return ResponseEntity.ok(res);
     }
 
     @Operation(summary="회원 정보 반환", description = "회원 정보를 반환합니다")

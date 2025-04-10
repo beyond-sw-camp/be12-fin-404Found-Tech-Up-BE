@@ -20,6 +20,9 @@ public class SignupRequestDto {
     @Schema(description="별명, 필수",required = true,  example = "Yippie20")
     @NotBlank
     private String userNickname;
+    @Schema(description="별명 중복 확인 여부, 필수",required = true,  example = "true")
+    @NotBlank
+    private Boolean verifyNickname;
     @Schema(description="이메일, 필수",required = true,  example = "example@example.com")
     @Email
     @NotBlank
@@ -42,9 +45,13 @@ public class SignupRequestDto {
                 .userNickname(userNickname)
                 .userEmail(userEmail)
                 .userPassword(encodedPassword)
+                .isActive(false)
                 .createdAt(LocalDateTime.now())
                 .enabled(true)
                 .isAdmin(false)
+                .likeEnabled(false)
+                .newEnabled(false)
+                .upgradeEnabled(false)
                 .build();
     }
 }

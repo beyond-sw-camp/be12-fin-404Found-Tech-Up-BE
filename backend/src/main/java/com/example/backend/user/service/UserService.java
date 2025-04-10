@@ -5,6 +5,7 @@ import com.example.backend.user.model.User;
 import com.example.backend.user.model.dto.request.SignupRequestDto;
 import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
 import com.example.backend.user.model.dto.request.VerifyNickNameRequestDto;
+import com.example.backend.user.model.dto.response.SignupResponseDto;
 import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
 import com.example.backend.user.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -32,10 +33,13 @@ public class UserService implements UserDetailsService {
         return new VerifyNickNameResponseDto(isAvailable);
     }
 
-    public void signup(SignupRequestDto dto) {
-        if (dto.getUserConfirmPassword().equals( dto.getUserPassword())){
+    public SignupResponseDto signup(SignupRequestDto dto) {
+        boolean isSuccessSignup = false;
+        if (dto.getVerifyNickname().equals(true) && dto.getUserConfirmPassword().equals( dto.getUserPassword())){
             User user = userRepository.save(dto.toEntity(passwordEncoder.encode(dto.getUserPassword())));
+            isSuccessSignup = true;
         }
+        return new SignupResponseDto(isSuccessSignup);
     }
 
     @Override
