@@ -42,13 +42,14 @@ public class CouponController {
         return ResponseEntity.ok(couponIdx.toString() + "번 쿠폰 발행 성공");
     }
 
+   /*
     @Operation(summary = "카테고리별 쿠폰 발급", description = "제품별 쿠폰 발급")
     @PostMapping("/issuecategory")
     public void issueByCategory(@RequestBody CategoryCouponCreateRequestDto category) {
         // TODO: 프론트 수정 후 여기를 구현
         log.info("issue category coupon {} with discount {}%", category.getCategory(), category.getDiscount());
     }
-
+    */
     @Operation(summary = "전체 쿠폰 발급", description = "전체에게 쿠폰 발급.")
     @PostMapping("/issueall")
     public void issueCouponsToAll(@RequestBody CategoryCouponCreateRequestDto category) {
@@ -62,4 +63,7 @@ public class CouponController {
     ) {
         // TODO: 구현
     }
+
+    // TODO: 등록한 쿠폰 수정 혹은 발행 취소
+
 }

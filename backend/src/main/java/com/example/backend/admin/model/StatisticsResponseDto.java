@@ -15,7 +15,7 @@ public class StatisticsResponseDto {
     Integer totalRefunds; //
     List<ProductResponseDto> topViews; // TODO
     List<ProductResponseDto> topSales; // TODO
-    List<ProductResponseDto> topWishList; // TODO
+    List<TopWishListDto> topWishList; // TODO
     List<String> topKeywords; // TODO
     Integer newCustomers; //
 }
