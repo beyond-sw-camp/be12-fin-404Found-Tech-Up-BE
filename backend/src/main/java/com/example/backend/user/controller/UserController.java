@@ -34,10 +34,11 @@ public class UserController {
     @ApiResponse(responseCode="400", description="인증 실패")
     @ApiResponse(responseCode="500", description="서버 내 오류")
     @PostMapping("/verify")
-    private ResponseEntity<String> verifyEmail(
+    public ResponseEntity<String> verifyEmail(
             @Parameter(description="회원 가입시의 정보: User 테이블의 모든 정보를 채우지 않습니다.")
             @Valid @RequestBody ValidateEmailRequestDto request) {
         // TODO: Java Mail Sender 추가 후 메일 보내기
+//        userService.verify(request);
         return ResponseEntity.ok("이메일을 보냈습니다. 메일함을 확인해주세요.");
     }
     
@@ -46,9 +47,10 @@ public class UserController {
     @ApiResponse(responseCode="400", description="가입 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @PostMapping("/signup")
-    private ResponseEntity<String> signup(
+    public ResponseEntity<String> signup(
             @Parameter(description="회원 가입시의 정보: User 테이블의 모든 정보를 채우지 않습니다.")
             @Valid @RequestBody SignupRequestDto request) {
+        userService.signup(request);
         return ResponseEntity.ok("Signup success");
     }
 
