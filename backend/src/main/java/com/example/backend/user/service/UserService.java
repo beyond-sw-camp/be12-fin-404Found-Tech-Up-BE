@@ -18,7 +18,9 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     public void signup(SignupRequestDto dto) {
-        User user = userRepository.save(dto.toEntity(passwordEncoder.encode(dto.getUserPassword())));
+        if (dto.getUserConfirmPassword().equals( dto.getUserPassword())){
+            User user = userRepository.save(dto.toEntity(passwordEncoder.encode(dto.getUserPassword())));
+        }
     }
 
     @Override

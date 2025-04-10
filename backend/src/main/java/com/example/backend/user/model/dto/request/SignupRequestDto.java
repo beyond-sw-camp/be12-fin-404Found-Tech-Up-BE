@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -28,6 +30,9 @@ public class SignupRequestDto {
     @Schema(description="비밀번호, 영문 소문자 및 숫자로 8자 이상, 필수",required = true,  example = "abcd142857")
     @Pattern(regexp = "[0-9a-z]{8,}", message="signup wrong pass")
     private String userPassword;
+    @Schema(description="확인 비밀번호, 영문 소문자 및 숫자로 8자 이상, 필수",required = true,  example = "abcd142857")
+    @Pattern(regexp = "[0-9a-z]{8,}", message="signup wrong pass")
+    private String userConfirmPassword;
 //    @Schema(description="약관 동의 기록, 참이어야 회원 가입 성공 처리", required = true, example = "true")
 //    @NotNull
 //    private Boolean agreement;
@@ -37,6 +42,8 @@ public class SignupRequestDto {
                 .userNickname(userNickname)
                 .userEmail(userEmail)
                 .userPassword(encodedPassword)
+                .createdAt(LocalDateTime.now())
+                .enabled(true)
                 .isAdmin(false)
                 .build();
     }

@@ -16,6 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -34,11 +35,13 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String userEmail;
     private String userPassword;
+    private String userConfirmPassword;
+    @Column(unique = true)
     private String userNickname;
     private String userPhone;
     private String userAddress;
     private Boolean isActive;
-    private Date createdAt;
+    private LocalDateTime createdAt;
     private Boolean isSocial;
     private Boolean enabled;
     private Boolean isAdmin;
