@@ -2,6 +2,7 @@ package com.example.backend.cart.controller;
 
 import com.example.backend.cart.model.dto.CartItemRequestDto;
 import com.example.backend.cart.model.dto.CartItemResponseDto;
+import com.example.backend.cart.model.dto.CartItemUpdateRequestDto;
 import com.example.backend.cart.service.CartService;
 import com.example.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,7 +47,7 @@ public class CartController {
             @AuthenticationPrincipal User loginUser,
             @Parameter(description = "추가할 상품의 고유번호", required = true)
             @PathVariable Long productIdx,
-            @Parameter(description = "장바구니에 추가할 상품 정보 DTO (수량은 CartItemRequestDto.idx 필드에 저장됨)", required = true)
+            @Parameter(description = "장바구니에 추가할 상품 정보 DTO (수량은 cartItemQuantity 필드에 저장됨)", required = true)
             @RequestBody CartItemRequestDto cartItemRequestDto) {
         cartService.addToCart(loginUser, productIdx, cartItemRequestDto);
         return ResponseEntity.ok("상품이 장바구니에 추가되었습니다.");
@@ -64,5 +65,21 @@ public class CartController {
             @PathVariable Long cartItemIdx) {
         cartService.removeCartItem(loginUser, cartItemIdx);
         return ResponseEntity.ok("장바구니 항목이 삭제되었습니다.");
+    }
+
+    @Operation(
+            summary = "장바구니 항목 수량 변경",
+            description = "특정 상품의 장바구니 항목 수량을 증가 또는 감소시킵니다. 최종 수량이 0 이하이면 해당 항목은 삭제됩니다."
+    )
+    @PutMapping("/update/{productIdx}")
+    public ResponseEntity<String> updateCartItemQuantity(
+            @Parameter(description = "로그인한 사용자 정보", required = true)
+            @AuthenticationPrincipal User loginUser,
+            @Parameter(description = "수량 변경할 상품의 고유번호", required = true)
+            @PathVariable Long productIdx,
+            @Parameter(description = "수량 변경 요청 DTO (양수면 추가, 음수면 차감)", required = true)
+            @RequestBody CartItemUpdateRequestDto updateDto) {
+        cartService.updateCartItemQuantity(loginUser, productIdx, updateDto.getDeltaQuantity());
+        return ResponseEntity.ok("장바구니 항목 수량이 업데이트되었습니다.");
     }
 }

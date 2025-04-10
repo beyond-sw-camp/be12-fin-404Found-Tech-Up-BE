@@ -64,6 +64,36 @@ public class CartService {
         cartRepository.save(cart);
     }
 
+    public void updateCartItemQuantity(User user, Long productId, int deltaQuantity) {
+        Cart cart = getOrCreateCart(user);
+        Optional<CartItem> optionalItem = cart.getCartItems().stream()
+                .filter(item -> item.getProduct().getProductIdx().equals(productId))
+                .findFirst();
+        if (optionalItem.isPresent()) {
+            CartItem item = optionalItem.get();
+            int newQuantity = item.getCartItemQuantity() + deltaQuantity;
+            if (newQuantity > 0) {
+                item.setCartItemQuantity(newQuantity);
+            } else {
+                // 수량이 0 이하이면 해당 항목 삭제
+                cart.getCartItems().remove(item);
+            }
+        } else {
+            // 존재하지 않으면, deltaQuantity가 양수일 때만 신규 추가
+            if (deltaQuantity > 0) {
+                Product product = productRepository.findById(productId)
+                        .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+                CartItem newItem = CartItem.builder()
+                        .cartItemQuantity(deltaQuantity)
+                        .product(product)
+                        .cart(cart)
+                        .build();
+                cart.getCartItems().add(newItem);
+            }
+        }
+        cartRepository.save(cart);
+    }
+
     // 로그인한 사용자의 Cart가 없으면 생성하는 헬퍼 메서드
     private Cart getOrCreateCart(User user) {
         return cartRepository.findByUser(user)
