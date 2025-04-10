@@ -16,6 +16,6 @@ server:
   port: 8080
 
 portone:
-  secret=${PORTONE_SECRET}:
+  secret: ${PORTONE_SECRET}
 
 
