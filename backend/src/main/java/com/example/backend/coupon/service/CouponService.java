@@ -52,13 +52,7 @@ public class CouponService {
         Long limit = couponListInfo.getTotalElements();
         Integer pageLength = couponListInfo.getTotalPages();
         List<CouponInfoDto> couponList = couponListInfo.getContent().stream()
-                .map(coupon -> CouponInfoDto.builder()
-                        .couponIdx(coupon.getCouponIdx())
-                        .couponName(coupon.getCouponName())
-                        .couponDiscountRate(coupon.getCouponDiscountRate())
-                        .couponValidDate(coupon.getCouponValidDate())
-                        .productIdx(coupon.getProduct().getProductIdx())
-                        .build())
+                .map(coupon -> CouponInfoDto.from(coupon))
                 .toList();
         return CouponListResponseDto.builder().couponList(couponList).total(pageLength).limit(limit).offset(offset).build();
     }
