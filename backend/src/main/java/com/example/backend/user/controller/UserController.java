@@ -6,7 +6,10 @@ import com.example.backend.user.model.User;
 import com.example.backend.user.model.dto.request.SignupRequestDto;
 import com.example.backend.user.model.dto.request.UserUpdateRequestDto;
 import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
+import com.example.backend.user.model.dto.request.VerifyNickNameRequestDto;
+import com.example.backend.user.model.dto.response.SignupResponseDto;
 import com.example.backend.user.model.dto.response.UserInfoResponseDto;
+import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
 import com.example.backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,15 +32,28 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    @Operation(summary="닉네임 중복 확인", description = "회원 가입, 닉네임 중복 확인합니다.")
+    @ApiResponse(responseCode="200", description="인증 성공, 성공 문자열을 반환합니다.")
+    @ApiResponse(responseCode="400", description="인증 실패")
+    @ApiResponse(responseCode="500", description="서버 내 오류")
+    @PostMapping("/verify/nickname")
+    public ResponseEntity<VerifyNickNameResponseDto> verifyNickName(
+            @Parameter(description="회원 가입시 닉네임 중복 확인")
+            @Valid @RequestBody VerifyNickNameRequestDto request) {
+        VerifyNickNameResponseDto res = userService.verifyNickName(request);
+        return ResponseEntity.ok(res);
+    }
+
     @Operation(summary="이메일 인증", description = "회원 가입, 비밀번호 찾기 시 이메일 인증을 합니다")
     @ApiResponse(responseCode="200", description="인증 성공, 성공 문자열을 반환합니다.")
     @ApiResponse(responseCode="400", description="인증 실패")
     @ApiResponse(responseCode="500", description="서버 내 오류")
-    @PostMapping("/verify")
-    private ResponseEntity<String> verifyEmail(
+    @PostMapping("/verify/email")
+    public ResponseEntity<String> verifyEmail(
             @Parameter(description="회원 가입시의 정보: User 테이블의 모든 정보를 채우지 않습니다.")
             @Valid @RequestBody ValidateEmailRequestDto request) {
         // TODO: Java Mail Sender 추가 후 메일 보내기
+//        userService.verify(request);
         return ResponseEntity.ok("이메일을 보냈습니다. 메일함을 확인해주세요.");
     }
     
@@ -46,10 +62,11 @@ public class UserController {
     @ApiResponse(responseCode="400", description="가입 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @PostMapping("/signup")
-    private ResponseEntity<String> signup(
+    public ResponseEntity<SignupResponseDto> signup(
             @Parameter(description="회원 가입시의 정보: User 테이블의 모든 정보를 채우지 않습니다.")
             @Valid @RequestBody SignupRequestDto request) {
-        return ResponseEntity.ok("Signup success");
+        SignupResponseDto res = userService.signup(request);
+        return ResponseEntity.ok(res);
     }
 
     @Operation(summary="회원 정보 반환", description = "회원 정보를 반환합니다")

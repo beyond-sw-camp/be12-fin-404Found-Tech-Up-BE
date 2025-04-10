@@ -16,6 +16,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -30,13 +32,15 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userIdx;
+    @Column(unique = true)
     private String userEmail;
     private String userPassword;
+    @Column(unique = true)
     private String userNickname;
     private String userPhone;
     private String userAddress;
     private Boolean isActive;
-    private Date createdAt;
+    private LocalDateTime createdAt;
     private Boolean isSocial;
     private Boolean enabled;
     private Boolean isAdmin;
@@ -65,12 +69,24 @@ public class User implements UserDetails {
     // UserCoupon 과 일대다 맵핑
     @OneToMany(mappedBy = "user")
     private List<UserCoupon> userCoupons;
+
+    public void verify() {
+        this.enabled = true;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+
         if (this.isAdmin) {
-            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_ADMIN");
+            authorities.add(grantedAuthority);
+        } else {
+            GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_USER");
+            authorities.add(grantedAuthority);
         }
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+
+        return authorities;
     }
 
     @Override
