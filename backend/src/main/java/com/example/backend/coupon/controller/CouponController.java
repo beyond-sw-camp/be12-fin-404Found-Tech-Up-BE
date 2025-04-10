@@ -1,6 +1,6 @@
 package com.example.backend.coupon.controller;
 
-import com.example.backend.coupon.model.dto.request.CategoryCouponCreateRequest;
+import com.example.backend.coupon.model.dto.request.CategoryCouponCreateRequestDto;
 import com.example.backend.coupon.model.dto.response.CouponListResponseDto;
 import com.example.backend.coupon.model.dto.request.EventCouponCreateRequest;
 import com.example.backend.coupon.model.dto.request.UserCouponCreateRequestDto;
@@ -21,9 +21,15 @@ public class CouponController {
     private final CouponService couponService;
 
     @Operation(summary = "쿠폰 목록 조회", description = "전체 발급된 쿠폰 목록을 페이지 번호에 따라 조회합니다.")
+    @GetMapping
+    public ResponseEntity<CouponListResponseDto> getCouponList() {
+        CouponListResponseDto result = couponService.getCouponPage(0);
+        return ResponseEntity.ok(result);
+    }
+
+    @Operation(summary = "쿠폰 목록 조회", description = "전체 발급된 쿠폰 목록을 페이지 번호에 따라 조회합니다.")
     @GetMapping("/{offset}")
     public ResponseEntity<CouponListResponseDto> getCouponList(@PathVariable int offset) {
-        // TODO: 구현
         CouponListResponseDto result = couponService.getCouponPage(offset);
         return ResponseEntity.ok(result);
     }
@@ -38,14 +44,15 @@ public class CouponController {
 
     @Operation(summary = "카테고리별 쿠폰 발급", description = "제품별 쿠폰 발급")
     @PostMapping("/issuecategory")
-    public void issueByCategory(@RequestBody CategoryCouponCreateRequest category) {
-
+    public void issueByCategory(@RequestBody CategoryCouponCreateRequestDto category) {
+        // TODO: 프론트 수정 후 여기를 구현
+        log.info("issue category coupon {} with discount {}%", category.getCategory(), category.getDiscount());
     }
 
     @Operation(summary = "전체 쿠폰 발급", description = "전체에게 쿠폰 발급.")
     @PostMapping("/issueall")
-    public void issueCouponsToAll() {
-        // TODO: 구현
+    public void issueCouponsToAll(@RequestBody CategoryCouponCreateRequestDto category) {
+        // TODO: 프론트 수정 후 여기를 구현
     }
 
     @Operation(summary = "선착순 쿠폰 발급", description = "선착순 쿠폰 발급.")

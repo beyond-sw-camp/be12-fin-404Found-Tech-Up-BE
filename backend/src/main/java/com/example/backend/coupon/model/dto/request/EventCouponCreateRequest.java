@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class EventCouponCreateRequest {
     private Integer quantity;
     private String category;
+    private Integer discount;
+    private String expiryDate;
 }
