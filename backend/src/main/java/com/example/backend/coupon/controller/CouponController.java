@@ -1,19 +1,45 @@
 package com.example.backend.coupon.controller;
 
-import com.example.backend.coupon.model.Coupon;
+import com.example.backend.coupon.model.dto.request.CategoryCouponCreateRequest;
+import com.example.backend.coupon.model.dto.response.CouponListResponseDto;
+import com.example.backend.coupon.model.dto.request.EventCouponCreateRequest;
+import com.example.backend.coupon.model.dto.request.UserCouponCreateRequestDto;
+import com.example.backend.coupon.service.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @Tag(name = "쿠폰 기능", description = "쿠폰 관련 기능을 제공합니다.")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/coupon")
 public class CouponController {
+    private final CouponService couponService;
 
-    @Operation(summary = "쿠폰 목록 조회", description = "전체 발급된 쿠폰 목록을 조회합니다.")
-    @GetMapping
-    public void getCoupons() {
+    @Operation(summary = "쿠폰 목록 조회", description = "전체 발급된 쿠폰 목록을 페이지 번호에 따라 조회합니다.")
+    @GetMapping("/{offset}")
+    public ResponseEntity<CouponListResponseDto> getCouponList(@PathVariable int offset) {
         // TODO: 구현
+        CouponListResponseDto result = couponService.getCouponPage(offset);
+        return ResponseEntity.ok(result);
+    }
+
+    @Operation(summary="사용자별 쿠폰 발급", description="개별 사용자마다 수동 쿠폰 발급")
+    @PostMapping("/issue")
+    public ResponseEntity<String> issueCoupon(@RequestBody UserCouponCreateRequestDto request) {
+        Long couponIdx = couponService.CreateCouponForUser(request);
+        log.info("issue coupon {}", couponIdx);
+        return ResponseEntity.ok(couponIdx.toString() + "번 쿠폰 발행 성공");
+    }
+
+    @Operation(summary = "카테고리별 쿠폰 발급", description = "제품별 쿠폰 발급")
+    @PostMapping("/issuecategory")
+    public void issueByCategory(@RequestBody CategoryCouponCreateRequest category) {
+
     }
 
     @Operation(summary = "전체 쿠폰 발급", description = "전체에게 쿠폰 발급.")
@@ -25,7 +51,7 @@ public class CouponController {
     @Operation(summary = "선착순 쿠폰 발급", description = "선착순 쿠폰 발급.")
     @PostMapping("/issuefirst")
     public void issueCouponsToFirstCome(
-            @RequestBody int quantity
+            @RequestBody EventCouponCreateRequest request
     ) {
         // TODO: 구현
     }
