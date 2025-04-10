@@ -31,16 +31,17 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "상품 결제", description = "주문한 상품을 결제합니다.")
+    @Operation(summary = "상품 결제", description = "주문한 상품을 결제합니다. 결제 식별자(paymentId)를 사용해 PortOne API로 결제 금액을 검증합니다.")
     @PostMapping("/payment/{orderId}")
     public ResponseEntity<OrderResponseDto> payOrder(
             @AuthenticationPrincipal User loginUser,
-            @PathVariable Long orderId
+            @RequestParam @PathVariable Long orderId
     ) {
         Orders order = orderService.payOrder(loginUser, orderId);
         OrderResponseDto response = OrderResponseDto.from(order);
         return ResponseEntity.ok(response);
     }
+
 
     @Operation(summary = "주문 취소", description = "회원의 주문을 취소합니다.")
     @PostMapping("/cancel/{orderId}")

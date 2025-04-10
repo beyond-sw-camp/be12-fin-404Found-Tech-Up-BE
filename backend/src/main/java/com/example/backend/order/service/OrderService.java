@@ -8,6 +8,7 @@ import com.example.backend.order.model.Orders;
 import com.example.backend.order.repository.OrderRepository;
 import com.example.backend.product.model.Product;
 import com.example.backend.user.model.User;
+import com.example.backend.util.HttpClientUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -82,14 +83,29 @@ public class OrderService {
         return savedOrder;
     }
 
-    // 주문 결제(결제 기능 따로 추가 필요)
+    /**
+     * 주문 결제 메서드 – PortOne API를 통해 결제 금액을 검증하고, 주문 상태를 업데이트합니다.
+     * @param user 로그인한 사용자
+     * @param orderId 주문 고유 ID
+     * @return 결제 완료된 Orders 엔티티
+     */
     public Orders payOrder(User user, Long orderId) {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
         if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
             throw new IllegalArgumentException("사용자와 주문이 일치하지 않습니다.");
         }
-        order.setOrderStatus("PAID");
+
+        // PortOne API를 통해 실제 결제한 금액 조회
+        int portoneTotal = HttpClientUtil.getTotalAmount(orderId.toString());
+        int orderTotal = (int) order.getOrderTotalPrice();  // 필요한 경우 적절한 형 변환 및 반올림 처리
+
+        if (portoneTotal == orderTotal) {
+            order.setOrderStatus("PAID");
+        } else {
+            // 금액 불일치 시 예외 처리 또는 상태를 실패로 업데이트
+            throw new IllegalArgumentException("결제 금액이 주문 총액과 일치하지 않습니다.");
+        }
         return orderRepository.save(order);
     }
 
