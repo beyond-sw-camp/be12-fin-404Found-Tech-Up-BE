@@ -35,9 +35,9 @@ public class StatisticsService {
             totalSales += order.getOrderTotalPrice();
         }
         List<TopWishListDto> topw = wishlistRepository.countWishlistGroupByProduct();
-        Integer newcomers = userRepository.findAllByCreatedAtAfter(criterionDate).size();
+        Integer newcomers = userRepository.findAllByCreatedAtAfter(startDate.atStartOfDay()).size();
         Integer totalRefunds = orderRepository.findAllByOrderStatusAndOrderDateAfter("취소됨", new Date(startDate.toEpochDay())).size();
-        return StatisticsResponseDto.builder().totalOrders(totalOrder.size()).totalSales(totalSales).totalRefunds(totalRefunds).newCustomers(newcomers).topWishList(topw).build();
+        return StatisticsResponseDto.builder().totalOrders(totalOrder.size()).totalSales(totalSales).totalRefunds(totalRefunds).topWishList(topw).newCustomers(newcomers).build();
     }
 
     public Integer getTotalOrders() {
@@ -66,7 +66,7 @@ public class StatisticsService {
         int month = today.getMonthValue();
         int year = today.getYear();
         LocalDate startDate = LocalDate.of(year, month, 1);
-        return userRepository.findAllByCreatedAtAfter(new Date(startDate.toEpochDay())).size();
+        return userRepository.findAllByCreatedAtAfter(startDate.atStartOfDay()).size();
     }
 
     public Integer getTotalRefunds() {
