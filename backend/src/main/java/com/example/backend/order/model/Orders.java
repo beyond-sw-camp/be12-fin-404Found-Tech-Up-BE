@@ -28,6 +28,6 @@ public class Orders {
     @JoinColumn(name = "user_idx")
     private User user;
     // 주문상세정보와 일대다 맵핑
-    @OneToMany(mappedBy = "orders")
+    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails;
 }
