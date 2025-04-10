@@ -1,5 +1,6 @@
 package com.example.backend.coupon.model;
 
+import com.example.backend.coupon.model.dto.response.CouponInfoDto;
 import com.example.backend.product.model.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,4 +31,8 @@ public class Coupon {
     // 유저 쿠폰과 일대다 맵핑
     @OneToMany(mappedBy = "coupon")
     private List<UserCoupon> userCoupons;
+
+    public CouponInfoDto toDto() {
+        return CouponInfoDto.builder().couponIdx(this.couponIdx).couponName(this.couponName).couponDiscountRate(this.couponDiscountRate).productIdx(product.getProductIdx()).couponValidDate(this.couponValidDate).build();
+    }
 }
