@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -81,4 +82,53 @@ public class OrderService {
         return savedOrder;
     }
 
+    // 주문 결제(결제 기능 따로 추가 필요)
+    public Orders payOrder(User user, Long orderId) {
+        Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
+        if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
+            throw new IllegalArgumentException("사용자와 주문이 일치하지 않습니다.");
+        }
+        order.setOrderStatus("PAID");
+        return orderRepository.save(order);
+    }
+
+    // 주문 취소
+    public void cancelOrder(User user, Long orderId) {
+        Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
+        if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
+            throw new IllegalArgumentException("사용자와 주문이 일치하지 않습니다.");
+        }
+        order.setOrderStatus("CANCELED");
+        orderRepository.save(order);
+    }
+
+    // 주문 내역 조회 (사용자 기준)
+    public List<Orders> getOrderHistory(User user) {
+        return orderRepository.findAll().stream()
+                .filter(order -> order.getUser().getUserIdx().equals(user.getUserIdx()))
+                .collect(Collectors.toList());
+    }
+
+    // 주문 상세 조회
+    public Orders getOrderDetail(User user, Long orderId) {
+        Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
+        if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
+            throw new IllegalArgumentException("해당 주문은 로그인한 사용자의 주문이 아닙니다.");
+        }
+        return order;
+    }
+
+    // 환불 요청
+    public void requestRefund(User user, Long orderId) {
+        Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
+        if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
+            throw new IllegalArgumentException("사용자와 주문이 일치하지 않습니다.");
+        }
+        order.setOrderStatus("REFUND_REQUESTED");
+        orderRepository.save(order);
+    }
 }
