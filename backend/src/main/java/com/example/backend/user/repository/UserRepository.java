@@ -13,4 +13,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUserEmail(String email);
     List<User> findAllByCreatedAtAfter(LocalDateTime createdAt);
     Optional<User> findByUserNickname(String userNickname);
+    Optional<User> findByKakaoId(String kakaoId);
 }
