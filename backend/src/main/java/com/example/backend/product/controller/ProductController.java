@@ -8,20 +8,21 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @Tag(name = "상품 기능", description = "상품 관련 기능을 제공합니다.")
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/product")
-@RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
@@ -59,7 +60,7 @@ public class ProductController {
     @Operation(summary = "상품 필터링", description = "카테고리, 이름 키워드, 가격 범위 등의 조건으로 상품을 필터링합니다.")
     @PostMapping("/filter")
     public List<ProductResponseDto> filterProduct(
-            @RequestBody(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "필터링 조건을 담은 JSON 객체",
                     required = true,
                     content = @Content(
@@ -99,8 +100,8 @@ public class ProductController {
 
     @Operation(summary = "상품 등록", description = "신규 상품을 등록합니다.")
     @PostMapping("/register")
-    public ProductResponseDto registerProduct(@RequestBody ProductRequestDto requestDto) {
-        return productService.registerProduct(requestDto);
+    public ResponseEntity<ProductResponseDto> registerProduct(@RequestBody ProductRequestDto requestDto) {
+        return ResponseEntity.ok(productService.registerProduct(requestDto));
     }
 
 
