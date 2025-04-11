@@ -1,5 +1,7 @@
 package com.example.backend.wishlist.service;
 
+import com.example.backend.global.exception.ProductException;
+import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.product.model.Product;
 import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.wishlist.dto.WishlistResponseDto;
@@ -27,7 +29,7 @@ public class WishlistService {
      */
     public WishlistToggleResponseDto toggleWishlist(User user, Long productIdx) {
         Product product = productRepository.findById(productIdx)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+                .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
 
         // 이미 위시리스트에 존재하는지 확인
         return wishlistRepository.findByUserAndProduct(user, product)

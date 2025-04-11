@@ -1,5 +1,9 @@
 package com.example.backend.review.service;
 
+import com.example.backend.global.exception.ProductException;
+import com.example.backend.global.exception.ReviewException;
+import com.example.backend.global.response.responseStatus.ProductResponseStatus;
+import com.example.backend.global.response.responseStatus.ReviewResponseStatus;
 import com.example.backend.review.model.Review;
 import com.example.backend.review.model.dto.ReviewDeleteResponseDto;
 import com.example.backend.review.model.dto.ReviewRequestDto;
@@ -22,7 +26,7 @@ public class ReviewService {
     public ReviewResponseDto createReview(User loginUser, Integer productIdx, ReviewRequestDto dto) {
         // 구매 검증 로직 추가 필요. 구매한 사람만 리뷰 작성 가능.
         Product product = productRepository.findById(productIdx.longValue())
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+                .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
         Review review = dto.toEntity(loginUser, product);
         review = reviewRepository.save(review);
         return ReviewResponseDto.from(review);
@@ -31,9 +35,9 @@ public class ReviewService {
     // 리뷰 수정 (작성자인지 확인)
     public ReviewResponseDto updateReview(User loginUser, Long reviewIdx, ReviewRequestDto dto) {
         Review review = reviewRepository.findById(reviewIdx)
-                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰가 존재하지 않습니다."));
+                .orElseThrow(() -> new ReviewException(ReviewResponseStatus.REVIEW_NOT_FOUND));
         if (!review.getUser().getUserIdx().equals(loginUser.getUserIdx())) {
-            throw new IllegalArgumentException("작성자만 리뷰 수정이 가능합니다.");
+            throw new ReviewException(ReviewResponseStatus.REVIEW_USER_MISMATCH);
         }
         // 리뷰 내용을 업데이트합니다.
         review.setReviewContent(dto.getReviewContent());
@@ -46,9 +50,9 @@ public class ReviewService {
     // 리뷰 삭제 (작성자인지 확인)
     public ReviewDeleteResponseDto deleteReview(User loginUser, Long reviewIdx) {
         Review review = reviewRepository.findById(reviewIdx)
-                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰가 존재하지 않습니다."));
+                .orElseThrow(() -> new ReviewException(ReviewResponseStatus.REVIEW_NOT_FOUND));
         if (!review.getUser().getUserIdx().equals(loginUser.getUserIdx())) {
-            throw new IllegalArgumentException("작성자만 리뷰 삭제가 가능합니다.");
+            throw new ReviewException(ReviewResponseStatus.REVIEW_USER_MISMATCH);
         }
         reviewRepository.delete(review);
         return ReviewDeleteResponseDto.from(reviewIdx);
