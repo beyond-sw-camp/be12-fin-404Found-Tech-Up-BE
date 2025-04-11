@@ -6,6 +6,10 @@ import com.example.backend.cart.model.dto.CartItemUpdateResponseDto;
 import com.example.backend.cart.model.dto.CartItemResponseDto;
 import com.example.backend.cart.model.dto.CartItemRequestDto;
 import com.example.backend.cart.repository.CartRepository;
+import com.example.backend.global.exception.CartException;
+import com.example.backend.global.exception.ProductException;
+import com.example.backend.global.response.responseStatus.CartResponseStatus;
+import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.product.model.Product;
 import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.user.model.User;
@@ -36,7 +40,7 @@ public class CartService {
     public CartItemResponseDto addToCart(User user, Long productId, CartItemRequestDto dto) {
         Cart cart = getOrCreateCart(user);
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+                .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
         int quantityToAdd = dto.getCartItemQuantity();
 
         // 이미 해당 상품이 장바구니에 있는 경우
@@ -67,7 +71,7 @@ public class CartService {
                 .filter(item -> item.getCartItemIdx().equals(cartItemId))
                 .findFirst();
         if (optionalItem.isEmpty()) {
-            throw new IllegalArgumentException("해당 카트 아이템이 존재하지 않습니다.");
+            throw new CartException(CartResponseStatus.CART_ITEM_DELETE_FAIL);
         }
         cart.getCartItems().removeIf(item -> item.getCartItemIdx().equals(cartItemId));
         cartRepository.save(cart);
@@ -95,7 +99,7 @@ public class CartService {
             // 만약 수정할 항목이 없고, deltaQuantity가 양수이면 신규 추가
             if (deltaQuantity > 0) {
                 Product product = productRepository.findById(productId)
-                        .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+                        .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
                 CartItem newItem = CartItem.builder()
                         .cartItemQuantity(deltaQuantity)
                         .product(product)
@@ -105,7 +109,7 @@ public class CartService {
                 cartRepository.save(cart);
                 return CartItemUpdateResponseDto.from(newItem.getCartItemIdx());
             } else {
-                throw new IllegalArgumentException("수량 변경할 항목을 찾을 수 없습니다.");
+                throw new CartException(CartResponseStatus.CART_ITEM_UPDATE_FAIL);
             }
         }
     }

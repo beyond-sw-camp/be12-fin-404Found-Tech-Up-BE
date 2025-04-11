@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,7 +41,6 @@ public class CartController {
         return baseResponseService.getSuccessResponse(response, CartResponseStatus.SUCCESS);
     }
 
-    //TODO: 수정 필요
     @Operation(
             summary = "장바구니에 상품 추가",
             description = "로그인한 사용자가 특정 상품을 장바구니에 추가합니다. URL 경로로 productIdx를 받고, 요청 본문에 수량 정보를 전달합니다."
