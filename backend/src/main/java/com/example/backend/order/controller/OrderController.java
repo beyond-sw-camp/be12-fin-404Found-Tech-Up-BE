@@ -4,6 +4,7 @@ import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseService;
 import com.example.backend.global.response.responseStatus.OrderResponseStatus;
 import com.example.backend.order.model.Orders;
+import com.example.backend.order.model.dto.OrderCancelResponseDto;
 import com.example.backend.order.model.dto.OrderResponseDto;
 import com.example.backend.order.service.OrderService;
 import com.example.backend.user.model.User;
@@ -23,7 +24,6 @@ import java.util.stream.Collectors;
 public class OrderController {
     private final OrderService orderService;
     private final BaseResponseService baseResponseService;
-
 
     @Operation(summary = "상품 주문", description = "장바구니에서 선택한 상품을 주문합니다.")
     @PostMapping
@@ -49,12 +49,12 @@ public class OrderController {
 
     @Operation(summary = "주문 취소", description = "회원의 주문을 취소합니다.")
     @PostMapping("/cancel/{orderId}")
-    public BaseResponse<Object> cancelOrder(
+    public BaseResponse<OrderCancelResponseDto> cancelOrder(
             @AuthenticationPrincipal User loginUser,
             @PathVariable Long orderId
     ) {
-        orderService.cancelOrder(loginUser, orderId);
-        return baseResponseService.getSuccessResponse(OrderResponseStatus.SUCCESS);
+        OrderCancelResponseDto response = orderService.cancelOrder(loginUser, orderId);
+        return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
     }
 
     @Operation(summary = "주문 내역 조회", description = "회원의 주문 내역을 조회합니다.")
@@ -82,11 +82,11 @@ public class OrderController {
 
     @Operation(summary = "환불 요청", description = "회원이 환불을 요청합니다.")
     @PostMapping("/refund/{orderId}")
-    public BaseResponse<Object> requestRefund(
+    public BaseResponse<OrderCancelResponseDto> requestRefund(
             @AuthenticationPrincipal User loginUser,
             @PathVariable Long orderId
     ) {
-        orderService.requestRefund(loginUser, orderId);
-        return baseResponseService.getSuccessResponse(OrderResponseStatus.SUCCESS);
+        OrderCancelResponseDto response = orderService.requestRefund(loginUser, orderId);
+        return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
     }
 }

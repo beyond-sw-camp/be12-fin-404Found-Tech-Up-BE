@@ -5,6 +5,7 @@ import com.example.backend.cart.model.CartItem;
 import com.example.backend.cart.repository.CartRepository;
 import com.example.backend.order.model.OrderDetail;
 import com.example.backend.order.model.Orders;
+import com.example.backend.order.model.dto.OrderCancelResponseDto;
 import com.example.backend.order.repository.OrderRepository;
 import com.example.backend.product.model.Product;
 import com.example.backend.user.model.User;
@@ -110,7 +111,7 @@ public class OrderService {
     }
 
     // 주문 취소
-    public void cancelOrder(User user, Long orderId) {
+    public OrderCancelResponseDto cancelOrder(User user, Long orderId) {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
         if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
@@ -118,6 +119,7 @@ public class OrderService {
         }
         order.setOrderStatus("CANCELED");
         orderRepository.save(order);
+        return OrderCancelResponseDto.from(orderId, "CANCELED");
     }
 
     // 주문 내역 조회 (사용자 기준)
@@ -138,7 +140,7 @@ public class OrderService {
     }
 
     // 환불 요청
-    public void requestRefund(User user, Long orderId) {
+    public OrderCancelResponseDto requestRefund(User user, Long orderId) {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
         if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
@@ -146,5 +148,6 @@ public class OrderService {
         }
         order.setOrderStatus("REFUND_REQUESTED");
         orderRepository.save(order);
+        return OrderCancelResponseDto.from(orderId, "REFUND_REQUESTED");
     }
 }
