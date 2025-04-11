@@ -1,6 +1,7 @@
 package com.example.backend.review.service;
 
 import com.example.backend.review.model.Review;
+import com.example.backend.review.model.dto.ReviewDeleteResponseDto;
 import com.example.backend.review.model.dto.ReviewRequestDto;
 import com.example.backend.review.model.dto.ReviewResponseDto;
 import com.example.backend.review.repository.ReviewRepository;
@@ -43,12 +44,13 @@ public class ReviewService {
     }
 
     // 리뷰 삭제 (작성자인지 확인)
-    public void deleteReview(User loginUser, Long reviewIdx) {
+    public ReviewDeleteResponseDto deleteReview(User loginUser, Long reviewIdx) {
         Review review = reviewRepository.findById(reviewIdx)
                 .orElseThrow(() -> new IllegalArgumentException("해당 리뷰가 존재하지 않습니다."));
         if (!review.getUser().getUserIdx().equals(loginUser.getUserIdx())) {
             throw new IllegalArgumentException("작성자만 리뷰 삭제가 가능합니다.");
         }
         reviewRepository.delete(review);
+        return ReviewDeleteResponseDto.from(reviewIdx);
     }
 }
