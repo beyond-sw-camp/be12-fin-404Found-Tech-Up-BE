@@ -4,6 +4,7 @@ import com.example.backend.product.model.Product;
 import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.wishlist.dto.WishlistResponseDto;
 import com.example.backend.wishlist.model.Wishlist;
+import com.example.backend.wishlist.model.dto.WishlistToggleResponseDto;
 import com.example.backend.wishlist.repository.WishlistRepository;
 import com.example.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class WishlistService {
      * - 해당 상품이 이미 위시리스트에 있으면 삭제하고 "삭제" 메시지를,
      * - 없으면 추가하고 "추가" 메시지를 반환.
      */
-    public String toggleWishlist(User user, Long productIdx) {
+    public WishlistToggleResponseDto toggleWishlist(User user, Long productIdx) {
         Product product = productRepository.findById(productIdx)
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 
@@ -32,7 +33,7 @@ public class WishlistService {
         return wishlistRepository.findByUserAndProduct(user, product)
                 .map(existingWishlist -> {
                     wishlistRepository.delete(existingWishlist);
-                    return "위시리스트에서 상품을 삭제했습니다.";
+                    return WishlistToggleResponseDto.from(productIdx, "위시리스트에서 상품을 삭제했습니다.");
                 })
                 .orElseGet(() -> {
                     Wishlist wishlist = Wishlist.builder()
@@ -40,7 +41,7 @@ public class WishlistService {
                             .product(product)
                             .build();
                     wishlistRepository.save(wishlist);
-                    return "상품을 위시리스트에 추가했습니다.";
+                    return WishlistToggleResponseDto.from(productIdx, "상품을 위시리스트에 추가했습니다.");
                 });
     }
 
