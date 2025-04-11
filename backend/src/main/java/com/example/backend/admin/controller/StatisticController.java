@@ -1,6 +1,7 @@
 package com.example.backend.admin.controller;
 
 import com.example.backend.admin.model.StatisticsResponseDto;
+import com.example.backend.admin.model.TopSalesDto;
 import com.example.backend.admin.model.TopWishListDto;
 import com.example.backend.admin.model.ViewRequestDto;
 import com.example.backend.admin.service.StatisticsService;
@@ -34,6 +35,11 @@ public class StatisticController {
     @GetMapping("/order")
     public ResponseEntity<Integer> getTotalOrder() {
         return ResponseEntity.ok(statisticsService.getTotalOrders());
+    }
+
+    @GetMapping("/topsales")
+    public ResponseEntity<List<TopSalesDto>> getTopSales() {
+        return ResponseEntity.ok(statisticsService.getTopSales());
     }
 
     @PostMapping("/view")

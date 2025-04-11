@@ -53,7 +53,7 @@ public class OrderService {
             Product product = cartItem.getProduct();
             int quantity = cartItem.getCartItemQuantity();
             // 주문 상세 금액: 단가 * 수량
-            int price = (int) product.getPrice();
+            int price = product.getPrice().intValue();
             totalPrice += price * quantity;
 
             OrderDetail orderDetail = OrderDetail.builder()
