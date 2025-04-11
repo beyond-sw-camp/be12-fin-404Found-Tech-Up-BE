@@ -1,8 +1,12 @@
 package com.example.backend.board.controller;
 
 import com.example.backend.board.model.dto.BoardRegisterRequestDto;
+import com.example.backend.board.model.dto.BoardRegisterResponseDto;
 import com.example.backend.board.model.dto.BoardResponseDto;
 import com.example.backend.board.service.BoardService;
+import com.example.backend.global.response.BaseResponse;
+import com.example.backend.global.response.BaseResponseService;
+import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,14 +23,17 @@ import java.util.List;
 @Tag(name = "게시판 기능", description = "게시판 관리 API")
 public class BoardController {
     private final BoardService boardService;
+    private final BaseResponseService baseResponseService;
 
     @Operation(
             summary = "게시글 등록",
             description = "제목, 내용, 첨부파일과 함께 글을 작성합니다."
     )
     @PostMapping("/create")
-    public void create(@AuthenticationPrincipal User loginUser, @RequestBody BoardRegisterRequestDto dto) {
-        boardService.create(loginUser, dto);
+    public BaseResponse<Object> create(@AuthenticationPrincipal User loginUser, @RequestBody BoardRegisterRequestDto dto) {
+        System.out.println("출력확인" + dto.getBoardTitle());
+        BoardRegisterResponseDto response = boardService.create(loginUser, dto);
+        return baseResponseService.getSuccessResponse(response, CommonResponseStatus.CREATED);
     }
 
     @Operation(

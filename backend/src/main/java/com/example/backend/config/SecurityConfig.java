@@ -45,6 +45,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
+                        .requestMatchers("/board/**").permitAll()
                         // 나머지는 인증 필요
                         //.anyRequest().authenticated()
                         // Swagger 테스트 동안에는 전부 허용
