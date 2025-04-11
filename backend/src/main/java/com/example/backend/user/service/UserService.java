@@ -35,10 +35,13 @@ public class UserService implements UserDetailsService {
 
     public SignupResponseDto signup(SignupRequestDto dto) {
         boolean isSuccessSignup = false;
-        if (dto.getVerifyNickname().equals(true) && dto.getUserConfirmPassword().equals( dto.getUserPassword())){
-            User user = userRepository.save(dto.toEntity(passwordEncoder.encode(dto.getUserPassword())));
-            isSuccessSignup = true;
+        if (dto.getVerifyNickname().equals(true)){
+            if(dto.getUserConfirmPassword().equals( dto.getUserPassword())){
+                userRepository.save(dto.toEntity(passwordEncoder.encode(dto.getUserPassword())));
+                isSuccessSignup = true;
+            }
         }
+
         return new SignupResponseDto(isSuccessSignup);
     }
 
