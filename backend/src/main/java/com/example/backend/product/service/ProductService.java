@@ -1,5 +1,7 @@
 package com.example.backend.product.service;
 
+import com.example.backend.global.exception.ProductException;
+import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.product.model.Product;
 import com.example.backend.product.model.dto.ProductDeleteResponseDto;
 import com.example.backend.product.model.dto.ProductFilterRequestDto;
@@ -27,7 +29,7 @@ public class ProductService {
 
     public ProductResponseDto getProductDetail(Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+                .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
         return ProductResponseDto.from(product);
     }
 
@@ -94,14 +96,14 @@ public class ProductService {
 
     public ProductDeleteResponseDto deleteProduct(Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+                .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
         productRepository.delete(product);
         return ProductDeleteResponseDto.from(productId);
     }
 
     public ProductResponseDto updateProduct(Long productId, ProductRequestDto requestDto) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+                .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
 
         product.update(requestDto);
         return ProductResponseDto.from(product);
