@@ -11,11 +11,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @Entity
-public class BoardImage {
+public class BoardFiles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
-    private String url;
+    private String filesUrl;
+    private String filesType;
+    private String filesName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_idx")
