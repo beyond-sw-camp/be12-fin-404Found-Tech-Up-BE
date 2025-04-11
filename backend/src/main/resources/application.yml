@@ -9,6 +9,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
+  cloud:
+    aws:
+      credentials:
+        access-key: 1
+        secret-key: 2
+      s3:
+        bucket: ogh-spring-prac
+      region:
+        static: ${AWS_REGION}
 jwtData:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
