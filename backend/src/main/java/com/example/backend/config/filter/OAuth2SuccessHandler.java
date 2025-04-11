@@ -17,17 +17,17 @@ import java.time.Duration;
 @Component
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JwtUtility jwtUtility;
-
-    public OAuth2SuccessHandler(JwtUtility jwtUtility) {
-        this.jwtUtility = jwtUtility;
-    }
+//    private final JwtUtility jwtUtility;
+//
+//    public OAuth2SuccessHandler(JwtUtility jwtUtility) {
+//        this.jwtUtility = jwtUtility;
+//    }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         User user = (User) authentication.getPrincipal();
-        String jwtToken = jwtUtility.generateToken(user.getUserIdx(), user.getUserEmail(), user.getIsAdmin());
+        String jwtToken = JwtUtility.generateToken(user.getUserIdx(), user.getUserEmail(), user.getIsAdmin());
 
         // 쿠키에 토큰 설정
         ResponseCookie cookie = ResponseCookie

@@ -8,6 +8,7 @@ import com.example.backend.user.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+@Slf4j
 @EnableWebSecurity
 @RequiredArgsConstructor
 @Configuration
@@ -80,12 +82,23 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 // OAuth2 로그인 설정
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
-                        .successHandler(oAuth2SuccessHandler)
-                )
+                .oauth2Login(config -> {
+                    config.successHandler(new OAuth2SuccessHandler());
+                    config.userInfoEndpoint(endpoint ->
+                            endpoint.userService(customOAuth2UserService));
+                })
+//                .oauth2Login(oauth2 -> oauth2
+//                        .userInfoEndpoint(userInfo -> userInfo
+//                                .userService(customOAuth2UserService)
+//                        )
+//                        .successHandler(oAuth2SuccessHandler)
+//                        .failureHandler((request, response, exception) -> {
+//                            log.error("OAuth2 failure: ", exception);
+//                            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                            response.setContentType("application/json");
+//                            response.getWriter().write("{\"error\": \"OAuth2 login failed: " + exception.getMessage() + "\"}");
+//                        })
+//                )
                 // 필터 추가
                 .addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
