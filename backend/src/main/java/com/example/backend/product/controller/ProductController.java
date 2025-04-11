@@ -3,6 +3,7 @@ package com.example.backend.product.controller;
 import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseService;
 import com.example.backend.global.response.responseStatus.ProductResponseStatus;
+import com.example.backend.product.model.dto.ProductDeleteResponseDto;
 import com.example.backend.product.model.dto.ProductFilterRequestDto;
 import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.dto.ProductResponseDto;
@@ -117,9 +118,9 @@ public class ProductController {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 상품")
     })
     @DeleteMapping("/{productId}")
-    public BaseResponse<Object> deleteProduct(@PathVariable Long productId) {
-        productService.deleteProduct(productId);
-        return baseResponseService.getSuccessResponse(ProductResponseStatus.SUCCESS);
+    public BaseResponse<ProductDeleteResponseDto> deleteProduct(@PathVariable Long productId) {
+        ProductDeleteResponseDto response = productService.deleteProduct(productId);
+        return baseResponseService.getSuccessResponse(response, ProductResponseStatus.SUCCESS);
     }
 
     @Operation(summary = "상품 수정", description = "상품 ID를 기준으로 상품 정보를 수정합니다.")

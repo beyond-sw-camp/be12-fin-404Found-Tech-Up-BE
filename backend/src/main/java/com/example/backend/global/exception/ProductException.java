@@ -1,9 +1,9 @@
 package com.example.backend.global.exception;
 
-import com.example.backend.global.response.responseStatus.BoardResponseStatus;
+import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 
 public class ProductException extends BaseException {
-    public ProductException(BoardResponseStatus status) {
+    public ProductException(ProductResponseStatus status) {
         super(status);
     }
 }

@@ -3,8 +3,13 @@ package com.example.backend.order.service;
 import com.example.backend.cart.model.Cart;
 import com.example.backend.cart.model.CartItem;
 import com.example.backend.cart.repository.CartRepository;
+import com.example.backend.global.exception.CartException;
+import com.example.backend.global.exception.OrderException;
+import com.example.backend.global.response.responseStatus.CartResponseStatus;
+import com.example.backend.global.response.responseStatus.OrderResponseStatus;
 import com.example.backend.order.model.OrderDetail;
 import com.example.backend.order.model.Orders;
+import com.example.backend.order.model.dto.OrderCancelResponseDto;
 import com.example.backend.order.repository.OrderRepository;
 import com.example.backend.product.model.Product;
 import com.example.backend.user.model.User;
@@ -34,10 +39,10 @@ public class OrderService {
     public Orders placeOrder(User user) {
         // 사용자의 장바구니를 조회 (CartRepository에서 사용자 기준으로 찾음)
         Cart cart = cartRepository.findByUser(user)
-                .orElseThrow(() -> new IllegalArgumentException("장바구니가 비어있습니다."));
+                .orElseThrow(() -> new CartException(CartResponseStatus.CART_IS_EMPTY));
         List<CartItem> cartItems = cart.getCartItems();
         if (cartItems == null || cartItems.isEmpty()) {
-            throw new IllegalArgumentException("장바구니에 주문할 상품이 없습니다.");
+            throw new CartException(CartResponseStatus.CART_IS_EMPTY);
         }
 
         double totalPrice = 0.0;
@@ -91,9 +96,9 @@ public class OrderService {
      */
     public Orders payOrder(User user, Long orderId) {
         Orders order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
+                .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
         if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
-            throw new IllegalArgumentException("사용자와 주문이 일치하지 않습니다.");
+            throw new OrderException(OrderResponseStatus.ORDER_USER_MISMATCH);
         }
 
         // PortOne API를 통해 실제 결제한 금액 조회
@@ -104,20 +109,21 @@ public class OrderService {
             order.setOrderStatus("PAID");
         } else {
             // 금액 불일치 시 예외 처리 또는 상태를 실패로 업데이트
-            throw new IllegalArgumentException("결제 금액이 주문 총액과 일치하지 않습니다.");
+            throw new OrderException(OrderResponseStatus.ORDER_TOTAL_MISMATCH);
         }
         return orderRepository.save(order);
     }
 
     // 주문 취소
-    public void cancelOrder(User user, Long orderId) {
+    public OrderCancelResponseDto cancelOrder(User user, Long orderId) {
         Orders order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
+                .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
         if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
-            throw new IllegalArgumentException("사용자와 주문이 일치하지 않습니다.");
+            throw new OrderException(OrderResponseStatus.ORDER_USER_MISMATCH);
         }
         order.setOrderStatus("CANCELED");
         orderRepository.save(order);
+        return OrderCancelResponseDto.from(orderId, "CANCELED");
     }
 
     // 주문 내역 조회 (사용자 기준)
@@ -130,21 +136,22 @@ public class OrderService {
     // 주문 상세 조회
     public Orders getOrderDetail(User user, Long orderId) {
         Orders order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
+                .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
         if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
-            throw new IllegalArgumentException("해당 주문은 로그인한 사용자의 주문이 아닙니다.");
+            throw new OrderException(OrderResponseStatus.ORDER_USER_MISMATCH);
         }
         return order;
     }
 
     // 환불 요청
-    public void requestRefund(User user, Long orderId) {
+    public OrderCancelResponseDto requestRefund(User user, Long orderId) {
         Orders order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
+                .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
         if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
-            throw new IllegalArgumentException("사용자와 주문이 일치하지 않습니다.");
+            throw new OrderException(OrderResponseStatus.ORDER_USER_MISMATCH);
         }
         order.setOrderStatus("REFUND_REQUESTED");
         orderRepository.save(order);
+        return OrderCancelResponseDto.from(orderId, "REFUND_REQUESTED");
     }
 }
