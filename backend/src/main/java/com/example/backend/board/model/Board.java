@@ -21,6 +21,7 @@ public class Board {
     private Long idx;
     private String boardTitle;
     private String boardContent;
+    private String boardCategory;
     private LocalDateTime boardCreated;
     private LocalDateTime boardModified;
     private Integer boardLikes;
@@ -33,7 +34,7 @@ public class Board {
 
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @BatchSize(size = 10)  // 한 번에 최대 10개의 이미지 조회
-    private List<BoardImage> imageList = new ArrayList<>();
+    private List<BoardFiles> imageList = new ArrayList<>();
 
     public void addLikesCount() {
         this.boardLikes = this.boardLikes + 1;

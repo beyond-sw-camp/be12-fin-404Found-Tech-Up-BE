@@ -1,6 +1,6 @@
 package com.example.backend.board.controller;
 
-import com.example.backend.board.model.dto.BoardRegisterDto;
+import com.example.backend.board.model.dto.BoardRegisterRequestDto;
 import com.example.backend.board.model.dto.BoardResponseDto;
 import com.example.backend.board.service.BoardService;
 import com.example.backend.user.model.User;
@@ -25,7 +25,7 @@ public class BoardController {
             description = "제목, 내용, 첨부파일과 함께 글을 작성합니다."
     )
     @PostMapping("/create")
-    public void create(@AuthenticationPrincipal User loginUser, @RequestBody BoardRegisterDto dto) {
+    public void create(@AuthenticationPrincipal User loginUser, @RequestBody BoardRegisterRequestDto dto) {
         boardService.create(loginUser, dto);
     }
 
@@ -34,7 +34,7 @@ public class BoardController {
             description = "boardIdx를 전달받아 본인이 작성한글인지 확인 후, 게시글의 제목과 내용, 첨부파일을 수정합니다."
     )
     @PostMapping("/update/{boardIdx}")
-    public void update(@AuthenticationPrincipal User loginUser, @PathVariable Long boardIdx, @RequestBody BoardRegisterDto dto) {
+    public void update(@AuthenticationPrincipal User loginUser, @PathVariable Long boardIdx, @RequestBody BoardRegisterRequestDto dto) {
         boardService.update(loginUser, boardIdx, dto);
     }
 

@@ -101,7 +101,6 @@ public class ProductController {
     @Operation(summary = "상품 등록", description = "신규 상품을 등록합니다.")
     @PostMapping("/register")
     public ResponseEntity<ProductResponseDto> registerProduct(@RequestBody ProductRequestDto requestDto) {
-        log.info("{}", requestDto.toString());
         return ResponseEntity.ok(productService.registerProduct(requestDto));
     }
 
