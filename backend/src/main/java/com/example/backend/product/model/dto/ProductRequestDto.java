@@ -19,7 +19,14 @@ public class ProductRequestDto {
     private String description;
     private String category;
 
+    private CpuSpecDto cpuSpec;
+    private GpuSpecDto gpuSpec;
+    private RamSpecDto ramSpec;
+    private HddSpecDto hddSpec;
+    private SsdSpecDto ssdSpec;
+
     public Product toEntity() {
+        // 부품 별 스펙은 제외한다
         return Product.builder()
                 .name(name)
                 .price(price)
@@ -28,6 +35,11 @@ public class ProductRequestDto {
                 .stock(stock)
                 .description(description)
                 .category(category)
+                .cpuSpec(null)
+                .gpuSpec(null)
+                .ramSpec(null)
+                .hddSpec(null)
+                .ssdSpec(null)
                 .build();
     }
 }
