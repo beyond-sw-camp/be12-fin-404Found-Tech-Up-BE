@@ -2,6 +2,7 @@ package com.example.backend.board.service;
 
 import com.example.backend.board.model.Board;
 import com.example.backend.board.model.BoardFiles;
+import com.example.backend.board.model.dto.BoardPageResponse;
 import com.example.backend.board.model.dto.BoardRegisterRequestDto;
 import com.example.backend.board.model.dto.BoardRegisterResponseDto;
 import com.example.backend.board.model.dto.BoardResponseDto;
@@ -11,6 +12,10 @@ import com.example.backend.common.s3.PreSignedUrlService;
 import com.example.backend.common.s3.S3Service;
 import com.example.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -91,11 +96,17 @@ public class BoardService {
         }
     }
 
-    public List<BoardResponseDto> list() {
-        List<Board> result = boardRepository.findAll();
+    public BoardPageResponse getBoardList(int page, int size, String sort, String direction) {
+        Sort sorting = direction.equalsIgnoreCase("asc")
+                ? Sort.by(sort).ascending()
+                : Sort.by(sort).descending();
 
-        return result.stream().map(BoardResponseDto::from).toList();
+        Pageable pageable = PageRequest.of(page, size, sorting);
+        Page<Board> boardPage = boardRepository.findAll(pageable);
+
+        return BoardPageResponse.from(boardPage, sort, direction);
     }
+
 
     public BoardResponseDto read(Long tempIdx) {
         Board board = boardRepository.findById(tempIdx).orElseThrow();

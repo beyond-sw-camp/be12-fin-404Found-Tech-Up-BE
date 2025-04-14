@@ -1,6 +1,7 @@
 // BoardController.java
 package com.example.backend.board.controller;
 
+import com.example.backend.board.model.dto.BoardPageResponse;
 import com.example.backend.board.model.dto.BoardRegisterRequestDto;
 import com.example.backend.board.model.dto.BoardRegisterResponseDto;
 import com.example.backend.board.model.dto.BoardResponseDto;
@@ -9,6 +10,7 @@ import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseService;
 import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.user.model.User;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -67,9 +69,14 @@ public class BoardController {
             description = "게시글 목록을 확인합니다."
     )
     @GetMapping("/list")
-    public ResponseEntity<List<BoardResponseDto>> list() {
-        List<BoardResponseDto> response = boardService.list();
-        return ResponseEntity.ok(response);
+    public BaseResponse<Object> list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "boardCreated") String sort,
+            @RequestParam(defaultValue = "desc") String direction
+    ) {
+        BoardPageResponse response = boardService.getBoardList(page, size, sort, direction);
+        return baseResponseService.getSuccessResponse(response, CommonResponseStatus.SUCCESS);
     }
 
     @Operation(
