@@ -92,6 +92,8 @@ public class ProductController {
             )
             ProductFilterRequestDto filterDto
     ) {
+
+        List<ProductResponseDto> list = productService.filterProduct(filterDto);
         return productService.filterProduct(filterDto);
     }
 

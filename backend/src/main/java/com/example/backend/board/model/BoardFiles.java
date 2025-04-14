@@ -22,4 +22,8 @@ public class BoardFiles {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_idx")
     private Board board;
+
+    public void linkToBoard(Board board) {
+        this.board = board;
+    }
 }
