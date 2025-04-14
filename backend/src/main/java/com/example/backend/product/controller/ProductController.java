@@ -100,7 +100,7 @@ public class ProductController {
             ProductFilterRequestDto filterDto
     ) {
         List<ProductResponseDto> list = productService.filterProduct(filterDto);
-        return baseResponseService.getSuccessResponse(list, ProductResponseStatus.SUCCESS);
+        return null;
     }
 
     //-----------------------관리자 전용 상품 기능----------------

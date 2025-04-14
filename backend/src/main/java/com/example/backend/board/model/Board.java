@@ -20,6 +20,7 @@ public class Board {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
     private String boardTitle;
+    @Lob
     private String boardContent;
     private String boardCategory;
     private LocalDateTime boardCreated;
