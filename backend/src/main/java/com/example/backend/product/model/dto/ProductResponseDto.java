@@ -14,6 +14,7 @@ public class ProductResponseDto {
     private Long idx;
     private String name;
     private double price;
+    private Integer discount;
     private String brand;
     private Integer stock;
     private String description;
@@ -30,6 +31,7 @@ public class ProductResponseDto {
                 .idx(product.getProductIdx())
                 .name(product.getName())
                 .price(product.getPrice())
+                .discount(product.getDiscount())
                 .brand(product.getBrand())
                 .stock(product.getStock())
                 .description(product.getDescription())

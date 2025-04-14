@@ -7,7 +7,9 @@ import com.example.backend.product.model.dto.ProductDeleteResponseDto;
 import com.example.backend.product.model.dto.ProductFilterRequestDto;
 import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.dto.ProductResponseDto;
-import com.example.backend.product.repository.ProductRepository;
+import com.example.backend.product.model.spec.*;
+import com.example.backend.product.repository.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,12 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    // 영속성 이슈로 불가피하게 스펙 리포지토리를 만듦(F Key가 스펙 테이블 쪽에 있기 때문)
+    private final CpuSpecRepository cpuSpecRepository;
+    private final GpuSpecRepository gpuSpecRepository;
+    private final RamSpecRepository ramSpecRepository;
+    private final SsdSpecRepository ssdSpecRepository;
+    private final HddSpecRepository hddSpecRepository;
 
     public List<ProductResponseDto> getProductList() {
         return productRepository.findAll()
@@ -44,6 +52,7 @@ public class ProductService {
         return productRepository.findAll().stream()
                 .filter(product -> dto.getBrand() == null || product.getBrand().equalsIgnoreCase(dto.getBrand()))
                 .filter(product -> dto.getCategory() == null || product.getCategory().equalsIgnoreCase(dto.getCategory()))
+                .filter(product -> dto.getDiscount() == null || product.getDiscount() >= dto.getDiscount())
                 .filter(product -> dto.getMinPrice() == null || product.getPrice() >= dto.getMinPrice())
                 .filter(product -> dto.getMaxPrice() == null || product.getPrice() <= dto.getMaxPrice())
                 .filter(product -> dto.getNameKeyword() == null || product.getName().toLowerCase().contains(dto.getNameKeyword().toLowerCase()))
@@ -89,8 +98,27 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public ProductResponseDto registerProduct(ProductRequestDto requestDto) {
-        Product savedProduct = productRepository.save(requestDto.toEntity());
+        Product source = requestDto.toEntity();
+        Product savedProduct = productRepository.save(source);
+        if (requestDto.getCategory().equals("CPU")){
+            CpuSpec cpuSpec = CpuSpec.builder().cpuType(requestDto.getCpuSpec().getCpuType()).cpuCore(requestDto.getCpuSpec().getCpuCore()).cpuThreads(requestDto.getCpuSpec().getCpuThreads()).product(savedProduct).build();
+            cpuSpecRepository.save(cpuSpec);
+        } else if (requestDto.getCategory().equals("GPU")){
+            GpuSpec gpuSpec = GpuSpec.builder().gpuChip(requestDto.getGpuSpec().getGpuChip()).gpuMemory(requestDto.getGpuSpec().getGpuMemory()).gpuLength(requestDto.getGpuSpec().getGpuLength()).product(savedProduct).build();
+            gpuSpecRepository.save(gpuSpec);
+        } else if (requestDto.getCategory().equals("RAM")){
+            RamSpec ramSpec = RamSpec.builder().ramType(requestDto.getRamSpec().getRamType()).ramNum(requestDto.getRamSpec().getRamNum()).ramSize(requestDto.getRamSpec().getRamSize()).ramUsage(requestDto.getRamSpec().getRamUsage()).product(savedProduct).build();
+            ramSpecRepository.save(ramSpec);
+        } else if (requestDto.getCategory().equals("SSD")){
+            SsdSpec ssdSpec = SsdSpec.builder().ssdCapacity(requestDto.getSsdSpec().getSsdCapacity()).ssdRead(requestDto.getSsdSpec().getSsdRead()).ssdWrite(requestDto.getSsdSpec().getSsdWrite()).product(savedProduct).build();
+            ssdSpecRepository.save(ssdSpec);
+        } else if (requestDto.getCategory().equals("HDD")){
+            HddSpec hddSpec = HddSpec.builder().hddCapacity(requestDto.getHddSpec().getHddCapacity()).hddRpm(requestDto.getHddSpec().getHddRpm()).hddBuffer(requestDto.getHddSpec().getHddBuffer()).product(savedProduct).build();
+            hddSpecRepository.save(hddSpec);
+        }
+
         return ProductResponseDto.from(savedProduct);
     }
 
