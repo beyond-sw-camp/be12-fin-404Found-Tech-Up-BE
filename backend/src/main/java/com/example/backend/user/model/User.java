@@ -76,12 +76,12 @@ public class User implements UserDetails, OAuth2User {
     // OAuth2User 구현
     @Override
     public Map<String, Object> getAttributes() {
-        return oauth2Attributes != null ? oauth2Attributes : Collections.emptyMap();
+        return Map.of("nickname", userEmail);
     }
 
     @Override
     public String getName() {
-        return kakaoId != null ? kakaoId : userEmail;
+        return userEmail;
     }
 
     @Override

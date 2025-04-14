@@ -1,6 +1,7 @@
 package com.example.backend.config.filter;
 
 import com.example.backend.user.model.User;
+import com.example.backend.user.repository.UserRepository;
 import com.example.backend.util.JwtUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,7 +17,6 @@ import java.time.Duration;
 
 @Component
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-
 //    private final JwtUtility jwtUtility;
 //
 //    public OAuth2SuccessHandler(JwtUtility jwtUtility) {
@@ -26,8 +26,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        User user = (User) authentication.getPrincipal();
-        String jwtToken = JwtUtility.generateToken(user.getUserIdx(), user.getUserEmail(), user.getIsAdmin());
+        OAuth2User user = (OAuth2User) authentication.getPrincipal();
+
+        String jwtToken = JwtUtility.generateToken(0L, user.getName(), false);
 
         // 쿠키에 토큰 설정
         ResponseCookie cookie = ResponseCookie
