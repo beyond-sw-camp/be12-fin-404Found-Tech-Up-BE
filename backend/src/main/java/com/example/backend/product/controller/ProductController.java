@@ -1,9 +1,5 @@
 package com.example.backend.product.controller;
 
-import com.example.backend.global.response.BaseResponse;
-import com.example.backend.global.response.BaseResponseService;
-import com.example.backend.global.response.responseStatus.ProductResponseStatus;
-import com.example.backend.product.model.dto.ProductDeleteResponseDto;
 import com.example.backend.product.model.dto.ProductFilterRequestDto;
 import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.dto.ProductResponseDto;
@@ -30,20 +26,19 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
-    private final BaseResponseService baseResponseService;
 
     @Operation(summary = "상품 리스트 조회", description = "전체 상품 리스트를 조회합니다.")
     @GetMapping("/list")
-    public BaseResponse<List<ProductResponseDto>> getProductList() {
-        List<ProductResponseDto> list = productService.getProductList();
-        return baseResponseService.getSuccessResponse(list, ProductResponseStatus.SUCCESS);
+    public List<ProductResponseDto> getProductList() {
+        return productService.getProductList();
     }
 
     @Operation(summary = "상품 상세 조회", description = "상품 ID로 상세 정보를 조회합니다.")
     @GetMapping("/{productId}")
-    public BaseResponse<ProductResponseDto> getProductDetail(@PathVariable Long productId) {
-        ProductResponseDto response = productService.getProductDetail(productId);
-        return baseResponseService.getSuccessResponse(response, ProductResponseStatus.SUCCESS);
+    public ProductResponseDto getProductDetail(
+            @PathVariable Long productId
+    ) {
+        return productService.getProductDetail(productId);
     }
 
     @Operation(
@@ -58,9 +53,8 @@ public class ProductController {
             }
     )
     @GetMapping("/search")
-    public BaseResponse<List<ProductResponseDto>> searchProduct(@RequestParam String keyword) {
-        List<ProductResponseDto> list = productService.searchProduct(keyword);
-        return baseResponseService.getSuccessResponse(list, ProductResponseStatus.SUCCESS);
+    public List<ProductResponseDto> searchProduct(@RequestParam String keyword) {
+        return productService.searchProduct(keyword);
     }
 
     @Operation(summary = "상품 필터링", description = "카테고리, 이름 키워드, 가격 범위 등의 조건으로 상품을 필터링합니다.")
@@ -99,18 +93,15 @@ public class ProductController {
             )
             ProductFilterRequestDto filterDto
     ) {
-        List<ProductResponseDto> list = productService.filterProduct(filterDto);
-        return baseResponseService.getSuccessResponse(list, ProductResponseStatus.SUCCESS);
+        return productService.filterProduct(filterDto);
     }
 
     //-----------------------관리자 전용 상품 기능----------------
 
     @Operation(summary = "상품 등록", description = "신규 상품을 등록합니다.")
     @PostMapping("/register")
-    public BaseResponse<ProductResponseDto> registerProduct(@RequestBody ProductRequestDto requestDto) {
-        ProductResponseDto response = productService.registerProduct(requestDto);
-        return baseResponseService.getSuccessResponse(response, ProductResponseStatus.SUCCESS);
-
+    public ResponseEntity<ProductResponseDto> registerProduct(@RequestBody ProductRequestDto requestDto) {
+        return ResponseEntity.ok(productService.registerProduct(requestDto));
     }
 
 
@@ -121,19 +112,18 @@ public class ProductController {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 상품")
     })
     @DeleteMapping("/{productId}")
-    public BaseResponse<ProductDeleteResponseDto> deleteProduct(@PathVariable Long productId) {
-        ProductDeleteResponseDto response = productService.deleteProduct(productId);
-        return baseResponseService.getSuccessResponse(response, ProductResponseStatus.SUCCESS);
+    public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
+        productService.deleteProduct(productId);
+        return ResponseEntity.ok("상품이 성공적으로 삭제되었습니다.");
     }
 
     @Operation(summary = "상품 수정", description = "상품 ID를 기준으로 상품 정보를 수정합니다.")
     @PutMapping("/update/{productId}")
-    public BaseResponse<ProductResponseDto> updateProduct(
+    public ProductResponseDto updateProduct(
             @PathVariable Long productId,
             @RequestBody ProductRequestDto requestDto
     ) {
-        ProductResponseDto response = productService.updateProduct(productId, requestDto);
-        return baseResponseService.getSuccessResponse(response, ProductResponseStatus.SUCCESS);
+        return productService.updateProduct(productId, requestDto);
     }
 
 }
