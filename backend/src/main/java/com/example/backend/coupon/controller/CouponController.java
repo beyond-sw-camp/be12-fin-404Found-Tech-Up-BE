@@ -5,6 +5,9 @@ import com.example.backend.coupon.model.dto.response.CouponListResponseDto;
 import com.example.backend.coupon.model.dto.request.EventCouponCreateRequest;
 import com.example.backend.coupon.model.dto.request.UserCouponCreateRequestDto;
 import com.example.backend.coupon.service.CouponService;
+import com.example.backend.global.response.BaseResponse;
+import com.example.backend.global.response.BaseResponseServiceImpl;
+import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,24 +25,24 @@ public class CouponController {
 
     @Operation(summary = "쿠폰 목록 조회", description = "전체 발급된 쿠폰 목록을 페이지 번호에 따라 조회합니다.")
     @GetMapping
-    public ResponseEntity<CouponListResponseDto> getCouponList() {
+    public ResponseEntity<BaseResponse<CouponListResponseDto>> getCouponList() {
         CouponListResponseDto result = couponService.getCouponPage(0);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(new BaseResponseServiceImpl().getSuccessResponse(result, CommonResponseStatus.SUCCESS));
     }
 
     @Operation(summary = "쿠폰 목록 조회", description = "전체 발급된 쿠폰 목록을 페이지 번호에 따라 조회합니다.")
     @GetMapping("/{offset}")
-    public ResponseEntity<CouponListResponseDto> getCouponList(@PathVariable int offset) {
+    public ResponseEntity<BaseResponse<CouponListResponseDto>> getCouponList(@PathVariable int offset) {
         CouponListResponseDto result = couponService.getCouponPage(offset);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(new BaseResponseServiceImpl().getSuccessResponse(result, CommonResponseStatus.SUCCESS));
     }
 
     @Operation(summary="사용자별 쿠폰 발급", description="개별 사용자마다 수동 쿠폰 발급")
     @PostMapping("/issue")
-    public ResponseEntity<String> issueCoupon(@RequestBody UserCouponCreateRequestDto request) {
+    public ResponseEntity<BaseResponse<String>> issueCoupon(@RequestBody UserCouponCreateRequestDto request) {
         Long couponIdx = couponService.CreateCouponForUser(request);
         log.info("issue coupon {}", couponIdx);
-        return ResponseEntity.ok(couponIdx.toString() + "번 쿠폰 발행 성공");
+        return ResponseEntity.ok(new BaseResponseServiceImpl().getSuccessResponse(couponIdx.toString() + "번 쿠폰 발행 성공", CommonResponseStatus.SUCCESS));
     }
 
    /*
