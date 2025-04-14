@@ -27,6 +27,7 @@ public class Product {
     private Long productIdx;
     private String name;
     private Double price;
+    private Integer discount;
     private String brand;
     private Integer stock;
     private String description;

@@ -44,6 +44,7 @@ public class ProductService {
         return productRepository.findAll().stream()
                 .filter(product -> dto.getBrand() == null || product.getBrand().equalsIgnoreCase(dto.getBrand()))
                 .filter(product -> dto.getCategory() == null || product.getCategory().equalsIgnoreCase(dto.getCategory()))
+                .filter(product -> dto.getDiscount() == null || product.getDiscount() >= dto.getDiscount())
                 .filter(product -> dto.getMinPrice() == null || product.getPrice() >= dto.getMinPrice())
                 .filter(product -> dto.getMaxPrice() == null || product.getPrice() <= dto.getMaxPrice())
                 .filter(product -> dto.getNameKeyword() == null || product.getName().toLowerCase().contains(dto.getNameKeyword().toLowerCase()))
