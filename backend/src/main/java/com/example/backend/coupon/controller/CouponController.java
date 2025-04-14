@@ -26,7 +26,7 @@ import java.util.List;
 public class CouponController {
     private final CouponService couponService;
 
-    @Operation(summary = "쿠폰 목록 조회", description = "전체 발급된 쿠폰 목록을 페이지 번호에 따라 조회합니다.")
+    @Operation(summary = "쿠폰 목록 조회", description = "전체 발급된 쿠폰 목록을 전부 조회합니다.")
     @GetMapping
     public ResponseEntity<BaseResponse<CouponListResponseDto>> getCouponList() {
         CouponListResponseDto result = couponService.getCouponPage(0);
