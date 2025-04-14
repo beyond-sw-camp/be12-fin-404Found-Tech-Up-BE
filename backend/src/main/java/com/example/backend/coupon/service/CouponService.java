@@ -39,7 +39,7 @@ public class CouponService {
         }
         Coupon coupon = couponRepository.findByCouponName(request.getCouponName()).orElse(null);
         if (coupon == null) { // 아직 한 번도 발급한 적 없는 종류의 쿠폰을 발급하는 경우
-            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(new Date(request.getExpiryDate())).build();
+            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(new Date(Integer.parseInt(request.getExpiryDate()))).build();
             couponRepository.save(coupon);
         }
         UserCoupon issuedCoupon = UserCoupon.builder().user(user).coupon(coupon).couponUsed(false).build();
