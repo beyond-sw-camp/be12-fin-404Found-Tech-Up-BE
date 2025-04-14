@@ -8,6 +8,7 @@ import com.example.backend.product.model.dto.ProductFilterRequestDto;
 import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.dto.ProductResponseDto;
 import com.example.backend.product.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -89,8 +90,20 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public ProductResponseDto registerProduct(ProductRequestDto requestDto) {
         Product savedProduct = productRepository.save(requestDto.toEntity());
+        if (requestDto.getCategory().equals("CPU")){
+
+        } else if (requestDto.getCategory().equals("GPU")){
+
+        } else if (requestDto.getCategory().equals("RAM")){
+
+        } else if (requestDto.getCategory().equals("SSD")){
+
+        } else if (requestDto.getCategory().equals("HDD")){
+
+        }
         return ProductResponseDto.from(savedProduct);
     }
 
