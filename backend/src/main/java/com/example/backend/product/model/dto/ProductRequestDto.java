@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class ProductRequestDto {
     private String name;
     private Double price;
+    private Integer discount;
     private String brand;
     private Integer stock;
     private String description;
@@ -22,6 +23,7 @@ public class ProductRequestDto {
         return Product.builder()
                 .name(name)
                 .price(price)
+                .discount(discount)
                 .brand(brand)
                 .stock(stock)
                 .description(description)

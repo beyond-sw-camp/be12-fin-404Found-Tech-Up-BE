@@ -7,6 +7,7 @@ public class ProductFilterRequestDto {
     private String nameKeyword;
     private String brand;
     private String category;
+    private Integer discount;
     private Double minPrice;
     private Double maxPrice;
 

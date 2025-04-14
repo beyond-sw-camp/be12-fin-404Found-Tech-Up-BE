@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -65,7 +64,7 @@ public class ProductController {
 
     @Operation(summary = "상품 필터링", description = "카테고리, 이름 키워드, 가격 범위 등의 조건으로 상품을 필터링합니다.")
     @PostMapping("/filter")
-    public List<ProductResponseDto> filterProduct(
+    public BaseResponse<List<ProductResponseDto>> filterProduct(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "필터링 조건을 담은 JSON 객체",
                     required = true,
