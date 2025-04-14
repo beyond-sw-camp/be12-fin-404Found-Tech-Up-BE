@@ -1,5 +1,6 @@
 package com.example.backend.coupon.controller;
 
+import com.example.backend.coupon.model.dto.request.AllCouponCreateRequestDto;
 import com.example.backend.coupon.model.dto.request.CategoryCouponCreateRequestDto;
 import com.example.backend.coupon.model.dto.response.CouponListResponseDto;
 import com.example.backend.coupon.model.dto.request.EventCouponCreateRequest;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @Tag(name = "쿠폰 기능", description = "쿠폰 관련 기능을 제공합니다.")
@@ -55,8 +58,11 @@ public class CouponController {
     */
     @Operation(summary = "전체 쿠폰 발급", description = "전체에게 쿠폰 발급.")
     @PostMapping("/issueall")
-    public void issueCouponsToAll(@RequestBody CategoryCouponCreateRequestDto category) {
+    public ResponseEntity<BaseResponse<List<Long>>> issueCouponsToAll(@RequestBody AllCouponCreateRequestDto request) {
         // TODO: 프론트 수정 후 여기를 구현
+        List<Long> coupons = couponService.CreateCouponForAll(request);
+        log.info("issued {} coupons", coupons.size());
+        return ResponseEntity.ok(new BaseResponseServiceImpl().getSuccessResponse(coupons, CommonResponseStatus.SUCCESS));
     }
 
     @Operation(summary = "선착순 쿠폰 발급", description = "선착순 쿠폰 발급.")
