@@ -3,8 +3,12 @@ package com.example.backend.config;
 import com.example.backend.config.filter.JwtFilter;
 import com.example.backend.config.filter.LoginFilter;
 import com.example.backend.config.filter.OAuth2SuccessHandler;
+import com.example.backend.global.response.BaseResponse;
+import com.example.backend.global.response.BaseResponseService;
+import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.user.service.CustomOAuth2UserService;
 import com.example.backend.user.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +26,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import java.util.List;
 
@@ -33,6 +38,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration configuration;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final BaseResponseService baseResponseService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -68,7 +74,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login")
+                        .logoutUrl("/user/logout")
+                        .logoutSuccessHandler(logoutSuccessHandler())
                         .deleteCookies("ATOKEN")
                 )
                 // 권한 설정
@@ -95,6 +102,15 @@ public class SecurityConfig {
         return http.build();
     }
 
-
-
+    @Bean
+    public LogoutSuccessHandler logoutSuccessHandler() {
+        return (request, response, authentication) -> {
+            response.setStatus(200);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            ObjectMapper mapper = new ObjectMapper();
+            BaseResponse<String> baseResponse = baseResponseService.getSuccessResponse("로그아웃 성공", UserResponseStatus.SUCCESS);
+            mapper.writeValue(response.getWriter(), baseResponse);
+        };
+    }
 }
