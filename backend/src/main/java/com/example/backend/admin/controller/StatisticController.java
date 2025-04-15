@@ -21,8 +21,8 @@ public class StatisticController {
     private final StatisticsService statisticsService;
 
     @GetMapping
-    public ResponseEntity<BaseResponse<StatisticsResponseDto>> statistics() {
-        return ResponseEntity.ok(new BaseResponseServiceImpl().getSuccessResponse(statisticsService.getStatistics(), CommonResponseStatus.SUCCESS));
+    public BaseResponse<StatisticsResponseDto> statistics() {
+        return new BaseResponseServiceImpl().getSuccessResponse(statisticsService.getStatistics(), CommonResponseStatus.SUCCESS);
     }
 
     // ---- 이 아래는 테스트용 api로 규칙을 따르지 않음----

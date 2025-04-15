@@ -28,24 +28,24 @@ public class CouponController {
 
     @Operation(summary = "쿠폰 목록 조회", description = "전체 발급된 쿠폰 목록을 전부 조회합니다.")
     @GetMapping
-    public ResponseEntity<BaseResponse<CouponListResponseDto>> getCouponList() {
+    public BaseResponse<CouponListResponseDto> getCouponList() {
         CouponListResponseDto result = couponService.getCouponPage(0);
-        return ResponseEntity.ok(new BaseResponseServiceImpl().getSuccessResponse(result, CommonResponseStatus.SUCCESS));
+        return new BaseResponseServiceImpl().getSuccessResponse(result, CommonResponseStatus.SUCCESS);
     }
 
     @Operation(summary = "쿠폰 목록 조회", description = "전체 발급된 쿠폰 목록을 페이지 번호에 따라 조회합니다.")
     @GetMapping("/{offset}")
-    public ResponseEntity<BaseResponse<CouponListResponseDto>> getCouponList(@PathVariable int offset) {
+    public BaseResponse<CouponListResponseDto> getCouponList(@PathVariable int offset) {
         CouponListResponseDto result = couponService.getCouponPage(offset);
-        return ResponseEntity.ok(new BaseResponseServiceImpl().getSuccessResponse(result, CommonResponseStatus.SUCCESS));
+        return new BaseResponseServiceImpl().getSuccessResponse(result, CommonResponseStatus.SUCCESS);
     }
 
     @Operation(summary="사용자별 쿠폰 발급", description="개별 사용자마다 수동 쿠폰 발급")
     @PostMapping("/issue")
-    public ResponseEntity<BaseResponse<String>> issueCoupon(@RequestBody UserCouponCreateRequestDto request) {
+    public BaseResponse<String> issueCoupon(@RequestBody UserCouponCreateRequestDto request) {
         Long couponIdx = couponService.CreateCouponForUser(request);
         log.info("issue coupon {}", couponIdx);
-        return ResponseEntity.ok(new BaseResponseServiceImpl().getSuccessResponse(couponIdx.toString() + "번 쿠폰 발행 성공", CommonResponseStatus.SUCCESS));
+        return new BaseResponseServiceImpl().getSuccessResponse(couponIdx.toString() + "번 쿠폰 발행 성공", CommonResponseStatus.SUCCESS);
     }
 
    /*
@@ -58,11 +58,11 @@ public class CouponController {
     */
     @Operation(summary = "전체 쿠폰 발급", description = "전체에게 쿠폰 발급.")
     @PostMapping("/issueall")
-    public ResponseEntity<BaseResponse<List<Long>>> issueCouponsToAll(@RequestBody AllCouponCreateRequestDto request) {
+    public BaseResponse<List<Long>> issueCouponsToAll(@RequestBody AllCouponCreateRequestDto request) {
         // TODO: 프론트 수정 후 여기를 구현
         List<Long> coupons = couponService.CreateCouponForAll(request);
         log.info("issued {} coupons", coupons.size());
-        return ResponseEntity.ok(new BaseResponseServiceImpl().getSuccessResponse(coupons, CommonResponseStatus.SUCCESS));
+        return new BaseResponseServiceImpl().getSuccessResponse(coupons, CommonResponseStatus.SUCCESS);
     }
 
     @Operation(summary = "선착순 쿠폰 발급", description = "선착순 쿠폰 발급.")
