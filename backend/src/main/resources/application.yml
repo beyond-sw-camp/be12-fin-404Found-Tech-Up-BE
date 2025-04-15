@@ -13,8 +13,8 @@ spring:
   cloud:
     aws:
       credentials:
-        access-key: 1
-        secret-key: 2
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
       s3:
         bucket: ogh-spring-prac
       region:

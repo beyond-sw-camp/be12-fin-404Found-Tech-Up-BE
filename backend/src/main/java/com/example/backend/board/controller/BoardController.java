@@ -84,8 +84,8 @@ public class BoardController {
             description = "boardIdx를 전달받아 게시글 하나의 정보를 확인합니다."
     )
     @GetMapping("/read/{boardIdx}")
-    public ResponseEntity<BoardResponseDto> read(@PathVariable Long boardIdx) {
+    public BaseResponse<Object> read(@PathVariable Long boardIdx) {
         BoardResponseDto response = boardService.read(boardIdx);
-        return ResponseEntity.ok(response);
+        return baseResponseService.getSuccessResponse(response, CommonResponseStatus.SUCCESS);
     }
 }
