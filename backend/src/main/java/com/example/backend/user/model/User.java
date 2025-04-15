@@ -15,12 +15,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -41,7 +39,8 @@ public class User implements UserDetails {
     private String userAddress;
     private Boolean isActive;
     private LocalDateTime createdAt;
-    private Boolean isSocial;
+    private String isSocial;
+    private String kakaoId;
     private Boolean enabled;
     private Boolean isAdmin;
     private Boolean likeEnabled;
@@ -49,6 +48,10 @@ public class User implements UserDetails {
     private Boolean upgradeEnabled;
     private Boolean allowSms;
     private Boolean allowEmail;
+
+    // OAuth2 속성을 저장하기 위한 필드
+    @Transient
+    private Map<String, Object> oauth2Attributes;
 
     // review와 일대다 맵핑
     @OneToMany(mappedBy = "user")
@@ -70,22 +73,10 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<UserCoupon> userCoupons;
 
-    public void verify() {
-        this.enabled = true;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-
-        if (this.isAdmin) {
-            GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_ADMIN");
-            authorities.add(grantedAuthority);
-        } else {
-            GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_USER");
-            authorities.add(grantedAuthority);
-        }
-
+        authorities.add(new SimpleGrantedAuthority(isAdmin ? "ROLE_ADMIN" : "ROLE_USER"));
         return authorities;
     }
 
@@ -119,4 +110,13 @@ public class User implements UserDetails {
         return enabled;
     }
 
+    // OAuth2 속성 설정 메서드
+    public void setOAuth2Attributes(Map<String, Object> attributes) {
+        this.oauth2Attributes = attributes;
+    }
+
+    // 인증 활성화
+    public void verify() {
+        this.enabled = true;
+    }
 }
