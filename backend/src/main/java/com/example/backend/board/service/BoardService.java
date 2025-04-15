@@ -11,6 +11,7 @@ import com.example.backend.board.repository.BoardRepository;
 import com.example.backend.common.s3.PreSignedUrlService;
 import com.example.backend.common.s3.S3Service;
 import com.example.backend.user.model.User;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,11 +19,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -30,6 +34,7 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFilesService boardFilesService;
+    private final S3Service s3Service;
     /**
      * 게시글 등록 메서드.
      * - BoardRegisterRequestDto 로부터 Board 엔티티 생성 후 저장.
@@ -79,22 +84,31 @@ public class BoardService {
         }
     }
 
+    @Transactional
     public void delete(User loginUser, Long boardIdx) {
-        Board board = boardRepository.findById(boardIdx).orElseThrow();
+        Board board = boardRepository.findById(boardIdx)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
 
-        // 어드민에서 삭제 가능하게 하려면 유저가 admin인지 확인하는 or 조건문 추가 필요
-        if (board.getUser().equals(loginUser)) {
-//            List<String> fileUrls = boardImageRepository.findUrlsByBoard(board);
-//
-//            if (!fileUrls.isEmpty()) {
-//                s3Service.deleteFiles(fileUrls);
-//            }
-//
-//            boardImageRepository.deleteByBoard(board);
-
-            boardRepository.delete(board);
+        // 작성자 검증
+        if (!board.getUser().getUserIdx().equals(loginUser.getUserIdx())) {
+            throw new IllegalArgumentException("게시글 삭제 권한이 없습니다.");
         }
+
+        // 1️⃣ 첨부파일 삭제 (board_files 기준)
+        List<String> fileKeys = board.getImageList().stream()
+                .map(file -> extractS3KeyFromUrl(file.getFilesUrl()))
+                .toList();
+        s3Service.deleteFiles(fileKeys);
+
+        // 2️⃣ quill editor 내 이미지 삭제
+        List<String> quillKeys = extractImageKeysFromContent(board.getBoardContent());
+        s3Service.deleteFiles(quillKeys);
+
+        // 3️⃣ 게시글 삭제 (연관 파일은 cascade로 제거되어야 함)
+        boardRepository.delete(board);
     }
+
+
 
     public BoardPageResponse getBoardList(int page, int size, String sort, String direction) {
         Sort sorting = direction.equalsIgnoreCase("asc")
@@ -112,4 +126,32 @@ public class BoardService {
         Board board = boardRepository.findById(tempIdx).orElseThrow();
         return BoardResponseDto.from(board);
     }
+
+    private String extractS3KeyFromUrl(String urlOrKey) {
+        // 이미 key 형식이라면 그냥 반환
+        if (!urlOrKey.startsWith("http")) return urlOrKey;
+
+        try {
+            URL url = new URL(urlOrKey);
+            return url.getPath().substring(1); // 앞의 "/" 제거
+        } catch (Exception e) {
+            throw new IllegalArgumentException("S3 URL 형식 오류: " + urlOrKey);
+        }
+    }
+
+
+
+    private List<String> extractImageKeysFromContent(String html) {
+        Pattern pattern = Pattern.compile("https://[\\w\\-\\.]+\\.amazonaws\\.com/([\\w\\-/\\.]+)");
+        Matcher matcher = pattern.matcher(html);
+        List<String> keys = new ArrayList<>();
+
+        while (matcher.find()) {
+            keys.add(matcher.group(1)); // group(1)이 키
+        }
+
+        return keys;
+    }
+
+
 }

@@ -59,9 +59,10 @@ public class BoardController {
             description = "boardIdx를 전달받아 본인이 작성한 글인지 확인 후, 해당 게시글을 삭제합니다."
     )
     @DeleteMapping("/delete/{boardIdx}")
-    public void delete(@AuthenticationPrincipal User loginUser,
+    public BaseResponse<Object> delete(@AuthenticationPrincipal User loginUser,
                        @PathVariable Long boardIdx) {
         boardService.delete(loginUser, boardIdx);
+        return baseResponseService.getSuccessResponse(CommonResponseStatus.DELETED);
     }
 
     @Operation(

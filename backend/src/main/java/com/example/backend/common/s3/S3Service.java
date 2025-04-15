@@ -37,6 +37,7 @@ public class S3Service {
      * @param key 삭제할 파일의 키 (board_files 테이블의 key와 동일)
      */
     public void deleteFile(String key) {
+        System.out.println("🗑️ S3 삭제 요청 key: {}" + key);  // 꼭 추가
         DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)

@@ -28,11 +28,17 @@ public class BoardResponseDto {
     @Schema(description = "작성자 이름", example = "홍길동")
     private String writer;
 
+    @Schema(description = "작성자 ID", example = "5") // ✅ 추가
+    private Long userIdx;
+
     @Schema(description = "게시글 생성 일시", example = "2025-04-14T15:18:31")
     private LocalDateTime boardCreated;
 
     @Schema(description = "게시글 수정 일시", example = "2025-04-14T16:10:00")
     private LocalDateTime boardModified;
+
+    @Schema(description = "게시글 카테고리", example = "자유, Q&A")
+    private String boardCategory;
 
     @Schema(description = "게시글 좋아요 수", example = "5")
     private Integer boardLikes;
@@ -52,8 +58,10 @@ public class BoardResponseDto {
                 .boardTitle(board.getBoardTitle())
                 .boardContent(board.getBoardContent())
                 .writer(board.getUser() != null ? board.getUser().getUsername() : "탈퇴한 사용자")
+                .userIdx(board.getUser() != null ? board.getUser().getUserIdx() : null) // ✅ 추가
                 .boardCreated(board.getBoardCreated())
                 .boardModified(board.getBoardModified())
+                .boardCategory(board.getBoardCategory())
                 .boardLikes(board.getBoardLikes())
                 .boardUnlikes(board.getBoardUnlikes())
                 .boardComments(board.getBoardComments())
