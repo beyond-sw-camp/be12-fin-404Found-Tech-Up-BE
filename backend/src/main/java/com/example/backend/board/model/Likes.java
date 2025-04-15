@@ -25,4 +25,8 @@ public class Likes {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx")
     private User user;
+
+    public void setLikesType(Boolean likesType) {
+        this.likesType = likesType;
+    }
 }
