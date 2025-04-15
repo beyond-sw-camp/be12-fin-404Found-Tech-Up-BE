@@ -10,6 +10,7 @@ import com.example.backend.product.model.dto.ProductImageSaveRequestDto;
 import com.example.backend.product.service.ProductImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -26,6 +27,18 @@ public class ProductImageController {
         String filetype = productImageService.getFileType(filename);
         String fileKey = productImageService.getFileKey(filename);
         return new BaseResponseServiceImpl().getSuccessResponse(preSignedUrlService.generatePreSignedUrl(fileKey, filetype), CommonResponseStatus.SUCCESS);
+    }
+
+    @PutMapping("/upload")
+    public BaseResponse<String> upload(@RequestParam("file") MultipartFile file) {
+        if (file.getOriginalFilename() == null || file.getOriginalFilename().isEmpty()) {
+            return new BaseResponseServiceImpl().getFailureResponse(ProductResponseStatus.PRODUCT_SAVE_FAIL);
+        }
+        String filetype = productImageService.getFileType(file.getOriginalFilename());
+        String fileKey = productImageService.getFileKey(file.getOriginalFilename());
+        String url = preSignedUrlService.generatePreSignedUrl(fileKey, filetype);
+        s3Service.uploadFileWithPresignedUrl(url,file,filetype);
+        return new BaseResponseServiceImpl().getSuccessResponse(url.split("\\?")[0], CommonResponseStatus.SUCCESS);
     }
 
     @PostMapping
