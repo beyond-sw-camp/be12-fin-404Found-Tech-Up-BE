@@ -2,6 +2,9 @@ package com.example.backend.user.controller;
 
 
 import com.example.backend.common.dto.ErrorResponseDto;
+import com.example.backend.global.response.BaseResponse;
+import com.example.backend.global.response.BaseResponseServiceImpl;
+import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.user.model.User;
 import com.example.backend.user.model.dto.request.SignupRequestDto;
 import com.example.backend.user.model.dto.request.UserUpdateRequestDto;
@@ -31,17 +34,18 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final BaseResponseServiceImpl baseResponseService;
 
     @Operation(summary="닉네임 중복 확인", description = "회원 가입, 닉네임 중복 확인합니다.")
     @ApiResponse(responseCode="200", description="인증 성공, 성공 문자열을 반환합니다.")
     @ApiResponse(responseCode="400", description="인증 실패")
     @ApiResponse(responseCode="500", description="서버 내 오류")
     @PostMapping("/verify/nickname")
-    public ResponseEntity<VerifyNickNameResponseDto> verifyNickName(
+    public BaseResponse<VerifyNickNameResponseDto> verifyNickName(
             @Parameter(description="회원 가입시 닉네임 중복 확인")
             @Valid @RequestBody VerifyNickNameRequestDto request) {
         VerifyNickNameResponseDto res = userService.verifyNickName(request);
-        return ResponseEntity.ok(res);
+        return baseResponseService.getSuccessResponse(res, UserResponseStatus.SUCCESS );
     }
 
     @Operation(summary="이메일 인증", description = "회원 가입, 비밀번호 찾기 시 이메일 인증을 합니다")
@@ -62,11 +66,11 @@ public class UserController {
     @ApiResponse(responseCode="400", description="가입 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @PostMapping("/signup")
-    public ResponseEntity<SignupResponseDto> signup(
+    public BaseResponse<SignupResponseDto> signup(
             @Parameter(description="회원 가입시의 정보: User 테이블의 모든 정보를 채우지 않습니다.")
             @Valid @RequestBody SignupRequestDto request) {
         SignupResponseDto res = userService.signup(request);
-        return ResponseEntity.ok(res);
+        return baseResponseService.getSuccessResponse(res, UserResponseStatus.SUCCESS );
     }
 
     @Operation(summary="회원 정보 반환", description = "회원 정보를 반환합니다")

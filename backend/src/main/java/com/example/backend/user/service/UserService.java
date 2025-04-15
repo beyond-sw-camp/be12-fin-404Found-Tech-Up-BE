@@ -34,18 +34,32 @@ public class UserService implements UserDetailsService {
     }
 
     public SignupResponseDto signup(SignupRequestDto dto) {
-        boolean isSuccessSignup = false;
-        if (dto.getVerifyNickname().equals(true) && dto.getUserConfirmPassword().equals( dto.getUserPassword())){
-            User user = userRepository.save(dto.toEntity(passwordEncoder.encode(dto.getUserPassword())));
-            isSuccessSignup = true;
+//        boolean isSuccessSignup = false;
+//        if (dto.getVerifyNickname().equals(true)){
+//            if(dto.getUserConfirmPassword().equals( dto.getUserPassword())){
+//                userRepository.save(dto.toEntity(passwordEncoder.encode(dto.getUserPassword())));
+//                isSuccessSignup = true;
+//            }
+//        }
+//
+//        return new SignupResponseDto(isSuccessSignup);
+        if (!dto.getVerifyNickname()) {
+            return new SignupResponseDto(false);
         }
-        return new SignupResponseDto(isSuccessSignup);
+        if (!dto.getUserConfirmPassword().equals(dto.getUserPassword())) {
+            return new SignupResponseDto(false);
+        }
+
+        User user = dto.toEntity(passwordEncoder.encode(dto.getUserPassword()));
+        userRepository.save(user);
+        return new SignupResponseDto(true);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // TODO: 소셜 로그인 관련 이슈 해결
-        User user = userRepository.findByUserEmail(username).orElse(null);
+        User user = userRepository.findByUserEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
         // TODO: 예외처리
         return user;
     }
