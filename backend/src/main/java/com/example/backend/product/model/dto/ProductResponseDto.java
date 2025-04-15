@@ -1,10 +1,15 @@
 package com.example.backend.product.model.dto;
 
 import com.example.backend.product.model.Product;
+import com.example.backend.product.model.ProductImage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 @AllArgsConstructor
@@ -26,6 +31,8 @@ public class ProductResponseDto {
     private SsdSpecDto ssdSpec;
     private RamSpecDto ramSpec;
 
+    private List<String> images;
+
     public static ProductResponseDto from(Product product) {
         return ProductResponseDto.builder()
                 .idx(product.getProductIdx())
@@ -41,6 +48,7 @@ public class ProductResponseDto {
                 .hddSpec(product.getHddSpec() != null ? HddSpecDto.from(product.getHddSpec()) : null)
                 .ssdSpec(product.getSsdSpec() != null ? SsdSpecDto.from(product.getSsdSpec()) : null)
                 .ramSpec(product.getRamSpec() != null ? RamSpecDto.from(product.getRamSpec()) : null)
+                .images(product.getImages() != null ? product.getImages().stream().map(ProductImage::getImageUrl).collect(Collectors.toList()): new ArrayList<String>())
                 .build();
     }
 }
