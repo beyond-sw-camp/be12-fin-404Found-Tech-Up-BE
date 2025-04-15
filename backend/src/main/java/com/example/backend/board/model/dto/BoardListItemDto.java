@@ -33,6 +33,9 @@ class BoardListItemDto {
     @Schema(description = "댓글 수")
     private Integer boardComments;
 
+    @Schema(description = "게시글 카테고리")
+    private String boardCategory;
+
     public static BoardListItemDto from(Board board) {
         return BoardListItemDto.builder()
                 .idx(board.getIdx())
@@ -42,6 +45,7 @@ class BoardListItemDto {
                 .boardLikes(board.getBoardLikes())
                 .boardUnlikes(board.getBoardUnlikes())
                 .boardComments(board.getBoardComments())
+                .boardCategory(board.getBoardCategory())
                 .build();
     }
 }
