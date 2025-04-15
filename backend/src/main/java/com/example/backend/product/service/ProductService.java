@@ -3,6 +3,7 @@ package com.example.backend.product.service;
 import com.example.backend.global.exception.ProductException;
 import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.product.model.Product;
+import com.example.backend.product.model.ProductImage;
 import com.example.backend.product.model.dto.ProductDeleteResponseDto;
 import com.example.backend.product.model.dto.ProductFilterRequestDto;
 import com.example.backend.product.model.dto.ProductRequestDto;
@@ -13,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,7 @@ public class ProductService {
     private final RamSpecRepository ramSpecRepository;
     private final SsdSpecRepository ssdSpecRepository;
     private final HddSpecRepository hddSpecRepository;
+    private final ProductImageRepository productImageRepository;
 
     public List<ProductResponseDto> getProductList() {
         return productRepository.findAll()
