@@ -108,8 +108,8 @@ public class UserController {
     @ApiResponse(responseCode="400", description="실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @PostMapping("/logout")
-    private ResponseEntity<String> logout() {
-        return ResponseEntity.ok("Bye and see you again!");
+    private BaseResponse<String> logout() {
+        return baseResponseService.getSuccessResponse("로그아웃 성공", UserResponseStatus.SUCCESS );
     }
 
     // --------------------- 여기서부터 관리자 전용 ----------------------------
