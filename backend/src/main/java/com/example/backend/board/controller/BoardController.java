@@ -73,8 +73,10 @@ public class BoardController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "boardCreated") String sort,
-            @RequestParam(defaultValue = "desc") String direction
+            @RequestParam(defaultValue = "desc") String direction,
+            @AuthenticationPrincipal User loginUser
     ) {
+        System.out.println(loginUser.getUserIdx());
         BoardPageResponse response = boardService.getBoardList(page, size, sort, direction);
         return baseResponseService.getSuccessResponse(response, CommonResponseStatus.SUCCESS);
     }

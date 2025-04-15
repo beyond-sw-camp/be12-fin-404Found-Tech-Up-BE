@@ -37,6 +37,9 @@ public class Board {
     @BatchSize(size = 10)  // 한 번에 최대 10개의 이미지 조회
     private List<BoardFiles> imageList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Likes> likesList = new ArrayList<>();
+
     public void addLikesCount() {
         this.boardLikes = this.boardLikes + 1;
     }
