@@ -31,10 +31,16 @@ public class PreSignedUrlService {
                 .build();
 
         PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(b -> b
-                .signatureDuration(Duration.ofMinutes(10)) // URL 유효 시간 설정
+                .signatureDuration(Duration.ofMinutes(10))
                 .putObjectRequest(putObjectRequest)
+                .build()
         );
-        System.out.println("Generated PreSigned URL: " + presignedRequest.url());
+
+        // ✅ 확인용 로그 추가
+        System.out.println("📎 Presigned URL: " + presignedRequest.url());
+        System.out.println("📎 Signed Headers: " + presignedRequest.signedHeaders());
+
         return presignedRequest.url().toString();
     }
+
 }

@@ -8,10 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Schema(description = "쿠폰 생성 요청")
-public class UserCouponCreateRequestDto {
-    @Schema(description = "사용자 고유 번호", example="21")
-    private Long userIdx;
+public class AllCouponCreateRequestDto {
     @Schema(description = "사용 가능한 제품의 고유 번호", example="121")
     private Long productIdx;
     @Schema(description = "할인율, 정수임에 주의", example="10")

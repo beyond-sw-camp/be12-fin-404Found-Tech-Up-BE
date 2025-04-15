@@ -1,9 +1,13 @@
 package com.example.backend.admin.controller;
 
 import com.example.backend.admin.model.StatisticsResponseDto;
+import com.example.backend.admin.model.TopSalesDto;
 import com.example.backend.admin.model.TopWishListDto;
 import com.example.backend.admin.model.ViewRequestDto;
 import com.example.backend.admin.service.StatisticsService;
+import com.example.backend.global.response.BaseResponse;
+import com.example.backend.global.response.BaseResponseServiceImpl;
+import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +21,11 @@ public class StatisticController {
     private final StatisticsService statisticsService;
 
     @GetMapping
-    public ResponseEntity<StatisticsResponseDto> statistics() {
-        return ResponseEntity.ok(statisticsService.getStatistics());
+    public ResponseEntity<BaseResponse<StatisticsResponseDto>> statistics() {
+        return ResponseEntity.ok(new BaseResponseServiceImpl().getSuccessResponse(statisticsService.getStatistics(), CommonResponseStatus.SUCCESS));
     }
 
+    // ---- 이 아래는 테스트용 api로 규칙을 따르지 않음----
     @GetMapping("/wishlist")
     public ResponseEntity<List<TopWishListDto>> getTopWishList() {
         return ResponseEntity.ok(statisticsService.getTopWishList());
@@ -34,6 +39,11 @@ public class StatisticController {
     @GetMapping("/order")
     public ResponseEntity<Integer> getTotalOrder() {
         return ResponseEntity.ok(statisticsService.getTotalOrders());
+    }
+
+    @GetMapping("/topsales")
+    public ResponseEntity<List<TopSalesDto>> getTopSales() {
+        return ResponseEntity.ok(statisticsService.getTopSales());
     }
 
     @PostMapping("/view")

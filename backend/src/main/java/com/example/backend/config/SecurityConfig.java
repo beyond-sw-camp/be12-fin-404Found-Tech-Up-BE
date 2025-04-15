@@ -22,9 +22,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
@@ -85,7 +82,8 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
-                        // 나머지 요청은 인증 필요
+                        .requestMatchers("/board/**").permitAll()
+                        // Swagger 테스트 동안에는 전부 허용
                         .anyRequest().permitAll()
                 )
                 // 기존에 사용자한테 설정하도록 한 쿠키(JSESSIONID)를 사용하지 않도록 하는 설정
@@ -96,4 +94,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+
+
 }
