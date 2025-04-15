@@ -16,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,23 +50,29 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(oAuth2SuccessHandler)
+                        .failureHandler((request, response, exception) -> {
+                            log.error("OAuth2 failure: ", exception);
+                            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\": \"OAuth2 login failed: " + exception.getMessage() + "\"}");
+                        })
+                )
                 // CSRF 비활성화 (JWT 기반 stateless API에 적합)
                 .csrf(csrf -> csrf.disable())
+//                .httpBasic(AbstractHttpConfigurer::disable)
+//                .formLogin(AbstractHttpConfigurer::disable)
                 // 세션 비활성화 (JWT 사용)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            Cookie cookie = new Cookie("Authorization", null);
-                            cookie.setHttpOnly(true);
-                            cookie.setSecure(true);
-                            cookie.setPath("/");
-                            cookie.setMaxAge(0);
-                            response.addCookie(cookie);
-                            response.setStatus(HttpServletResponse.SC_OK);
-                        })
+                        .logoutSuccessUrl("/login")
+                        .deleteCookies("ATOKEN")
                 )
                 // 권한 설정
                 .authorizeHttpRequests(authorize -> authorize
@@ -81,24 +88,8 @@ public class SecurityConfig {
                         // 나머지 요청은 인증 필요
                         .anyRequest().permitAll()
                 )
-                // OAuth2 로그인 설정
-                .oauth2Login(config -> {
-                    config.successHandler(new OAuth2SuccessHandler());
-                    config.userInfoEndpoint(endpoint ->
-                            endpoint.userService(customOAuth2UserService));
-                })
-//                .oauth2Login(oauth2 -> oauth2
-//                        .userInfoEndpoint(userInfo -> userInfo
-//                                .userService(customOAuth2UserService)
-//                        )
-//                        .successHandler(oAuth2SuccessHandler)
-//                        .failureHandler((request, response, exception) -> {
-//                            log.error("OAuth2 failure: ", exception);
-//                            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                            response.setContentType("application/json");
-//                            response.getWriter().write("{\"error\": \"OAuth2 login failed: " + exception.getMessage() + "\"}");
-//                        })
-//                )
+                // 기존에 사용자한테 설정하도록 한 쿠키(JSESSIONID)를 사용하지 않도록 하는 설정
+                .sessionManagement(AbstractHttpConfigurer::disable)
                 // 필터 추가
                 .addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);

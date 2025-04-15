@@ -26,7 +26,7 @@ import java.util.*;
 @Setter
 @Entity
 @Builder
-public class User implements UserDetails, OAuth2User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userIdx;
@@ -72,17 +72,6 @@ public class User implements UserDetails, OAuth2User {
     // UserCoupon 과 일대다 맵핑
     @OneToMany(mappedBy = "user")
     private List<UserCoupon> userCoupons;
-
-    // OAuth2User 구현
-    @Override
-    public Map<String, Object> getAttributes() {
-        return Map.of("nickname", userEmail);
-    }
-
-    @Override
-    public String getName() {
-        return userEmail;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
