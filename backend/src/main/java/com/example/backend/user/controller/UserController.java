@@ -23,10 +23,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name="회원 기능", description="회원 가입/회원 정보 변경 등의 작업")
 @RestController
@@ -110,6 +113,12 @@ public class UserController {
     @PostMapping("/logout")
     private BaseResponse<String> logout() {
         return baseResponseService.getSuccessResponse("로그아웃 성공", UserResponseStatus.SUCCESS );
+    }
+
+    @GetMapping("/check-auth")
+    public BaseResponse<Map<String, Boolean>> checkAuth(Authentication authentication) {
+        Map<String, Boolean> response = userService.chekAuth(authentication);
+        return baseResponseService.getSuccessResponse(response, UserResponseStatus.SUCCESS);
     }
 
     // --------------------- 여기서부터 관리자 전용 ----------------------------

@@ -10,12 +10,15 @@ import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
 import com.example.backend.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -64,4 +67,9 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
+    public Map<String, Boolean> chekAuth(Authentication authentication) {
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isAuthenticated", authentication != null && authentication.isAuthenticated());
+        return response;
+    }
 }
