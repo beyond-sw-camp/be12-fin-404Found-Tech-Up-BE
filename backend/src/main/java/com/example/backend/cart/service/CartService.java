@@ -5,6 +5,7 @@ import com.example.backend.cart.model.CartItem;
 import com.example.backend.cart.model.dto.CartItemUpdateResponseDto;
 import com.example.backend.cart.model.dto.CartItemResponseDto;
 import com.example.backend.cart.model.dto.CartItemRequestDto;
+import com.example.backend.cart.repository.CartItemRepository;
 import com.example.backend.cart.repository.CartRepository;
 import com.example.backend.global.exception.CartException;
 import com.example.backend.global.exception.ProductException;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class CartService {
 
     private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
 
     // 로그인한 사용자의 장바구니 목록 조회
@@ -61,6 +63,7 @@ public class CartService {
             cart.getCartItems().add(targetItem);
         }
         cartRepository.save(cart);
+//        cartItemRepository.save(targetItem);
         return CartItemResponseDto.from(targetItem);
     }
 
