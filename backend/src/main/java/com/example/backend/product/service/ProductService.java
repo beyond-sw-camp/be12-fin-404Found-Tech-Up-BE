@@ -10,6 +10,7 @@ import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.dto.ProductResponseDto;
 import com.example.backend.product.model.spec.*;
 import com.example.backend.product.repository.*;
+import com.example.backend.user.repository.UserProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ public class ProductService {
     private final SsdSpecRepository ssdSpecRepository;
     private final HddSpecRepository hddSpecRepository;
     private final ProductImageRepository productImageRepository;
+    // TODO: 실수로 잘못 등록한 기기에 대해 내 기기 등록한 사용자가 있는 경우를 대비해 강제 삭제하기 위한 리포지토리
+    // private final UserProductRepository userProductRepository;
 
     public List<ProductResponseDto> getProductList() {
         return productRepository.findAll()
