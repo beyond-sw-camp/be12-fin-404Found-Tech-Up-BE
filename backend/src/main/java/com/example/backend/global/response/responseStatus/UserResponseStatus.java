@@ -22,6 +22,7 @@ public enum UserResponseStatus implements BaseResponseStatus {
     INVALID_EMAIL_FORMAT(false, 2014, "유효하지 않은 이메일 형식입니다."),
     UNIDENTIFIED_ROLE(false, 2015, "유효하지 않은 직책입니다"),
     USER_SAVE_FAIL(false, 2016, "유저 정보를 저장하는데 실패했습니다"),
+    EMAIL_SEND_FAIL(false, 2017, "이메일 전송에 실패했습니다."),
     // 성공적인 응답을 위한 추가
     SUCCESS(true, 2000, "요청이 성공적으로 처리되었습니다.");
 

@@ -6,13 +6,11 @@ import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseServiceImpl;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.user.model.User;
-import com.example.backend.user.model.dto.request.SignupRequestDto;
-import com.example.backend.user.model.dto.request.UserUpdateRequestDto;
-import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
-import com.example.backend.user.model.dto.request.VerifyNickNameRequestDto;
+import com.example.backend.user.model.dto.request.*;
 import com.example.backend.user.model.dto.response.SignupResponseDto;
 import com.example.backend.user.model.dto.response.UserInfoResponseDto;
 import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
+import com.example.backend.user.service.EmailVerifyService;
 import com.example.backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,6 +35,7 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final EmailVerifyService emailVerifyService;
     private final BaseResponseServiceImpl baseResponseService;
 
     @Operation(summary="닉네임 중복 확인", description = "회원 가입, 닉네임 중복 확인합니다.")
@@ -49,6 +48,16 @@ public class UserController {
             @Valid @RequestBody VerifyNickNameRequestDto request) {
         VerifyNickNameResponseDto res = userService.verifyNickName(request);
         return baseResponseService.getSuccessResponse(res, UserResponseStatus.SUCCESS );
+    }
+
+    @Operation(summary="이메일 중복 확인 및 코드 전송", description = "회원 가입시 이메일 중복 확인 및 이메일 코드 전송을 합니다")
+    @ApiResponse(responseCode="200", description="인증 성공, 성공 문자열을 반환합니다.")
+    @ApiResponse(responseCode="400", description="인증 실패")
+    @ApiResponse(responseCode="500", description="서버 내 오류")
+    @PostMapping("/email")
+    public BaseResponse<String> sendVerificationEmail(@RequestBody EmailRequestDto request) {
+        emailVerifyService.sendVerificationEmail(request.getUserEmail());
+        return baseResponseService.getSuccessResponse("인증 코드가 전송되었습니다.", UserResponseStatus.SUCCESS);
     }
 
     @Operation(summary="이메일 인증", description = "회원 가입, 비밀번호 찾기 시 이메일 인증을 합니다")
