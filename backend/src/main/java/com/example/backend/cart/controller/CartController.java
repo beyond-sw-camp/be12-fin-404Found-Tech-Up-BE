@@ -37,6 +37,9 @@ public class CartController {
             @Parameter(description = "로그인한 사용자 정보", required = true)
             @AuthenticationPrincipal User loginUser
     ) {
+        if (loginUser == null) {
+            return baseResponseService.getFailureResponse(CartResponseStatus.USER_NOT_LOGGED);
+        }
         List<CartItemResponseDto> response = cartService.getCartItems(loginUser);
         return baseResponseService.getSuccessResponse(response, CartResponseStatus.SUCCESS);
     }
@@ -53,6 +56,9 @@ public class CartController {
             @PathVariable Long productIdx,
             @Parameter(description = "장바구니에 추가할 상품 정보 DTO (수량은 cartItemQuantity 필드)", required = true)
             @RequestBody CartItemRequestDto cartItemRequestDto) {
+        if (loginUser == null) {
+            return baseResponseService.getFailureResponse(CartResponseStatus.USER_NOT_LOGGED);
+        }
         CartItemResponseDto response = cartService.addToCart(loginUser, productIdx, cartItemRequestDto);
         return baseResponseService.getSuccessResponse(response, CartResponseStatus.SUCCESS);
     }
@@ -67,6 +73,9 @@ public class CartController {
             @AuthenticationPrincipal User loginUser,
             @Parameter(description = "삭제할 카트 아이템 고유번호", required = true)
             @PathVariable Long cartItemIdx) {
+        if (loginUser == null) {
+            return baseResponseService.getFailureResponse(CartResponseStatus.USER_NOT_LOGGED);
+        }
         CartItemUpdateResponseDto response = cartService.removeCartItem(loginUser, cartItemIdx);
         return baseResponseService.getSuccessResponse(response, CartResponseStatus.SUCCESS);
     }
@@ -83,6 +92,9 @@ public class CartController {
             @PathVariable Long productIdx,
             @Parameter(description = "수량 변경 요청 DTO (양수면 추가, 음수면 차감)", required = true)
             @RequestBody CartItemUpdateRequestDto updateDto) {
+        if (loginUser == null) {
+            return baseResponseService.getFailureResponse(CartResponseStatus.USER_NOT_LOGGED);
+        }
         CartItemUpdateResponseDto response = cartService.updateCartItemQuantity(loginUser, productIdx, updateDto.getDeltaQuantity());
         return baseResponseService.getSuccessResponse(response, CartResponseStatus.SUCCESS);
     }
