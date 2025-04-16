@@ -2,6 +2,8 @@ package com.example.backend.user.service;
 
 import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
+import com.example.backend.user.model.dto.request.EmailRequestDto;
+import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
 import com.example.backend.user.repository.UserRepository;
 import jakarta.mail.internet.MimeMessage;
 import lombok.Getter;
@@ -44,47 +46,47 @@ public class EmailVerifyService {
     }
 
     // 이메일로 인증 코드 전송
-    public void sendVerificationEmail(String email) {
+    public void sendVerificationEmail(EmailRequestDto dto) {
         // 이메일 중복 확인
-        if (userRepository.findByUserEmail(email).isPresent()) {
+        if (userRepository.findByUserEmail(dto.getUserEmail()).isPresent()) {
             throw new UserException(UserResponseStatus.EMAIL_ALREADY_IN_USE);
         }
         String code = generateVerificationCode();
-        long expiryTime = Instant.now().toEpochMilli() + 2 * 60 * 1000; // 2분 후 만료
+        long expiryTime = Instant.now().toEpochMilli() + 3 * 60 * 1000; // 2분 후 만료
 
         // 인증 코드 저장
-        codeStore.put(email, new VerificationCode(code, expiryTime));
+        codeStore.put(dto.getUserEmail(), new VerificationCode(code, expiryTime));
 
         // 이메일 전송
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setTo(email);
+            helper.setTo(dto.getUserEmail());
             helper.setSubject("이메일 인증 코드");
-            helper.setText("인증 코드는 <b>" + code + "</b> 입니다. 2분 내에 입력해주세요.", true);
+            helper.setText("인증 코드는 <b>" + code + "</b> 입니다. 3분 내에 입력해주세요.", true);
             mailSender.send(message);
         } catch (Exception e) {
-            codeStore.remove(email); // 전송 실패 시 코드 제거
+            codeStore.remove(dto.getUserEmail()); // 전송 실패 시 코드 제거
             throw new UserException(UserResponseStatus.EMAIL_SEND_FAIL);
         }
     }
 
     // 인증 코드 검증
-    public boolean verifyCode(String email, String inputCode) {
-        VerificationCode verificationCode = codeStore.get(email);
+    public void verifyCode(ValidateEmailRequestDto dto) {
+        VerificationCode verificationCode = codeStore.get(dto.getUserEmail());
         if (verificationCode == null) {
-            throw new RuntimeException("인증 코드가 존재하지 않습니다.");
+            throw new UserException(UserResponseStatus.EMAIL_VERIFY_NOTFOUND);
         }
 
         // 만료 시간 체크
         if (Instant.now().toEpochMilli() > verificationCode.getExpiryTime()) {
-            codeStore.remove(email);
-            throw new RuntimeException("인증 코드가 만료되었습니다.");
+            codeStore.remove(dto.getUserEmail());
+            throw new UserException(UserResponseStatus.EMAIL_VERIFY_EXPIRED);
         }
 
         // 코드 일치 여부 확인
-        if (!verificationCode.getCode().equals(inputCode)) {
-            return false;
+        if (!verificationCode.getCode().equals(dto.getInputCode())) {
+            throw new UserException(UserResponseStatus.EMAIL_VERIFY_FAIL);
         }
 
         // 검증 성공 시 enabled 상태 업데이트
@@ -95,8 +97,7 @@ public class EmailVerifyService {
 //        userRepository.save(user);
 
         // 검증 완료 후 코드 제거
-        codeStore.remove(email);
-        return true;
+        codeStore.remove(dto.getUserEmail());
     }
 
     // 주기적으로 만료된 코드 정리 (선택 사항)

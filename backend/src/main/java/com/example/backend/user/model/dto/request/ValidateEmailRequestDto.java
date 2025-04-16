@@ -15,5 +15,9 @@ public class ValidateEmailRequestDto {
     @Schema(description="이메일, 필수",required = true,  example = "example@example.com")
     @Email
     @NotBlank
-    private String email;
+    private String userEmail;
+    @Schema(description="이메일 인증 코드, 필수",required = true,  example = "123456")
+    @NotBlank
+    private String inputCode;
+
 }
