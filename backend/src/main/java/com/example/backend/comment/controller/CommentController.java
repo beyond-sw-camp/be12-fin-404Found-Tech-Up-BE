@@ -37,4 +37,27 @@ public class CommentController {
         return baseResponseService.getSuccessResponse(commentList, CommonResponseStatus.SUCCESS);
     }
 
+    @Operation(summary = "댓글 수정", description = "작성한 댓글을 수정합니다.")
+    @PatchMapping("/update/{commentIdx}")
+    public BaseResponse<Object> updateComment(
+            @AuthenticationPrincipal User loginUser,
+            @PathVariable Long commentIdx,
+            @RequestBody CommentRegisterDto dto
+    ) {
+        commentService.update(loginUser, commentIdx, dto);
+        return baseResponseService.getSuccessResponse(CommonResponseStatus.UPDATED);
+    }
+
+    @Operation(summary = "댓글 삭제", description = "작성한 댓글을 삭제합니다.")
+    @DeleteMapping("/delete/{commentIdx}")
+    public BaseResponse<Object> deleteComment(
+            @AuthenticationPrincipal User loginUser,
+            @PathVariable Long commentIdx
+    ) {
+        commentService.delete(loginUser, commentIdx);
+        return baseResponseService.getSuccessResponse(CommonResponseStatus.DELETED);
+    }
+
+
+
 }
