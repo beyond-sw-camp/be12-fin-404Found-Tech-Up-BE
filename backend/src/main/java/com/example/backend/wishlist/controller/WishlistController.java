@@ -36,6 +36,9 @@ public class WishlistController {
             @Parameter(description = "상품 고유번호", required = true)
             @PathVariable Long productIdx
     ) {
+        if(loginUser == null) {
+            return baseResponseService.getFailureResponse(WishlistResponseStatus.USER_NOT_LOGGED);
+        }
         WishlistToggleResponseDto response = wishlistService.toggleWishlist(loginUser, productIdx);
         return baseResponseService.getSuccessResponse(response, WishlistResponseStatus.SUCCESS);
     }
@@ -49,6 +52,9 @@ public class WishlistController {
             @Parameter(description = "로그인한 사용자 정보", required = true)
             @AuthenticationPrincipal User loginUser
     ) {
+        if(loginUser == null) {
+            return baseResponseService.getFailureResponse(WishlistResponseStatus.USER_NOT_LOGGED);
+        }
         List<WishlistResponseDto> response = wishlistService.getWishlist(loginUser);
         return baseResponseService.getSuccessResponse(response, WishlistResponseStatus.SUCCESS);
     }
