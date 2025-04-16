@@ -4,7 +4,7 @@ import com.example.backend.global.exception.ProductException;
 import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.product.model.Product;
 import com.example.backend.product.repository.ProductRepository;
-import com.example.backend.wishlist.dto.WishlistResponseDto;
+import com.example.backend.wishlist.model.dto.WishlistResponseDto;
 import com.example.backend.wishlist.model.Wishlist;
 import com.example.backend.wishlist.model.dto.WishlistToggleResponseDto;
 import com.example.backend.wishlist.repository.WishlistRepository;
