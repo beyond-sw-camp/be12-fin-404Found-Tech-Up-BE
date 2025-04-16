@@ -50,9 +50,17 @@ public class EmailVerifyService {
 
     // 이메일로 인증 코드 전송
     public void sendVerificationEmail(EmailRequestDto dto) {
-        // 이메일 중복 확인
-        if (userRepository.findByUserEmail(dto.getUserEmail()).isPresent()) {
-            throw new UserException(UserResponseStatus.EMAIL_ALREADY_IN_USE);
+        // 회원가입시
+        if (dto.getIsSignup()) {
+            // 이메일 중복 확인
+            if (userRepository.findByUserEmail(dto.getUserEmail()).isPresent()) {
+                throw new UserException(UserResponseStatus.EMAIL_ALREADY_IN_USE);
+            }
+        } else {
+            // 이메일 중복 확인
+            if (!userRepository.findByUserEmail(dto.getUserEmail()).isPresent()) {
+                throw new UserException(UserResponseStatus.INVALID_EMAIL_FORMAT);
+            }
         }
         String code = generateVerificationCode();
         long expiryTime = Instant.now().toEpochMilli() + 3 * 60 * 1000; // 2분 후 만료
