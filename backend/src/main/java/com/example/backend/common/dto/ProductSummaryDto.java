@@ -27,6 +27,9 @@ public class ProductSummaryDto {
     @Schema(description = "상품 브랜드", example = "BrandX")
     private String brand;
 
+    @Schema(description = "상품 재고", example = "120")
+    private Integer stock;
+
     // 첫번째로 등록된 사진 1개만 장바구니에서 보여줌
     @Schema(description = "상품 썸네일 이미지 URL", example = "https://example.com/image.jpg")
     private String imageUrl;
@@ -43,6 +46,7 @@ public class ProductSummaryDto {
                 .name(product.getName())
                 .price(product.getPrice())
                 .brand(product.getBrand())
+                .stock(product.getStock())
                 .imageUrl(imageUrl)
                 .build();
     }
