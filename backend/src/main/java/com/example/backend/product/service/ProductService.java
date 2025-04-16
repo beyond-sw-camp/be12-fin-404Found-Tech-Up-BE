@@ -124,20 +124,85 @@ public class ProductService {
 
         return ProductResponseDto.from(savedProduct);
     }
-
+    @Transactional
     public ProductDeleteResponseDto deleteProduct(Long productId) {
+        // Note: 쿠폰이 발급되었거나, 구매 기록이 있으면 삭제 불가!
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
-        productRepository.delete(product);
+        if (product.getImages().size() > 0) {
+            productImageRepository.deleteAll(product.getImages());
+        }
+        if (product.getCpuSpec() != null) cpuSpecRepository.delete(product.getCpuSpec());
+        if (product.getGpuSpec() != null) gpuSpecRepository.delete(product.getGpuSpec());
+        if (product.getRamSpec() != null) ramSpecRepository.delete(product.getRamSpec());
+        if (product.getSsdSpec() != null) ssdSpecRepository.delete(product.getSsdSpec());
+        if (product.getHddSpec() != null) hddSpecRepository.delete(product.getHddSpec());
+        try {
+            productRepository.delete(product);
+        } catch (Exception e) {
+            throw new ProductException(ProductResponseStatus.PRODUCT_DELETE_FAIL);
+        }
         return ProductDeleteResponseDto.from(productId);
     }
 
+    @Transactional
     public ProductResponseDto updateProduct(Long productId, ProductRequestDto requestDto) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
-
         product.update(requestDto);
-        productRepository.save(product);
+        product = productRepository.save(product);
+
+        if (requestDto.getCpuSpec() != null) {
+            CpuSpec cpuSpec = product.getCpuSpec();
+            if (cpuSpec == null) {
+                cpuSpec = new CpuSpec();
+                cpuSpec.setProduct(product);
+            }
+            cpuSpec.update(requestDto.getCpuSpec());
+            cpuSpecRepository.save(cpuSpec);
+        }
+        if (requestDto.getGpuSpec() != null) {
+            GpuSpec gpuSpec = product.getGpuSpec();
+            if (gpuSpec != null) {
+                gpuSpecRepository.delete(gpuSpec);
+                gpuSpec = new GpuSpec();
+                gpuSpec.setProduct(product);
+            }
+            gpuSpec.update(requestDto.getGpuSpec());
+            gpuSpecRepository.save(gpuSpec);
+        }
+        if (requestDto.getRamSpec() != null) {
+            RamSpec ramSpec = product.getRamSpec();
+            if (ramSpec != null) {
+                ramSpecRepository.delete(ramSpec);
+                ramSpec = new RamSpec();
+                ramSpec.setProduct(product);
+            }
+            ramSpec.update(requestDto.getRamSpec());
+            ramSpecRepository.save(ramSpec);
+        }
+        if (requestDto.getSsdSpec() != null) {
+            SsdSpec ssdSpec = product.getSsdSpec();
+            if (ssdSpec != null) {
+                ssdSpecRepository.delete(ssdSpec);
+                ssdSpec = new SsdSpec();
+                ssdSpec.setProduct(product);
+            }
+
+            ssdSpec.update(requestDto.getSsdSpec());
+            ssdSpecRepository.save(ssdSpec);
+        }
+        if (requestDto.getHddSpec() != null) {
+            HddSpec hddSpec = product.getHddSpec();
+            if (hddSpec != null) {
+                hddSpecRepository.delete(hddSpec);
+                hddSpec = new HddSpec();
+                hddSpec.setProduct(product);
+            }
+            hddSpec.update(requestDto.getHddSpec());
+            hddSpecRepository.save(hddSpec);
+        }
+
         return ProductResponseDto.from(product);
     }
 
