@@ -8,8 +8,10 @@ import com.example.backend.user.repository.UserRepository;
 import jakarta.mail.internet.MimeMessage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -28,9 +30,10 @@ public class EmailVerifyService {
 
     // 인증 코드 데이터 클래스
     @Getter
-    private static class VerificationCode {
+    @Setter
+    public static class VerificationCode {
         private final String code;
-        private final long expiryTime;
+        private long expiryTime;
 
         public VerificationCode(String code, long expiryTime) {
             this.code = code;
@@ -89,18 +92,18 @@ public class EmailVerifyService {
             throw new UserException(UserResponseStatus.EMAIL_VERIFY_FAIL);
         }
 
-        // 검증 성공 시 enabled 상태 업데이트
-//        User user = userRepository.findById(email)
-//                .orElse(new User());
-//        user.setEmail(email);
-//        user.setEnabled(true);
-//        userRepository.save(user);
+        // 검증 성공 시 expiryTime을 10분으로 업데이트
+        verificationCode.setExpiryTime(Instant.now().toEpochMilli() + 10 * 60 * 1000); // 10분 연장
+        codeStore.put(dto.getUserEmail(), verificationCode);
+    }
 
-        // 검증 완료 후 코드 제거
-        codeStore.remove(dto.getUserEmail());
+    // EmailVerifyService에 추가
+    public VerificationCode getVerificationCode(String email) {
+        return codeStore.get(email);
     }
 
     // 주기적으로 만료된 코드 정리 (선택 사항)
+    @Scheduled(fixedRate = 10 * 60 * 1000)
     public void cleanExpiredCodes() {
         long currentTime = Instant.now().toEpochMilli();
         codeStore.entrySet().removeIf(entry ->

@@ -1,6 +1,8 @@
 package com.example.backend.user.service;
 
 
+import com.example.backend.global.exception.UserException;
+import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.user.model.User;
 import com.example.backend.user.model.dto.request.SignupRequestDto;
 import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
@@ -17,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +29,7 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailVerifyService emailVerifyService;
 
     public VerifyNickNameResponseDto verifyNickName(VerifyNickNameRequestDto dto) {
         // 닉네임으로 사용자 조회
@@ -37,24 +41,30 @@ public class UserService implements UserDetailsService {
     }
 
     public SignupResponseDto signup(SignupRequestDto dto) {
-//        boolean isSuccessSignup = false;
-//        if (dto.getVerifyNickname().equals(true)){
-//            if(dto.getUserConfirmPassword().equals( dto.getUserPassword())){
-//                userRepository.save(dto.toEntity(passwordEncoder.encode(dto.getUserPassword())));
-//                isSuccessSignup = true;
-//            }
-//        }
-//
-//        return new SignupResponseDto(isSuccessSignup);
         if (!dto.getVerifyNickname()) {
-            return new SignupResponseDto(false);
+            throw new UserException(UserResponseStatus.NICKNAME_NOT_FOUND);
         }
         if (!dto.getUserConfirmPassword().equals(dto.getUserPassword())) {
-            return new SignupResponseDto(false);
+            throw new UserException(UserResponseStatus.INVALID_PASSWORD);
+        }
+
+        // 인증 코드 검증
+        EmailVerifyService.VerificationCode verificationCode = emailVerifyService.getVerificationCode(dto.getUserEmail());
+        if (verificationCode == null) {
+            throw new UserException(UserResponseStatus.EMAIL_VERIFY_NOTFOUND);
+        }
+
+        if (Instant.now().toEpochMilli() > verificationCode.getExpiryTime()) {
+            throw new UserException(UserResponseStatus.EMAIL_VERIFY_EXPIRED);
+        }
+
+        if (!verificationCode.getCode().equals(dto.getInputCode())) {
+            throw new UserException(UserResponseStatus.EMAIL_VERIFY_FAIL);
         }
 
         User user = dto.toEntity(passwordEncoder.encode(dto.getUserPassword()));
         userRepository.save(user);
+        emailVerifyService.cleanExpiredCodes();
         return new SignupResponseDto(true);
     }
 

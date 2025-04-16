@@ -8,24 +8,27 @@ public enum UserResponseStatus implements BaseResponseStatus {
     // 2000번대 - User 관련 에러
     // 성공적인 응답을 위한 추가
     SUCCESS(true, 2000, "요청이 성공적으로 처리되었습니다."),
-    // 2001 - 2010 사용자 닉네임 관련 에러
-    USER_NOT_FOUND(false, 2001, "사용자를 찾을 수 없습니다."),
-    DUPLICATE_USER(false, 2002, "이미 존재하는 사용자입니다."),
-    INVALID_USER_ID(false, 2003, "잘못된 사용자 ID입니다."),
-    UNAUTHORIZED_USER(false, 2004, "인증되지 않은 사용자입니다."),
-    FORBIDDEN_USER(false, 2005, "접근 권한이 없습니다."),
-    INVALID_LOGIN_CREDENTIALS(false, 2006, "아이디 또는 비밀번호가 올바르지 않습니다."),
-    ACCOUNT_LOCKED(false, 2007, "계정이 잠겼습니다."),
-    ACCOUNT_EXPIRED(false, 2008, "계정이 만료되었습니다."),
-    PASSWORD_EXPIRED(false, 2009, "비밀번호가 만료되었습니다."),
-    INVALID_PASSWORD(false, 2010, "잘못된 비밀번호입니다."),
-    //2011 - 2020 사용자 닉네임 관련 에러
+    // 2001 - 2010 사용자 로그인 관련 에러
+    NICKNAME_NOT_FOUND(false, 2001, "별명 중복 확인이 필요합니다."),
+    INVALID_PASSWORD(false, 2002, "비밀번호가 일치하지 않습니다."),
+//    DUPLICATE_USER(false, 2002, "이미 존재하는 사용자입니다."),
+//    INVALID_USER_ID(false, 2003, "잘못된 사용자 ID입니다."),
+//    UNAUTHORIZED_USER(false, 2004, "인증되지 않은 사용자입니다."),
+//    FORBIDDEN_USER(false, 2005, "접근 권한이 없습니다."),
+//    INVALID_LOGIN_CREDENTIALS(false, 2006, "아이디 또는 비밀번호가 올바르지 않습니다."),
+//    ACCOUNT_LOCKED(false, 2007, "계정이 잠겼습니다."),
+//    ACCOUNT_EXPIRED(false, 2008, "계정이 만료되었습니다."),
+//    PASSWORD_EXPIRED(false, 2009, "비밀번호가 만료되었습니다."),
+//    INVALID_PASSWORD(false, 2010, "잘못된 비밀번호입니다."),
+    // 2011 - 2020 사용자 이메일 인증 관련 에러
     INVALID_EMAIL_FORMAT(false, 2011, "유효하지 않은 이메일 형식입니다."),
     EMAIL_ALREADY_IN_USE(false, 2012, "해당 이메일은 이미 사용 중입니다."),
     EMAIL_SEND_FAIL(false, 2013, "이메일 전송에 실패했습니다."),
     EMAIL_VERIFY_NOTFOUND(false, 2014, "이메일 인증 코드가 존재하지 않습니다."),
     EMAIL_VERIFY_EXPIRED(false, 2015, "이메일 인증 코드가 만료 되었습니다."),
     EMAIL_VERIFY_FAIL(false, 2016, "이메일 인증 코드가 일치하지 않습니다."),
+
+
 
     // 2100 - 기타 에러
     TOO_MANY_FAILED_ATTEMPTS(false, 2101, "로그인 시도 횟수가 초과되었습니다."),
