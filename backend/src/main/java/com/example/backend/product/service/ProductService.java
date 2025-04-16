@@ -137,6 +137,7 @@ public class ProductService {
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
 
         product.update(requestDto);
+        productRepository.save(product);
         return ProductResponseDto.from(product);
     }
 
