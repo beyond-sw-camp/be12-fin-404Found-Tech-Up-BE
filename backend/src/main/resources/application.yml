@@ -1,6 +1,21 @@
 spring:
   application:
     name: techup-backend
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_ADDR}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+            required: true
+          auth: true
+          timeout: 5000
+
   datasource:
     url: ${DB_URL}
     driver-class-name: org.mariadb.jdbc.Driver
