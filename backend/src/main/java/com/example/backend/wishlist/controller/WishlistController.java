@@ -4,7 +4,7 @@ import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseService;
 import com.example.backend.global.response.responseStatus.WishlistResponseStatus;
 import com.example.backend.user.model.User;
-import com.example.backend.wishlist.dto.WishlistResponseDto;
+import com.example.backend.wishlist.model.dto.WishlistResponseDto;
 import com.example.backend.wishlist.model.dto.WishlistToggleResponseDto;
 import com.example.backend.wishlist.service.WishlistService;
 import io.swagger.v3.oas.annotations.Operation;
