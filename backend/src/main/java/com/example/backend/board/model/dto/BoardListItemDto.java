@@ -40,7 +40,7 @@ class BoardListItemDto {
         return BoardListItemDto.builder()
                 .idx(board.getIdx())
                 .boardTitle(board.getBoardTitle())
-                .writer(board.getUser() != null ? board.getUser().getUsername() : "탈퇴한 사용자")
+                .writer(board.getUser() != null ? board.getUser().getUserNickname() : "탈퇴한 사용자")
                 .boardCreated(board.getBoardCreated() != null ? board.getBoardCreated().toString() : null)
                 .boardLikes(board.getBoardLikes())
                 .boardUnlikes(board.getBoardUnlikes())
