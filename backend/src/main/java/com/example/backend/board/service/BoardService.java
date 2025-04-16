@@ -88,16 +88,21 @@ public class BoardService {
 
 
 
-    public BoardPageResponse getBoardList(int page, int size, String sort, String direction) {
+    public BoardPageResponse getBoardList(int page, int size, String sort, String direction, String category, String search, String type) {
+        System.out.println("Service 검색 파라미터 - 카테고리: " + category + ", 검색어: " + search + ", 타입: " + type);
+
         Sort sorting = direction.equalsIgnoreCase("asc")
                 ? Sort.by(sort).ascending()
                 : Sort.by(sort).descending();
 
         Pageable pageable = PageRequest.of(page, size, sorting);
-        Page<Board> boardPage = boardRepository.findAll(pageable);
+
+        Page<Board> boardPage = boardRepository.searchBoards(category, search, type, pageable);
 
         return BoardPageResponse.from(boardPage, sort, direction);
     }
+
+
 
 
     @Transactional

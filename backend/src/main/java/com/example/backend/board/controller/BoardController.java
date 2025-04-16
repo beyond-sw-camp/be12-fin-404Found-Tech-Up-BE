@@ -75,12 +75,16 @@ public class BoardController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "boardCreated") String sort,
             @RequestParam(defaultValue = "desc") String direction,
-            @AuthenticationPrincipal User loginUser
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String type
     ) {
-        System.out.println(loginUser.getUserIdx());
-        BoardPageResponse response = boardService.getBoardList(page, size, sort, direction);
+        System.out.println(" / 검색어 : " + search + " / 타입 : " + type);
+        BoardPageResponse response = boardService.getBoardList(page, size, sort, direction, category, search, type);
         return baseResponseService.getSuccessResponse(response, CommonResponseStatus.SUCCESS);
     }
+
+
 
     @Operation(
             summary = "게시글 상세보기",
