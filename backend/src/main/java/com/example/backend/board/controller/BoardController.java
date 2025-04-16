@@ -47,7 +47,7 @@ public class BoardController {
             summary = "게시글 수정",
             description = "boardIdx를 전달받아 본인이 작성한 글인지 확인 후, 게시글의 제목과 내용, 첨부파일을 수정합니다."
     )
-    @PostMapping("/update/{boardIdx}")
+    @PatchMapping("/update/{boardIdx}")
     public void update(@AuthenticationPrincipal User loginUser,
                        @PathVariable Long boardIdx,
                        @RequestBody BoardRegisterRequestDto dto) {
