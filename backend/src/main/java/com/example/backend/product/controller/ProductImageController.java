@@ -38,16 +38,16 @@ public class ProductImageController {
         String fileKey = productImageService.getFileKey(file.getOriginalFilename());
         String url = preSignedUrlService.generatePreSignedUrl(fileKey, filetype);
         s3Service.uploadFileWithPresignedUrl(url,file,filetype);
-        return new BaseResponseServiceImpl().getSuccessResponse(url.split("\\?")[0], CommonResponseStatus.SUCCESS);
+        return new BaseResponseServiceImpl().getSuccessResponse(url, CommonResponseStatus.SUCCESS);
     }
 
     @PostMapping
-    public BaseResponse<Object> saveFileKey(@RequestBody ProductImageSaveRequestDto requestBody) {
+    public BaseResponse<String> saveFileKey(@RequestBody ProductImageSaveRequestDto requestBody) {
         try {
             productImageService.saveFileInfo(requestBody);
         } catch (Exception e) {
             return new BaseResponseServiceImpl().getFailureResponse(ProductResponseStatus.PRODUCT_SAVE_FAIL);
         }
-        return new BaseResponseServiceImpl().getSuccessResponse(CommonResponseStatus.SUCCESS);
+        return new BaseResponseServiceImpl().getSuccessResponse("성공", CommonResponseStatus.SUCCESS);
     }
 }
