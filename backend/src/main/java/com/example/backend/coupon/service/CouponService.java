@@ -93,6 +93,14 @@ public class CouponService {
                 .toList();
         return CouponListResponseDto.builder().couponList(couponList).total(pageLength).limit(limit).offset(offset).build();
     }
+    public CouponListResponseDto getCouponList() {
+        List<Coupon> couponListInfo = couponRepository.findAll();
+        Long limit = (long) couponListInfo.size();
+        Integer pageLength = couponListInfo.size();
+        List<CouponInfoDto> couponList = couponListInfo.stream().map(coupon -> CouponInfoDto.from(coupon))
+                .toList();
+        return CouponListResponseDto.builder().couponList(couponList).total(pageLength).limit(limit).offset(0).build();
+    }
 
     public CouponInfoDto getCouponInfo(Long couponIdx) {
         Coupon coupon = couponRepository.findById(couponIdx).orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));

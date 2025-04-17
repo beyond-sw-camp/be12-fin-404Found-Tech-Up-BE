@@ -29,13 +29,16 @@ public class CouponController {
     @Operation(summary = "쿠폰 목록 조회", description = "전체 발급된 쿠폰 목록을 전부 조회합니다.")
     @GetMapping
     public BaseResponse<CouponListResponseDto> getCouponList() {
-        CouponListResponseDto result = couponService.getCouponPage(0);
+        CouponListResponseDto result = couponService.getCouponList();
         return new BaseResponseServiceImpl().getSuccessResponse(result, CouponResponseStatus.SUCCESS);
     }
 
     @Operation(summary = "쿠폰 목록 조회", description = "전체 발급된 쿠폰 목록을 페이지 번호에 따라 조회합니다.")
     @GetMapping("/{offset}")
-    public BaseResponse<CouponListResponseDto> getCouponList(@PathVariable int offset) {
+    public BaseResponse<CouponListResponseDto> getCouponList(@PathVariable Integer offset) {
+        if (offset == null) {
+            offset = 0;
+        }
         CouponListResponseDto result = couponService.getCouponPage(offset);
         return new BaseResponseServiceImpl().getSuccessResponse(result, CouponResponseStatus.SUCCESS);
     }
