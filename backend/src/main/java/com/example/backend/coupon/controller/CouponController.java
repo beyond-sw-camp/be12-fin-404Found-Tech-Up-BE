@@ -101,4 +101,14 @@ public class CouponController {
             return new BaseResponseServiceImpl().getFailureResponse(CouponResponseStatus.CANNOT_DELETE_COUPON);
         }
     }
+
+    @Operation(summary = "쿠폰 검색", description = "키워드가 포함된 쿠폰 제목에 따라 쿠폰을 검색합니다.")
+    @GetMapping("/search")
+    public BaseResponse<CouponListResponseDto> searchCoupon(@RequestParam String keyword) {
+        if (keyword == null) {
+            keyword = "";
+        }
+        CouponListResponseDto result = couponService.searchCoupon(keyword);
+        return new BaseResponseServiceImpl().getSuccessResponse(result, CouponResponseStatus.SUCCESS);
+    }
 }

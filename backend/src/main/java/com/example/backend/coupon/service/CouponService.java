@@ -23,6 +23,7 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /*
     Note: 쿠폰 만료일 설정시 시간대에 주의하세요: 서울 기준 +9시간 필요하므로 ZonedDateTime을 잘 설정해야 합니다.
@@ -124,4 +125,11 @@ public class CouponService {
         return true;
     }
 
+    public CouponListResponseDto searchCoupon(String keyword) {
+        List<Coupon> couponList = couponRepository.findAllByCouponNameContaining(keyword);
+        Long limit = (long) couponList.size();
+        Integer pageLength = couponList.size();
+        List<CouponInfoDto> result = couponList.stream().map(Coupon::toDto).toList();
+        return CouponListResponseDto.builder().couponList(result).total(pageLength).limit(limit).offset(0).build();
+    }
 }

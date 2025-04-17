@@ -12,4 +12,6 @@ import java.util.Optional;
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
     Page<Coupon> findAll(Pageable pageable);
     Optional<Coupon> findByCouponName(String couponName);
+
+    List<Coupon> findAllByCouponNameContaining(String couponName); // 검색용 메서드
 }
