@@ -49,6 +49,8 @@ public class User implements UserDetails {
     private Boolean allowSms;
     private Boolean allowEmail;
 
+    private Boolean alarmEnabled;
+
     // OAuth2 속성을 저장하기 위한 필드
     @Transient
     private Map<String, Object> oauth2Attributes;
