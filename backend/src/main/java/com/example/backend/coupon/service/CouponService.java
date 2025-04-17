@@ -8,6 +8,8 @@ import com.example.backend.coupon.model.dto.response.CouponInfoDto;
 import com.example.backend.coupon.model.dto.response.CouponListResponseDto;
 import com.example.backend.coupon.repository.CouponRepository;
 import com.example.backend.coupon.repository.UserCouponRepository;
+import com.example.backend.global.exception.CouponException;
+import com.example.backend.global.response.responseStatus.CouponResponseStatus;
 import com.example.backend.product.model.Product;
 import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.user.model.User;
@@ -17,14 +19,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalField;
-import java.time.temporal.TemporalQueries;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -92,4 +89,10 @@ public class CouponService {
                 .toList();
         return CouponListResponseDto.builder().couponList(couponList).total(pageLength).limit(limit).offset(offset).build();
     }
+
+    public CouponInfoDto getCouponInfo(Long couponIdx) {
+        Coupon coupon = couponRepository.findById(couponIdx).orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
+        return CouponInfoDto.from(coupon);
+    }
+
 }

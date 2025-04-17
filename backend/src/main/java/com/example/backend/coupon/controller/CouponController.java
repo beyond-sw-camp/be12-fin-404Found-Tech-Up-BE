@@ -2,6 +2,7 @@ package com.example.backend.coupon.controller;
 
 import com.example.backend.coupon.model.dto.request.AllCouponCreateRequestDto;
 import com.example.backend.coupon.model.dto.request.CategoryCouponCreateRequestDto;
+import com.example.backend.coupon.model.dto.response.CouponInfoDto;
 import com.example.backend.coupon.model.dto.response.CouponListResponseDto;
 import com.example.backend.coupon.model.dto.request.EventCouponCreateRequest;
 import com.example.backend.coupon.model.dto.request.UserCouponCreateRequestDto;
@@ -37,6 +38,13 @@ public class CouponController {
     @GetMapping("/{offset}")
     public BaseResponse<CouponListResponseDto> getCouponList(@PathVariable int offset) {
         CouponListResponseDto result = couponService.getCouponPage(offset);
+        return new BaseResponseServiceImpl().getSuccessResponse(result, CommonResponseStatus.SUCCESS);
+    }
+
+    @Operation(summary = "쿠폰 상세 조회", description = "특정한 idx의 쿠폰 상세 정보를 조회합니다.")
+    @GetMapping("/details/{idx}")
+    public BaseResponse<CouponInfoDto> getCouponList(@PathVariable Long idx) {
+        CouponInfoDto result = couponService.getCouponInfo(idx);
         return new BaseResponseServiceImpl().getSuccessResponse(result, CommonResponseStatus.SUCCESS);
     }
 
