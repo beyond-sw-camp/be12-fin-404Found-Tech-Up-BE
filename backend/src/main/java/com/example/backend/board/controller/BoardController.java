@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.ser.Serializers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,7 @@ public class BoardController {
 
     private final BoardService boardService;
     private final BaseResponseService baseResponseService;
+    Logger log = LoggerFactory.getLogger(BoardController.class);
 
     @Operation(
             summary = "게시글 등록",
@@ -75,12 +78,17 @@ public class BoardController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "boardCreated") String sort,
             @RequestParam(defaultValue = "desc") String direction,
-            @AuthenticationPrincipal User loginUser
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String type
     ) {
-        System.out.println(loginUser.getUserIdx());
-        BoardPageResponse response = boardService.getBoardList(page, size, sort, direction);
+        System.out.println("sort: " + sort);
+        BoardPageResponse response = boardService.getBoardList(
+                page, size, sort, direction, category, search, type
+        );
         return baseResponseService.getSuccessResponse(response, CommonResponseStatus.SUCCESS);
     }
+
 
     @Operation(
             summary = "게시글 상세보기",

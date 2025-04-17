@@ -4,6 +4,7 @@ package com.example.backend.user.service;
 import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.user.model.User;
+import com.example.backend.user.model.dto.request.EditPwdRequestDto;
 import com.example.backend.user.model.dto.request.SignupRequestDto;
 import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
 import com.example.backend.user.model.dto.request.VerifyNickNameRequestDto;
@@ -69,6 +70,29 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
         emailVerifyService.cleanExpiredCodes();
         return new SignupResponseDto(true);
+    }
+
+    public void editPwd(EditPwdRequestDto dto) {
+        if (!dto.getUserConfirmPassword().equals(dto.getUserPassword())) {
+            throw new UserException(UserResponseStatus.INVALID_PASSWORD);
+        }
+        // 인증 코드 검증
+        EmailVerifyService.VerificationCode verificationCode = emailVerifyService.getVerificationCode(dto.getUserEmail());
+        if (verificationCode == null) {
+            throw new UserException(UserResponseStatus.EMAIL_VERIFY_NOTFOUND);
+        }
+
+        if (Instant.now().toEpochMilli() > verificationCode.getExpiryTime()) {
+            throw new UserException(UserResponseStatus.EMAIL_VERIFY_EXPIRED);
+        }
+
+        if (!verificationCode.getCode().equals(dto.getInputCode())) {
+            throw new UserException(UserResponseStatus.EMAIL_VERIFY_FAIL);
+        }
+
+        User user = userRepository.findByUserEmail(dto.getUserEmail()).orElseThrow();
+        user.setUserPassword(passwordEncoder.encode(dto.getUserPassword()));
+        userRepository.save(user);
     }
 
     @Override

@@ -57,10 +57,10 @@ public class UserController {
     @ApiResponse(responseCode="500", description="서버 내 오류")
     @PostMapping("/email")
     public BaseResponse<String> sendVerificationEmail(
-            @Parameter(description="회원 가입시의 정보: User 테이블의 모든 정보를 채우지 않습니다.")
+            @Parameter(description="회원 가입시 이메일 인증코드 전송")
             @Valid @RequestBody EmailRequestDto request) {
         emailVerifyService.sendVerificationEmail(request);
-        return baseResponseService.getSuccessResponse("인증 코드가 전송되었습니다.", UserResponseStatus.SUCCESS);
+        return baseResponseService.getSuccessResponse("이메일 인증 코드가 전송되었습니다.", UserResponseStatus.SUCCESS);
     }
 
     @Operation(summary="이메일 인증", description = "회원 가입, 비밀번호 찾기 시 이메일 인증을 합니다")
@@ -69,7 +69,7 @@ public class UserController {
     @ApiResponse(responseCode="500", description="서버 내 오류")
     @PostMapping("/verify/email")
     public BaseResponse<String> verifyEmail(
-            @Parameter(description="회원 가입시의 정보: User 테이블의 모든 정보를 채우지 않습니다.")
+            @Parameter(description="회원 가입시 이메일 인증코드 검증")
             @Valid @RequestBody ValidateEmailRequestDto request) {
         emailVerifyService.verifyCode(request);
         return baseResponseService.getSuccessResponse("이메일 인증이 완료되었습니다.", UserResponseStatus.SUCCESS);
@@ -85,6 +85,18 @@ public class UserController {
             @Valid @RequestBody SignupRequestDto request) {
         SignupResponseDto res = userService.signup(request);
         return baseResponseService.getSuccessResponse(res, UserResponseStatus.SUCCESS );
+    }
+
+    @Operation(summary="비밀번호 변경", description = "비밀번호를 변경합니다")
+    @ApiResponse(responseCode="200", description="변경 성공, 성공 문자열을 반환합니다.", content= @Content(schema = @Schema(implementation = String.class, example="Signup success")))
+    @ApiResponse(responseCode="400", description="변경 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
+    @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
+    @PostMapping("/edit/password")
+    public BaseResponse<String> editPwd(
+            @Parameter(description="비밀번호 변경")
+            @Valid @RequestBody EditPwdRequestDto request) {
+        userService.editPwd(request);
+        return baseResponseService.getSuccessResponse("비밀번호 변경에 성공했습니다.", UserResponseStatus.SUCCESS );
     }
 
     @Operation(summary="회원 정보 반환", description = "회원 정보를 반환합니다")
@@ -126,6 +138,10 @@ public class UserController {
         return baseResponseService.getSuccessResponse("로그아웃 성공", UserResponseStatus.SUCCESS );
     }
 
+    @Operation(summary="로그인 확인", description = "유저 로그인 여부를 확인")
+    @ApiResponse(responseCode="200", description="로그인 확인 API.", content= @Content(schema = @Schema(implementation = String.class)))
+    @ApiResponse(responseCode="400", description="실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
+    @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @GetMapping("/check-auth")
     public BaseResponse<Map<String, Boolean>> checkAuth(Authentication authentication) {
         Map<String, Boolean> response = userService.chekAuth(authentication);

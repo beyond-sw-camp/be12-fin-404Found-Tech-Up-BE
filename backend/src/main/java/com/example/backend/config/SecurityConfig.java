@@ -90,6 +90,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
                         .requestMatchers("/board/**").permitAll()
+                        .requestMatchers("/notification/**").permitAll()
                         // Swagger 테스트 동안에는 전부 허용
                         .anyRequest().permitAll()
                 )
