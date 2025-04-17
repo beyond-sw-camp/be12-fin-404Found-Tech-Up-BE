@@ -5,7 +5,6 @@ import com.example.backend.cart.model.CartItem;
 import com.example.backend.cart.model.dto.CartItemUpdateResponseDto;
 import com.example.backend.cart.model.dto.CartItemResponseDto;
 import com.example.backend.cart.model.dto.CartItemRequestDto;
-import com.example.backend.cart.repository.CartItemRepository;
 import com.example.backend.cart.repository.CartRepository;
 import com.example.backend.global.exception.CartException;
 import com.example.backend.global.exception.ProductException;
