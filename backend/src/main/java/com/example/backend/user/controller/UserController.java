@@ -103,9 +103,9 @@ public class UserController {
     @ApiResponse(responseCode="400", description="요청이 이상하여 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @GetMapping("/mypage")
-    private ResponseEntity<UserInfoResponseDto> getMyPage(@AuthenticationPrincipal User user) {
-        // TODO: 서비스에서 정보 가져오기
-        return ResponseEntity.ok(new UserInfoResponseDto());
+    private BaseResponse<UserInfoResponseDto> getMyPage(@AuthenticationPrincipal User user) {
+        UserInfoResponseDto res = userService.getMyPage(user);
+        return baseResponseService.getSuccessResponse(res, UserResponseStatus.SUCCESS );
     }
 
     @Operation(summary="회원 정보 수정", description = "회원 정보를 수정합니다")
@@ -113,10 +113,11 @@ public class UserController {
     @ApiResponse(responseCode="400", description="요청이 이상하여 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @PutMapping("/updateprofile")
-    private ResponseEntity<String> updateProfile(
+    private BaseResponse<String> updateProfile(
             @Parameter(description="회원 정보 수정할 때 필요한 정보: 비밀번호를 제외하고 User 테이블의 모든 정보를 바꿉니다.")
             @AuthenticationPrincipal User user, @Valid @RequestBody UserUpdateRequestDto request) {
-        return ResponseEntity.ok("information update success");
+        userService.updateProfile(user, request);
+        return baseResponseService.getSuccessResponse("information update success", UserResponseStatus.SUCCESS);
     }
 
     @Operation(summary="회원 정보 삭제", description = "회원 정보를 삭제(탈퇴)합니다")

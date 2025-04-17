@@ -4,11 +4,9 @@ package com.example.backend.user.service;
 import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.user.model.User;
-import com.example.backend.user.model.dto.request.EditPwdRequestDto;
-import com.example.backend.user.model.dto.request.SignupRequestDto;
-import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
-import com.example.backend.user.model.dto.request.VerifyNickNameRequestDto;
+import com.example.backend.user.model.dto.request.*;
 import com.example.backend.user.model.dto.response.SignupResponseDto;
+import com.example.backend.user.model.dto.response.UserInfoResponseDto;
 import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
 import com.example.backend.user.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -105,5 +103,18 @@ public class UserService implements UserDetailsService {
         Map<String, Boolean> response = new HashMap<>();
         response.put("isAuthenticated", authentication != null && authentication.isAuthenticated());
         return response;
+    }
+
+    public UserInfoResponseDto getMyPage(User loginUser) {
+        User user = userRepository.findByUserEmail(loginUser.getUserEmail()).orElseThrow();
+        return UserInfoResponseDto.from(user);
+    }
+
+    public void updateProfile(User loginUser, @Valid UserUpdateRequestDto dto) {
+        User user = userRepository.findByUserEmail(loginUser.getUserEmail()).orElseThrow();
+
+        user.setUserPhone(dto.getPhoneNumber());
+        user.setUserAddress(dto.getAddress());
+        userRepository.save(user);
     }
 }
