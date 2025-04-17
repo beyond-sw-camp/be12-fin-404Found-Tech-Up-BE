@@ -33,23 +33,30 @@ public class NotificationController {
     }
 
 
-    @Operation(summary = "전체 알림 조회", description = "사용자의 모든 알림을 최신순으로 조회합니다.")
     @GetMapping
-    public List<UserNotification> getAll(@AuthenticationPrincipal(expression = "userIdx") Long userIdx) {
-        return notificationService.getAllNotifications(userIdx);
+    public List<UserNotification> getAll(@AuthenticationPrincipal User loginUser) {
+        if (loginUser == null) {
+            return List.of();
+        }
+        return notificationService.getAllNotifications(loginUser.getUserIdx());
     }
 
-    @Operation(summary = "읽지 않은 알림 조회", description = "사용자의 읽지 않은 알림을 최신순으로 조회합니다.")
-    @GetMapping("/unread")
-    public List<UserNotification> getUnread(@AuthenticationPrincipal(expression = "userIdx") Long userIdx) {
-        return notificationService.getUnreadNotifications(userIdx);
-    }
-
-    @Operation(summary = "읽은 알림 조회", description = "사용자의 읽은 알림을 최신순으로 조회합니다.")
     @GetMapping("/read")
-    public List<UserNotification> getRead(@AuthenticationPrincipal(expression = "userIdx") Long userIdx) {
-        return notificationService.getReadNotifications(userIdx);
+    public List<UserNotification> getRead(@AuthenticationPrincipal User loginUser) {
+        if (loginUser == null) {
+            return List.of();
+        }
+        return notificationService.getReadNotifications(loginUser.getUserIdx());
     }
+
+    @GetMapping("/unread")
+    public List<UserNotification> getUnread(@AuthenticationPrincipal User loginUser) {
+        if (loginUser == null) {
+            return List.of();
+        }
+        return notificationService.getUnreadNotifications(loginUser.getUserIdx());
+    }
+
 
     @Operation(
             summary = "알림 읽음 처리",
