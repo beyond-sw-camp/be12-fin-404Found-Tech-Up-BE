@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 public class CartService {
 
     private final CartRepository cartRepository;
-    private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
 
     // 로그인한 사용자의 장바구니 목록 조회
@@ -45,6 +44,18 @@ public class CartService {
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
         int quantityToAdd = dto.getCartItemQuantity();
 
+        int currentQuantity = cart.getCartItems().stream()
+                .filter(item -> item.getProduct().getProductIdx().equals(productId))
+                .findFirst()
+                .map(CartItem::getCartItemQuantity)
+                .orElse(0);
+
+        // 재고 체크
+        if (currentQuantity + quantityToAdd > product.getStock()) {
+            throw new CartException(CartResponseStatus.CART_ITEM_ADD_FAIL);
+        }
+
+        // 재고가 남아있다면 진행한다.
         // 이미 해당 상품이 장바구니에 있는 경우
         Optional<CartItem> optionalItem = cart.getCartItems().stream()
                 .filter(item -> item.getProduct().getProductIdx().equals(productId))
@@ -63,7 +74,7 @@ public class CartService {
             cart.getCartItems().add(targetItem);
         }
         cartRepository.save(cart);
-//        cartItemRepository.save(targetItem);
+
         return CartItemResponseDto.from(targetItem);
     }
 
