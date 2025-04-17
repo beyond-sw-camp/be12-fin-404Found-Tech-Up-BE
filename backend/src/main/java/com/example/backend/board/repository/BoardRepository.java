@@ -10,16 +10,17 @@ import org.springframework.data.repository.query.Param;
 public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("SELECT b FROM Board b " +
             "WHERE (:category IS NULL OR b.boardCategory = :category) " +
-            "AND (" +
-            "  :search IS NULL OR " +
-            "  ((:type = 'title' AND LOWER(b.boardTitle) LIKE LOWER(CONCAT('%', :search, '%'))) OR " +
-            "   (:type = 'content' AND LOWER(b.boardContent) LIKE LOWER(CONCAT('%', :search, '%'))) OR " +
-            "   (:type = 'writer' AND LOWER(b.user.userNickname) LIKE LOWER(CONCAT('%', :search, '%'))))" +
-            ")")
+            "  AND ( " +
+            "    :search IS NULL OR " +
+            "    (   (:type = 'title'   AND LOWER(b.boardTitle)   LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "     OR (:type = 'content' AND LOWER(b.boardContent) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "     OR (:type = 'writer'  AND LOWER(b.user.userNickname) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "    )" +
+            "  )")
     Page<Board> searchBoards(
             @Param("category") String category,
-            @Param("search") String search,
-            @Param("type") String type,
+            @Param("search")   String search,
+            @Param("type")     String type,
             Pageable pageable
     );
 
