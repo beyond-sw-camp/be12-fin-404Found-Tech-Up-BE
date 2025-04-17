@@ -4,12 +4,14 @@ package com.example.backend.user.service;
 import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.user.model.User;
+import com.example.backend.user.model.dto.request.*;
 import com.example.backend.user.model.dto.request.EditPwdRequestDto;
 import com.example.backend.user.model.dto.request.SignupRequestDto;
 import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
 import com.example.backend.user.model.dto.request.VerifyNickNameRequestDto;
 import com.example.backend.user.model.dto.response.ReducedUserInfoDto;
 import com.example.backend.user.model.dto.response.SignupResponseDto;
+import com.example.backend.user.model.dto.response.UserInfoResponseDto;
 import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
 import com.example.backend.user.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -110,6 +112,22 @@ public class UserService implements UserDetailsService {
         return response;
     }
 
+    public UserInfoResponseDto getMyPage(User loginUser) {
+        User user = userRepository.findByUserEmail(loginUser.getUserEmail()).orElseThrow();
+        return UserInfoResponseDto.from(user);
+    }
+
+    public void updateProfile(User loginUser, @Valid UserUpdateRequestDto dto) {
+        User user = userRepository.findByUserEmail(loginUser.getUserEmail()).orElseThrow();
+
+        if (dto.getUserPhone().equals(user.getUserPhone())&&dto.getUserAddress().equals(user.getUserAddress())) {
+            throw new UserException(UserResponseStatus.USER_UPDATE_FAIL);
+        }
+
+        user.setUserPhone(dto.getUserPhone());
+        user.setUserAddress(dto.getUserAddress());
+        userRepository.save(user);
+    }
 
     public List<ReducedUserInfoDto> getAllUsersForAdmin() {
         // TODO: Paging을 백엔드에서 처리할 것인가?
