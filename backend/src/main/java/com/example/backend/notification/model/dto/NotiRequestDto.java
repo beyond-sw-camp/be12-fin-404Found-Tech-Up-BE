@@ -1,6 +1,6 @@
-package com.example.backend.noti.model.dto;
+package com.example.backend.notification.model.dto;
 
-import com.example.backend.noti.model.Noti;
+import com.example.backend.notification.model.Notification;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,13 +19,5 @@ public class NotiRequestDto {
     @Schema(description = "알림 내용", example = "현재 사용중인 SSD의 업그레이드 버전 제품이 할인중입니다.")
     private String notiContent;
 
-    public Noti toEntity() {
-        return Noti.builder()
-                .notiTitle(notiTitle)
-                .notiContent(notiContent)
-                // 현재 시간 설정
-                .notiCreated(LocalDateTime.now())
-                .build();
-    }
 }
 
