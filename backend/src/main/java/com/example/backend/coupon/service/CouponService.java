@@ -19,10 +19,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+/*
+    Note: 쿠폰 만료일 설정시 시간대에 주의하세요: 서울 기준 +9시간 필요하므로 ZonedDateTime을 잘 설정해야 합니다.
+ */
 
 @RequiredArgsConstructor
 @Service
@@ -45,8 +49,8 @@ public class CouponService {
         Coupon coupon = couponRepository.findByCouponName(request.getCouponName()).orElse(null);
         String[] dates = request.getExpiryDate().split("-");
         if (coupon == null) { // 아직 한 번도 발급한 적 없는 종류의 쿠폰을 발급하는 경우
-            LocalDateTime expiry = LocalDate.of(Integer.parseInt(dates[0]), Integer.parseInt(dates[1]), Integer.parseInt(dates[2])).atStartOfDay();
-            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(java.sql.Timestamp.valueOf(expiry)).product(product).build();
+            ZonedDateTime expiry = LocalDate.of(Integer.parseInt(dates[0]), Integer.parseInt(dates[1]), Integer.parseInt(dates[2])).atStartOfDay().atZone(ZoneOffset.ofHours(9)); // +09:00
+            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).product(product).build();
             couponRepository.save(coupon);
         }
         UserCoupon issuedCoupon = UserCoupon.builder().user(user).coupon(coupon).couponUsed(false).build();
@@ -67,8 +71,8 @@ public class CouponService {
         Coupon coupon = couponRepository.findByCouponName(request.getCouponName()).orElse(null);
         String[] dates = request.getExpiryDate().split("\\-");
         if (coupon == null) { // 아직 한 번도 발급한 적 없는 종류의 쿠폰을 발급하는 경우
-            LocalDateTime expiry = LocalDate.of(Integer.parseInt(dates[0]), Integer.parseInt(dates[1]), Integer.parseInt(dates[2])).atStartOfDay();
-            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(java.sql.Timestamp.valueOf(expiry)).product(product).build();
+            ZonedDateTime expiry = LocalDate.of(Integer.parseInt(dates[0]), Integer.parseInt(dates[1]), Integer.parseInt(dates[2])).atStartOfDay().atZone(ZoneOffset.ofHours(9)); // +09:00
+            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).product(product).build();
             couponRepository.save(coupon);
         }
         List<Long> result = new ArrayList<>();
@@ -99,6 +103,17 @@ public class CouponService {
         Coupon coupon = couponRepository.findById(idx).orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
         coupon.update(request);
         couponRepository.save(coupon);
+    }
+
+    public Boolean deleteCoupon(Long couponIdx) {
+        Coupon coupon = couponRepository.findById(couponIdx).orElseThrow(()-> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
+        List<UserCoupon> issuedCoupons = coupon.getUserCoupons();
+        for (UserCoupon issuedCoupon : issuedCoupons) {
+            if (issuedCoupon.getCouponUsed()) return false;
+        }
+        userCouponRepository.deleteAll(issuedCoupons);
+        couponRepository.delete(coupon);
+        return true;
     }
 
 }

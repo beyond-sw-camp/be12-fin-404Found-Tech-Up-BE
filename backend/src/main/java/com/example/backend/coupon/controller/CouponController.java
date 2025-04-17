@@ -87,4 +87,15 @@ public class CouponController {
         couponService.updateCoupon(idx, request);
         return new BaseResponseServiceImpl().getSuccessResponse("수정 성공", CouponResponseStatus.SUCCESS);
     }
+
+    @Operation(summary = "제한적 쿠폰 삭제", description= "단 한 명도 사용하지 않은 쿠폰 삭제")
+    @DeleteMapping("/delete")
+    public BaseResponse<String> deleteCoupon(@RequestParam Long idx) {
+        Boolean result = couponService.deleteCoupon(idx);
+        if (result) {
+            return new BaseResponseServiceImpl().getSuccessResponse("성공", CouponResponseStatus.SUCCESS);
+        } else {
+            return new BaseResponseServiceImpl().getFailureResponse(CouponResponseStatus.CANNOT_DELETE_COUPON);
+        }
+    }
 }

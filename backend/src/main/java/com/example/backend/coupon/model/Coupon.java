@@ -9,8 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.Date;
 import java.util.List;
 
@@ -36,14 +35,14 @@ public class Coupon {
     private List<UserCoupon> userCoupons;
 
     public CouponInfoDto toDto() {
-        return CouponInfoDto.builder().couponIdx(this.couponIdx).couponName(this.couponName).couponDiscountRate(this.couponDiscountRate).productIdx(product.getProductIdx()).couponValidDate(this.couponValidDate).build();
+        return CouponInfoDto.builder().couponIdx(this.couponIdx).couponName(this.couponName).couponDiscountRate(this.couponDiscountRate).productIdx(product.getProductIdx()).couponValidDate(this.couponValidDate.toInstant().atZone(ZoneId.systemDefault())).build();
     }
 
     public void update(UserCouponCreateRequestDto dto) {
         couponName = dto.getCouponName();
         couponDiscountRate = dto.getDiscount();
         String[] dateString = dto.getExpiryDate().split("-");
-        LocalDateTime time = LocalDate.of(Integer.parseInt(dateString[0]), Integer.parseInt(dateString[1]),Integer.parseInt(dateString[2])).atStartOfDay();
-        couponValidDate = java.sql.Timestamp.valueOf(time);
+        ZonedDateTime time = ZonedDateTime.of(LocalDate.of(Integer.parseInt(dateString[0]), Integer.parseInt(dateString[1]),Integer.parseInt(dateString[2])).atStartOfDay(), ZoneId.systemDefault());
+        couponValidDate = Date.from(time.toInstant());
     }
 }
