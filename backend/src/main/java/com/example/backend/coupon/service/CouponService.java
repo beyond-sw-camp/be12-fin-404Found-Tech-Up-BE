@@ -95,4 +95,10 @@ public class CouponService {
         return CouponInfoDto.from(coupon);
     }
 
+    public void updateCoupon(Long idx, UserCouponCreateRequestDto request) {
+        Coupon coupon = couponRepository.findById(idx).orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
+        coupon.update(request);
+        couponRepository.save(coupon);
+    }
+
 }
