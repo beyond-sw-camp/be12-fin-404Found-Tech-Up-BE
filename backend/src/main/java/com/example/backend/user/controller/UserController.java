@@ -7,6 +7,7 @@ import com.example.backend.global.response.BaseResponseServiceImpl;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.user.model.User;
 import com.example.backend.user.model.dto.request.*;
+import com.example.backend.user.model.dto.response.ReducedUserInfoDto;
 import com.example.backend.user.model.dto.response.SignupResponseDto;
 import com.example.backend.user.model.dto.response.UserInfoResponseDto;
 import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
@@ -138,19 +139,21 @@ public class UserController {
     @ApiResponse(responseCode="400", description="요청이 이상하여 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @GetMapping("/alluser")
-    private ResponseEntity<List<UserInfoResponseDto>> getAllUser(@AuthenticationPrincipal User user, Integer offset) {
+    private BaseResponse<List<ReducedUserInfoDto>> getAllUser(/*@AuthenticationPrincipal User user, @RequestParam Integer offset*/) {
+        List<ReducedUserInfoDto> userInfoList = userService.getAllUsersForAdmin();
         // TODO: 서비스에서 페이징된 정보 가져오기
-        return ResponseEntity.ok(List.of());
+        return new BaseResponseServiceImpl().getSuccessResponse(userInfoList, UserResponseStatus.SUCCESS);
     }
 
-    @Operation(summary="검색한 회원 정보 반환", description = "키워드로 회원 정보를 30개 단위로 반환합니다")
+    @Operation(summary="검색한 회원 정보 반환", description = "키워드로 관리자 페이지에서 회원 정보를 30개 단위로 반환합니다")
     @ApiResponse(responseCode="200", description="정상 정보 반환", content= @Content(schema = @Schema(implementation = List.class), mediaType = "application/json"))
     @ApiResponse(responseCode="400", description="요청이 이상하여 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @GetMapping("/finduser")
-    private ResponseEntity<List<UserInfoResponseDto>> searchUser(@AuthenticationPrincipal User user, String keyword, Integer offset) {
+    private BaseResponse<List<ReducedUserInfoDto>> searchUser(/*@AuthenticationPrincipal User user, @RequestParam Integer offset, */ @RequestParam String keyword) {
         // TODO: 서비스에서 페이징된 정보 가져오기
-        return ResponseEntity.ok(List.of());
+        List<ReducedUserInfoDto> userInfoList = userService.searchUsers(keyword);
+        return new BaseResponseServiceImpl().getSuccessResponse(userInfoList, UserResponseStatus.SUCCESS);
     }
 
 }

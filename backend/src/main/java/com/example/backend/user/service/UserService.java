@@ -7,6 +7,7 @@ import com.example.backend.user.model.User;
 import com.example.backend.user.model.dto.request.SignupRequestDto;
 import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
 import com.example.backend.user.model.dto.request.VerifyNickNameRequestDto;
+import com.example.backend.user.model.dto.response.ReducedUserInfoDto;
 import com.example.backend.user.model.dto.response.SignupResponseDto;
 import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
 import com.example.backend.user.repository.UserRepository;
@@ -21,8 +22,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -81,5 +84,18 @@ public class UserService implements UserDetailsService {
         Map<String, Boolean> response = new HashMap<>();
         response.put("isAuthenticated", authentication != null && authentication.isAuthenticated());
         return response;
+    }
+
+
+    public List<ReducedUserInfoDto> getAllUsersForAdmin() {
+        // TODO: Paging을 백엔드에서 처리할 것인가?
+        List<User> users = userRepository.findAll();
+        return users.stream().map(ReducedUserInfoDto::from).toList();
+    }
+
+    public List<ReducedUserInfoDto> searchUsers(String keyword) {
+        // TODO: Paging을 백엔드에서 처리할 것인가?
+        List<User> target = userRepository.findAllByUserNicknameContaining(keyword);
+        return target.stream().map(ReducedUserInfoDto::from).toList();
     }
 }
