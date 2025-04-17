@@ -18,4 +18,7 @@ public class EmailRequestDto {
     @Email
     @NotBlank
     private String userEmail;
+    @Schema(description="회원가입, 비밀번호 찾기 여부(True: 회원가입, False: 비밀번호 찾기, 필수",required = true,  example = "true")
+    @NotBlank
+    private Boolean isSignup;
 }
