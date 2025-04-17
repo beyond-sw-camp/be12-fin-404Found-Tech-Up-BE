@@ -10,6 +10,7 @@ import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.dto.ProductResponseDto;
 import com.example.backend.product.model.spec.*;
 import com.example.backend.product.repository.*;
+import com.example.backend.review.repository.ReviewRepository;
 import com.example.backend.user.repository.UserProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +32,9 @@ public class ProductService {
     private final SsdSpecRepository ssdSpecRepository;
     private final HddSpecRepository hddSpecRepository;
     private final ProductImageRepository productImageRepository;
-    // TODO: 실수로 잘못 등록한 기기에 대해 내 기기 등록한 사용자가 있는 경우를 대비해 강제 삭제하기 위한 리포지토리
+    // TODO: 실수로 잘못 등록한 기기에 대해 내 기기 등록한 사용자/리뷰한 사용자가 있는 경우를 대비해 강제 삭제하기 위한 리포지토리
     // private final UserProductRepository userProductRepository;
+    // private final ReviewRepository reviewRepository;
 
     public List<ProductResponseDto> getProductList() {
         return productRepository.findAll()
@@ -132,7 +134,7 @@ public class ProductService {
         // Note: 쿠폰이 발급되었거나, 구매 기록이 있으면 삭제 불가!
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
-        if (product.getImages().size() > 0) {
+        if (!product.getImages().isEmpty()) {
             productImageRepository.deleteAll(product.getImages());
         }
         if (product.getCpuSpec() != null) cpuSpecRepository.delete(product.getCpuSpec());

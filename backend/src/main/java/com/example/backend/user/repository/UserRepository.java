@@ -15,6 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUserNickname(String userNickname);
     Optional<User> findByKakaoId(String kakaoId);
 
+    List<User> findAllByUserNicknameContaining(String keyword);
     // 알림 받는 유저들 리스트
     List<User> findByAlarmEnabledTrue();
 
