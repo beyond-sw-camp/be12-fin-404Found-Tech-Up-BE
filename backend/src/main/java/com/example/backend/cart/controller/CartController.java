@@ -81,6 +81,21 @@ public class CartController {
     }
 
     @Operation(
+            summary = "장바구니 항목 삭제",
+            description = "회원이 장바구니에 담긴 특정 상품 항목을 삭제합니다. 해당 항목의 ID(cartItemIdx)를 통해 삭제를 처리합니다."
+    )
+    @DeleteMapping("/clear")
+    public BaseResponse<CartItemUpdateResponseDto> clear(
+            @Parameter(description = "로그인한 사용자 정보", required = true)
+            @AuthenticationPrincipal User loginUser) {
+        if (loginUser == null) {
+            return baseResponseService.getFailureResponse(CartResponseStatus.USER_NOT_LOGGED);
+        }
+        CartItemUpdateResponseDto response = cartService.clearCart(loginUser);
+        return baseResponseService.getSuccessResponse(response, CartResponseStatus.SUCCESS);
+    }
+
+    @Operation(
             summary = "장바구니 항목 수량 변경",
             description = "특정 상품의 장바구니 항목 수량을 증가 또는 감소시킵니다. 최종 수량이 0 이하이면 해당 항목은 삭제됩니다."
     )

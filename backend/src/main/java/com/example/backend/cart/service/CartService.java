@@ -92,6 +92,13 @@ public class CartService {
         return CartItemUpdateResponseDto.from(cartItemId);
     }
 
+    public CartItemUpdateResponseDto clearCart(User user) {
+        Cart cart = getOrCreateCart(user);
+        cart.getCartItems().clear();
+        cartRepository.save(cart);
+        return CartItemUpdateResponseDto.from();
+    }
+
     // 장바구니 항목 수량 업데이트
     public CartItemUpdateResponseDto updateCartItemQuantity(User user, Long productId, int deltaQuantity) {
         Cart cart = getOrCreateCart(user);
