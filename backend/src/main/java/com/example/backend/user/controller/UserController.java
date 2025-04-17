@@ -112,7 +112,7 @@ public class UserController {
     @ApiResponse(responseCode="200", description="정상 작업 완료", content= @Content(schema = @Schema(implementation = String.class, example="Information update success")))
     @ApiResponse(responseCode="400", description="요청이 이상하여 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
-    @PutMapping("/updateprofile")
+    @PostMapping("/updateprofile")
     private BaseResponse<String> updateProfile(
             @Parameter(description="회원 정보 수정할 때 필요한 정보: 비밀번호를 제외하고 User 테이블의 모든 정보를 바꿉니다.")
             @AuthenticationPrincipal User user, @Valid @RequestBody UserUpdateRequestDto request) {

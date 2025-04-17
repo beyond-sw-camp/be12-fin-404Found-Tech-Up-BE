@@ -28,7 +28,8 @@ public enum UserResponseStatus implements BaseResponseStatus {
     EMAIL_VERIFY_EXPIRED(false, 2015, "이메일 인증 코드가 만료 되었습니다."),
     EMAIL_VERIFY_FAIL(false, 2016, "이메일 인증 코드가 일치하지 않습니다."),
 
-
+    // 2021 - 2030 사용자 마이페이지 관련 에러
+    USER_UPDATE_FAIL(false, 2021, "사용자 정보가 변경되지 않았습니다."),
 
     // 2100 - 기타 에러
     TOO_MANY_FAILED_ATTEMPTS(false, 2101, "로그인 시도 횟수가 초과되었습니다."),

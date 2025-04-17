@@ -113,8 +113,12 @@ public class UserService implements UserDetailsService {
     public void updateProfile(User loginUser, @Valid UserUpdateRequestDto dto) {
         User user = userRepository.findByUserEmail(loginUser.getUserEmail()).orElseThrow();
 
-        user.setUserPhone(dto.getPhoneNumber());
-        user.setUserAddress(dto.getAddress());
+        if (dto.getUserPhone().equals(user.getUserPhone())&&dto.getUserAddress().equals(user.getUserAddress())) {
+            throw new UserException(UserResponseStatus.USER_UPDATE_FAIL);
+        }
+
+        user.setUserPhone(dto.getUserPhone());
+        user.setUserAddress(dto.getUserAddress());
         userRepository.save(user);
     }
 }
