@@ -1,34 +1,48 @@
 package com.example.backend.user.service;
 
 
+import com.example.backend.cart.repository.CartRepository;
+import com.example.backend.coupon.repository.UserCouponRepository;
 import com.example.backend.global.exception.UserException;
+import com.example.backend.global.response.responseStatus.OrderResponseStatus;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
+import com.example.backend.order.repository.OrderRepository;
+import com.example.backend.review.repository.ReviewRepository;
 import com.example.backend.user.model.User;
 import com.example.backend.user.model.dto.request.*;
 import com.example.backend.user.model.dto.response.SignupResponseDto;
 import com.example.backend.user.model.dto.response.UserInfoResponseDto;
 import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
 import com.example.backend.user.repository.UserRepository;
+import com.example.backend.wishlist.repository.WishlistRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerifyService emailVerifyService;
+    private final ReviewRepository reviewRepository;
+    private final CartRepository cartRepository;
+    private final WishlistRepository wishlistRepository;
+    private final OrderRepository orderRepository;
+    private final UserCouponRepository userCouponRepository;
 
     public VerifyNickNameResponseDto verifyNickName(VerifyNickNameRequestDto dto) {
         // 닉네임으로 사용자 조회
@@ -120,5 +134,24 @@ public class UserService implements UserDetailsService {
         user.setUserPhone(dto.getUserPhone());
         user.setUserAddress(dto.getUserAddress());
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteUser(User loginUser) {
+        if (loginUser == null) {
+            throw new UserException(UserResponseStatus.UNDEFINED_USER);
+        }
+
+        // 사용자 정보 조회
+        User user = userRepository.findById(loginUser.getUserIdx()).orElseThrow();
+
+        try {
+            // 사용자 삭제
+            userRepository.delete(user);
+            log.info("User with ID: {} deleted successfully", user.getUserIdx());
+        } catch (Exception e) {
+            log.error("Failed to delete user with ID: {}", user.getUserIdx(), e);
+            throw new UserException(UserResponseStatus.USER_DELETE_FAIL);
+        }
     }
 }
