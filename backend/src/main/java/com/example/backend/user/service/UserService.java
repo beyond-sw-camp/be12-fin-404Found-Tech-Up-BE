@@ -10,6 +10,11 @@ import com.example.backend.order.repository.OrderRepository;
 import com.example.backend.review.repository.ReviewRepository;
 import com.example.backend.user.model.User;
 import com.example.backend.user.model.dto.request.*;
+import com.example.backend.user.model.dto.request.EditPwdRequestDto;
+import com.example.backend.user.model.dto.request.SignupRequestDto;
+import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
+import com.example.backend.user.model.dto.request.VerifyNickNameRequestDto;
+import com.example.backend.user.model.dto.response.ReducedUserInfoDto;
 import com.example.backend.user.model.dto.response.SignupResponseDto;
 import com.example.backend.user.model.dto.response.UserInfoResponseDto;
 import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
@@ -28,8 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -136,7 +143,6 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    @Transactional
     public void deleteUser(User loginUser) {
         if (loginUser == null) {
             throw new UserException(UserResponseStatus.UNDEFINED_USER);
@@ -153,5 +159,17 @@ public class UserService implements UserDetailsService {
             log.error("Failed to delete user with ID: {}", user.getUserIdx(), e);
             throw new UserException(UserResponseStatus.USER_DELETE_FAIL);
         }
+    }
+    
+    public List<ReducedUserInfoDto> getAllUsersForAdmin() {
+        // TODO: Paging을 백엔드에서 처리할 것인가?
+        List<User> users = userRepository.findAll();
+        return users.stream().map(ReducedUserInfoDto::from).toList();
+    }
+
+    public List<ReducedUserInfoDto> searchUsers(String keyword) {
+        // TODO: Paging을 백엔드에서 처리할 것인가?
+        List<User> target = userRepository.findAllByUserNicknameContaining(keyword);
+        return target.stream().map(ReducedUserInfoDto::from).toList();
     }
 }

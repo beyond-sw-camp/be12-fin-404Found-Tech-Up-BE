@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -22,7 +24,7 @@ public class CouponInfoDto {
     @Schema(description = "쿠폰 할인율, 정수값만 가능함에 주의", example="10")
     private int couponDiscountRate;
     @Schema(description = "쿠폰 만료 기한")
-    private Date couponValidDate;
+    private ZonedDateTime couponValidDate;
     @Schema(description = "이 쿠폰을 쓸 수 있는 제품의 DB 테이블 Idx", example="210")
     private Long productIdx;
 
@@ -31,7 +33,7 @@ public class CouponInfoDto {
                 .couponIdx(coupon.getCouponIdx())
                 .couponName(coupon.getCouponName())
                 .couponDiscountRate(coupon.getCouponDiscountRate())
-                .couponValidDate(coupon.getCouponValidDate())
+                .couponValidDate(coupon.getCouponValidDate().toInstant().atZone(ZoneId.systemDefault()))
                 .productIdx(coupon.getProduct().getProductIdx())
                 .build();
     }
