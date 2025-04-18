@@ -16,6 +16,11 @@ import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.responseStatus.CouponResponseStatus;
 import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
+import com.example.backend.notification.model.Notification;
+import com.example.backend.notification.model.NotificationType;
+import com.example.backend.notification.model.UserNotification;
+import com.example.backend.notification.repository.NotificationRepository;
+import com.example.backend.notification.repository.UserNotificationRepository;
 import com.example.backend.product.model.Product;
 import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.user.model.User;
@@ -43,6 +48,8 @@ public class CouponService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final UserCouponRepository userCouponRepository;
+    private final NotificationRepository notificationRepository;
+    private final UserNotificationRepository userNotificationRepository;
 
     public Long CreateCouponForUser(UserCouponCreateRequestDto request){
         // 발급할 사용자 엔티티 찾기
@@ -63,6 +70,14 @@ public class CouponService {
         }
         UserCoupon issuedCoupon = UserCoupon.builder().user(user).coupon(coupon).couponUsed(false).build();
         userCouponRepository.save(issuedCoupon);
+        // 알림
+        String title = "이벤트 쿠폰 :"+ coupon.getCouponName();
+        String content = coupon.getCouponDiscountRate()+"% 할인, 만료일: "+ coupon.getCouponValidDate();
+        Notification notification = Notification.builder().title(title).content(content).notificationType(NotificationType.PERSONAL).cronExpression("").createdAt(LocalDateTime.now()).build();
+        notificationRepository.save(notification);
+        UserNotification userNotification = UserNotification.builder().notificationType(NotificationType.PERSONAL).user(user).createdAt(LocalDateTime.now()).title(title).content(content).template(notification).isRead(false).build();
+        userNotificationRepository.save(userNotification);
+
         return issuedCoupon.getUserCouponIdx();
     }
 
@@ -83,11 +98,20 @@ public class CouponService {
             coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).couponQuantity(-1).product(product).build();
             couponRepository.save(coupon);
         }
+        String title = "이벤트 쿠폰 :"+ coupon.getCouponName();
+        String content = coupon.getCouponDiscountRate()+"% 할인, 만료일: "+ coupon.getCouponValidDate();
+        // 알림 템플릿 생성
+        Notification notification = Notification.builder().title(title).content(content).notificationType(NotificationType.PERSONAL).cronExpression("").createdAt(LocalDateTime.now()).build();
+        notificationRepository.save(notification);
         List<Long> result = new ArrayList<>();
         for (User user : users) {
+            // 사용자 별 쿠폰 발급
             UserCoupon issuedCoupon = UserCoupon.builder().user(user).coupon(coupon).couponUsed(false).build();
             userCouponRepository.save(issuedCoupon);
             result.add(issuedCoupon.getUserCouponIdx());
+            // 쿠폰 생성 알림
+            UserNotification userNotification = UserNotification.builder().notificationType(NotificationType.PERSONAL).user(user).createdAt(LocalDateTime.now()).title(title).content(content).template(notification).isRead(false).build();
+            userNotificationRepository.save(userNotification);
         }
         return result;
     }
@@ -150,6 +174,13 @@ public class CouponService {
         couponRepository.save(couponEvent);
         // 발급된 쿠폰 DB에 저장
         userCouponRepository.save(coupon);
+        // 알림 생성
+        String title = "이벤트 쿠폰 :"+ couponEvent.getCouponName();
+        String content = couponEvent.getCouponDiscountRate()+"% 할인, 만료일: "+ couponEvent.getCouponValidDate();
+        Notification notification = Notification.builder().title(title).content(content).notificationType(NotificationType.PERSONAL).cronExpression("").createdAt(LocalDateTime.now()).build();
+        notificationRepository.save(notification);
+        UserNotification userNotification = UserNotification.builder().notificationType(NotificationType.PERSONAL).user(user).createdAt(LocalDateTime.now()).title(title).content(content).template(notification).isRead(false).build();
+        userNotificationRepository.save(userNotification);
         return true;
     }
     @Transactional

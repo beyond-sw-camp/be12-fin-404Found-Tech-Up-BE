@@ -70,7 +70,7 @@ public class NotificationController {
     @PostMapping("/all")
     @Transactional
     public BaseResponse<Object> registerAllUserNotification(@RequestBody NotiRequestDto request) {
-        Notification notification = notificationService.generateNotificationForAllUser(request);
+        Notification notification = notificationService.generateNotificationEntity(request);
         notificationService.generateFromNotification(notification);
         return new BaseResponseServiceImpl().getSuccessResponse(CommonResponseStatus.SUCCESS);
     }

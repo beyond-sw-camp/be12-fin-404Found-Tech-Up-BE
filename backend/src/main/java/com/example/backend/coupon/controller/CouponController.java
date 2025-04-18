@@ -122,14 +122,14 @@ public class CouponController {
         return new BaseResponseServiceImpl().getSuccessResponse(CouponResponseStatus.SUCCESS);
     }
 
-    @Operation( summary= "쿠폰 발급 이벤트 수정" , description="예약된 이벤트를 수정합니다")
+    @Operation( summary= "선착순 쿠폰 발급 이벤트 수정" , description="예약된 이벤트를 수정합니다")
     @PutMapping("/events/{eventIdx}")
     public BaseResponse<Object> updateEvents(@RequestBody EventCouponCreateRequestDto request, @PathVariable Long eventIdx) {
         couponService.updateEvent(eventIdx, request);
         return new BaseResponseServiceImpl().getSuccessResponse(CouponResponseStatus.SUCCESS);
     }
 
-    @Operation( summary= "쿠폰 발급 이벤트 삭제" , description="발행한 이벤트를 삭제합니다. 이 쿠폰은 사용한 것도 삭제되므로 주의해야 합니다.")
+    @Operation( summary= "선착순 쿠폰 발급 이벤트 삭제" , description="발행한 이벤트를 삭제합니다. 이 쿠폰은 사용한 것은 삭제되지 않으므로 주의해야 합니다.")
     @DeleteMapping("/events")
     public BaseResponse<Object> deleteEvents(@RequestParam Long idx) {
         couponService.forceDeleteEvent(idx);

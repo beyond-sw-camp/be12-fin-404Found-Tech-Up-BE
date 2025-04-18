@@ -97,7 +97,7 @@ public class NotificationService {
         return notiList.stream().map(noti -> NotiResponseDto.builder().idx(noti.getIdx()).notiTitle(noti.getTitle()).notiContent(noti.getContent()).notiCreated(noti.getCreatedAt()).build()).toList();
     }
 
-    public Notification generateNotificationForAllUser(NotiRequestDto notiRequestDto) {
+    public Notification generateNotificationEntity(NotiRequestDto notiRequestDto) {
         Notification newNotification = Notification.builder().title(notiRequestDto.getNotiTitle()).content(notiRequestDto.getNotiContent()).createdAt(LocalDateTime.now()).cronExpression("").notificationType(NotificationType.GLOBAL).build();
         return notificationRepository.save(newNotification);
     }
