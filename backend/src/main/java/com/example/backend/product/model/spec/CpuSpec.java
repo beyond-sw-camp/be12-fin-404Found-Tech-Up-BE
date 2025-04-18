@@ -1,17 +1,16 @@
 package com.example.backend.product.model.spec;
 
 import com.example.backend.product.model.Product;
+import com.example.backend.product.model.dto.CpuSpecDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 public class CpuSpec {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,4 +22,10 @@ public class CpuSpec {
     @OneToOne
     @JoinColumn(name="product_idx")
     private Product product;
+
+    public void update(CpuSpecDto cpuSpecDto) {
+        this.cpuType = cpuSpecDto.getCpuType();
+        this.cpuCore = cpuSpecDto.getCpuCore();
+        this.cpuThreads = cpuSpecDto.getCpuThreads();
+    }
 }

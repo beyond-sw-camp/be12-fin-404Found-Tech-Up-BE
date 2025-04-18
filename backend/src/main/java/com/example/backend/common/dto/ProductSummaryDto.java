@@ -24,6 +24,9 @@ public class ProductSummaryDto {
     @Schema(description = "상품 가격", example = "50000")
     private double price;
 
+    @Schema(description = "할인율", example = "10")
+    private Integer discount;
+
     @Schema(description = "상품 브랜드", example = "BrandX")
     private String brand;
 
@@ -45,6 +48,7 @@ public class ProductSummaryDto {
                 .productIdx(product.getProductIdx())
                 .name(product.getName())
                 .price(product.getPrice())
+                .discount(product.getDiscount())
                 .brand(product.getBrand())
                 .stock(product.getStock())
                 .imageUrl(imageUrl)

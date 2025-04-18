@@ -7,6 +7,7 @@ public enum WishlistResponseStatus implements BaseResponseStatus {
     // 11000번대 - Wishlist 관련
     WISHLIST_NOT_FOUND(false, 11001, "위시리스트를 찾을 수 없습니다."),
     WISHLIST_TOGGLE_FAIL(false, 11002, "위시리스트 갱신에 실패했습니다."),
+    USER_NOT_LOGGED(false, 11003, "사용자가 로그인하지 않았습니다."),
 
     SUCCESS(true, 11000, "요청이 성공적으로 처리되었습니다.");
 

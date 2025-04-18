@@ -1,17 +1,16 @@
 package com.example.backend.product.model.spec;
 
 import com.example.backend.product.model.Product;
+import com.example.backend.product.model.dto.RamSpecDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 public class RamSpec {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,4 +23,11 @@ public class RamSpec {
     @OneToOne
     @JoinColumn(name="product_idx")
     private Product product;
+
+    public void update(RamSpecDto ramSpecDto) {
+        this.ramType=ramSpecDto.getRamType();
+        this.ramNum=ramSpecDto.getRamNum();
+        this.ramSize=ramSpecDto.getRamSize();
+        this.ramUsage=ramSpecDto.getRamUsage();
+    }
 }

@@ -11,6 +11,7 @@ import com.example.backend.board.repository.BoardRepository;
 import com.example.backend.common.s3.PreSignedUrlService;
 import com.example.backend.common.s3.S3Service;
 import com.example.backend.user.model.User;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -61,29 +62,6 @@ public class BoardService {
         return BoardRegisterResponseDto.from(board, preSignedUrls);
     }
 
-    public void update(User loginUser, Long boardIdx, BoardRegisterRequestDto dto) {
-        // 1. 기존 엔티티 조회
-        Board board = boardRepository.findById(boardIdx).orElseThrow();
-
-        if (board.getUser().equals(loginUser)) {
-            // 2. DTO와 비교 후 변경된 필드만 엔티티에 반영
-            if (dto.getBoardTitle() != null && !dto.getBoardTitle().equals(board.getBoardTitle())) {
-                board.setBoardTitle(dto.getBoardTitle());
-            }
-            if (dto.getBoardContent() != null && !dto.getBoardContent().equals(board.getBoardContent())) {
-                board.setBoardContent(dto.getBoardContent());
-            }
-//            if (dto.getFile() != null) { // 첨부파일은 null 체크만으로 충분
-//                String newFilePath = fileStorageService.upload(dto.getFile());
-//                fileStorageService.delete(board.getFilePath()); // 기존 파일 삭제
-//                board.setFilePath(newFilePath);
-//            }
-
-            // 3. 저장 (변경 감지에 의해 업데이트 쿼리 실행)
-            boardRepository.save(board);
-        }
-    }
-
     @Transactional
     public void delete(User loginUser, Long boardIdx) {
         Board board = boardRepository.findById(boardIdx)
@@ -94,38 +72,88 @@ public class BoardService {
             throw new IllegalArgumentException("게시글 삭제 권한이 없습니다.");
         }
 
-        // 1️⃣ 첨부파일 삭제 (board_files 기준)
+        // 첨부파일 삭제 (board_files 기준)
         List<String> fileKeys = board.getImageList().stream()
                 .map(file -> extractS3KeyFromUrl(file.getFilesUrl()))
                 .toList();
         s3Service.deleteFiles(fileKeys);
 
-        // 2️⃣ quill editor 내 이미지 삭제
+        // quill editor 내 이미지 삭제
         List<String> quillKeys = extractImageKeysFromContent(board.getBoardContent());
         s3Service.deleteFiles(quillKeys);
 
-        // 3️⃣ 게시글 삭제 (연관 파일은 cascade로 제거되어야 함)
+        // 게시글 삭제 (연관 파일은 cascade로 제거되어야 함)
         boardRepository.delete(board);
     }
 
 
+    public BoardPageResponse getBoardList(int page,
+                                          int size,
+                                          String sort,
+                                          String direction,
+                                          String category,
+                                          String search,
+                                          String type) {
 
-    public BoardPageResponse getBoardList(int page, int size, String sort, String direction) {
+
+        // sort 필드와 direction (asc/desc) 에 따른 Sort 객체 생성
         Sort sorting = direction.equalsIgnoreCase("asc")
                 ? Sort.by(sort).ascending()
                 : Sort.by(sort).descending();
 
         Pageable pageable = PageRequest.of(page, size, sorting);
-        Page<Board> boardPage = boardRepository.findAll(pageable);
 
+        // Repository 로 위 조건 모두 전달
+        Page<Board> boardPage = boardRepository.searchBoards(
+                category, search, type, pageable
+        );
+
+        // 정렬 필드·방향을 response 에도 담아줄 수 있습니다.
         return BoardPageResponse.from(boardPage, sort, direction);
     }
+
+
+
+
+    @Transactional
+    public void update(User loginUser, Long boardIdx, BoardRegisterRequestDto dto) {
+        Board board = boardRepository.findById(boardIdx)
+                .orElseThrow(() -> new EntityNotFoundException("게시글 없음"));
+
+//        if (!board.getUser().equals(loginUser)) {
+//            throw new IllegalArgumentException("수정 권한 없음");
+//        }
+
+        // 🔄 기존 내용 갱신
+        board.setBoardTitle(dto.getBoardTitle());
+        board.setBoardContent(dto.getBoardContent());
+        board.setBoardCategory(dto.getBoardCategory());
+
+        // ✅ 1) 첨부파일 갱신
+        List<String> newFiles = dto.getFiles(); // 새로 첨부된 파일 key 목록
+        List<String> oldFiles = board.getImageList().stream()
+                .map(f -> f.getFilesUrl()).toList();
+
+        // 기존 파일 중 제거된 파일 삭제
+        List<String> filesToDelete = oldFiles.stream()
+                .filter(f -> !newFiles.contains(f))
+                .collect(Collectors.toList());
+        s3Service.deleteFiles(filesToDelete);
+
+        // 새 파일을 DB에 저장 (기존 로직 재사용)
+        boardFilesService.processFilesForBoard(board, newFiles);
+
+        boardRepository.save(board);
+    }
+
 
 
     public BoardResponseDto read(Long tempIdx) {
         Board board = boardRepository.findById(tempIdx).orElseThrow();
         return BoardResponseDto.from(board);
     }
+
+
 
     private String extractS3KeyFromUrl(String urlOrKey) {
         // 이미 key 형식이라면 그냥 반환
@@ -152,6 +180,7 @@ public class BoardService {
 
         return keys;
     }
+
 
 
 }

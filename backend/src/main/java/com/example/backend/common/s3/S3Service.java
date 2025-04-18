@@ -53,8 +53,14 @@ public class S3Service {
      */
     public void deleteFiles(List<String> keys) {
         List<ObjectIdentifier> objects = keys.stream()
+                .filter(k -> k != null && !k.trim().isEmpty()) // ❗ null 또는 빈 키 제거
                 .map(k -> ObjectIdentifier.builder().key(k).build())
                 .collect(Collectors.toList());
+
+        if (objects.isEmpty()) {
+            System.out.println("삭제할 S3 키가 없습니다.");
+            return; // 아무것도 삭제하지 않도록 방어
+        }
 
         DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
                 .bucket(bucket)
