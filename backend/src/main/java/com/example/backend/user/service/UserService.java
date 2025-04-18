@@ -4,10 +4,7 @@ package com.example.backend.user.service;
 import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.user.model.User;
-import com.example.backend.user.model.dto.request.EditPwdRequestDto;
-import com.example.backend.user.model.dto.request.SignupRequestDto;
-import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
-import com.example.backend.user.model.dto.request.VerifyNickNameRequestDto;
+import com.example.backend.user.model.dto.request.*;
 import com.example.backend.user.model.dto.response.SignupResponseDto;
 import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
 import com.example.backend.user.repository.UserRepository;
@@ -88,6 +85,20 @@ public class UserService implements UserDetailsService {
         }
 
         User user = userRepository.findByUserEmail(dto.getUserEmail()).orElseThrow();
+        user.setUserPassword(passwordEncoder.encode(dto.getUserPassword()));
+        userRepository.save(user);
+    }
+
+    public void updatePwd(User loginUser, UpdatePwdRequestDto dto) {
+        User user = userRepository.findByUserEmail(loginUser.getUserEmail()).orElseThrow();
+        if (!passwordEncoder.matches(dto.getUserCurrentPassword(), user.getUserPassword())) {
+            throw new UserException(UserResponseStatus.INVALID_PASSWORD_FAIL);
+        }
+
+        if (!dto.getUserConfirmPassword().equals(dto.getUserPassword())) {
+            throw new UserException(UserResponseStatus.INVALID_PASSWORD);
+        }
+
         user.setUserPassword(passwordEncoder.encode(dto.getUserPassword()));
         userRepository.save(user);
     }
