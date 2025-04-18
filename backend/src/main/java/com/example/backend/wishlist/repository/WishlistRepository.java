@@ -17,4 +17,7 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
     @Query("SELECT w.product.brand brand, count(w.wishlistIdx) cw FROM Wishlist w GROUP BY w.product ORDER by cw DESC")
     List<TopWishListDto> countWishlistGroupByProduct();
 
+    // 알림 발행을 위해, 이 제품에 위시리스트 추가한 사람들 가져오기
+    @Query("SELECT w.user.userIdx FROM Wishlist w WHERE w.product.productIdx = :productId")
+    List<Long> findUserIdxByProductIdx(Long productId);
 }

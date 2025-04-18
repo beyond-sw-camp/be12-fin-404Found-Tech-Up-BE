@@ -2,6 +2,7 @@ package com.example.backend.product.service;
 
 import com.example.backend.global.exception.ProductException;
 import com.example.backend.global.response.responseStatus.ProductResponseStatus;
+import com.example.backend.notification.service.NotificationProducerService;
 import com.example.backend.product.model.Product;
 import com.example.backend.product.model.ProductImage;
 import com.example.backend.product.model.dto.ProductDeleteResponseDto;
@@ -10,6 +11,8 @@ import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.dto.ProductResponseDto;
 import com.example.backend.product.model.spec.*;
 import com.example.backend.product.repository.*;
+import com.example.backend.wishlist.repository.WishlistRepository;
+import com.example.backend.wishlist.service.WishlistService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,11 @@ public class ProductService {
     private final SsdSpecRepository ssdSpecRepository;
     private final HddSpecRepository hddSpecRepository;
     private final ProductImageRepository productImageRepository;
+
+    // 재입고 알림 발행을 위해
+    private final WishlistRepository wishlistRepository;
+    // 카프카 알림 발행
+    private final NotificationProducerService notificationProducerService;
 
     public List<ProductResponseDto> getProductList() {
         return productRepository.findAll()
@@ -136,8 +144,41 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
 
+        // 재고 변경 감지: 기존 재고가 0이고 새 재고가 1 이상이면 재입고라고 판단
+        int beforeStock = product.getStock();
+        int afterStock = requestDto.getStock();
+
+        // 할인율 변경 감지 : 기존 할인율보다 높아지거나, 할인율이 0 -> 양수로 변경했을때 할인을 시작한다고 판단
+        int oldDiscount = product.getDiscount() != null ? product.getDiscount() : 0;
+        int newDiscount = requestDto.getDiscount() != null ? requestDto.getDiscount() : 0;
+        System.out.println("새로운 할인율 ! : " + newDiscount);
         product.update(requestDto);
+
+        // 재입고 발생 시 위시리스트 사용자에게 알림 발송
+        if (beforeStock == 0 && afterStock > 0) {
+            List<Long> userIdxList = wishlistRepository.findUserIdxByProductIdx(productId);
+            for (Long userIdx : userIdxList) {
+                notificationProducerService.sendRestockNotification(productId, product.getName(), userIdx);
+            }
+        }
+
+
+        if (newDiscount > oldDiscount) {
+            // 위시리스트 등록된 사용자 가져오기
+            List<Long> userIdxList = wishlistRepository.findUserIdxByProductIdx(productId);
+
+            for (Long userIdx : userIdxList) {
+                notificationProducerService.sendPriceDropNotification(
+                        product.getProductIdx(),
+                        product.getName(),
+                        newDiscount,
+                        userIdx
+                );
+            }
+        }
+
         return ProductResponseDto.from(product);
     }
+
 
 }
