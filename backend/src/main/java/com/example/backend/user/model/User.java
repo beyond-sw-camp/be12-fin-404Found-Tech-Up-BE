@@ -56,23 +56,23 @@ public class User implements UserDetails {
     private Map<String, Object> oauth2Attributes;
 
     // review와 일대다 맵핑
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Review> reviews;
 
     // Cart와 일대일 맵핑
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Cart cart;
 
     // WishList와 일대다 맵핑
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Wishlist> wishlists;
 
     // Order와 일대다 맵핑
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Orders> orders;
 
     // UserCoupon 과 일대다 맵핑
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserCoupon> userCoupons;
 
     @Override

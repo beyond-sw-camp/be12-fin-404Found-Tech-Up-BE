@@ -12,7 +12,8 @@ import com.example.backend.product.model.dto.ProductResponseDto;
 import com.example.backend.product.model.spec.*;
 import com.example.backend.product.repository.*;
 import com.example.backend.wishlist.repository.WishlistRepository;
-import com.example.backend.wishlist.service.WishlistService;
+import com.example.backend.review.repository.ReviewRepository;
+import com.example.backend.user.repository.UserProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,9 @@ public class ProductService {
     private final SsdSpecRepository ssdSpecRepository;
     private final HddSpecRepository hddSpecRepository;
     private final ProductImageRepository productImageRepository;
+    // TODO: 실수로 잘못 등록한 기기에 대해 내 기기 등록한 사용자/리뷰한 사용자가 있는 경우를 대비해 강제 삭제하기 위한 리포지토리
+    // private final UserProductRepository userProductRepository;
+    // private final ReviewRepository reviewRepository;
 
     // 재입고 알림 발행을 위해
     private final WishlistRepository wishlistRepository;
@@ -132,29 +136,44 @@ public class ProductService {
 
         return ProductResponseDto.from(savedProduct);
     }
-
+    @Transactional
     public ProductDeleteResponseDto deleteProduct(Long productId) {
+        // Note: 쿠폰이 발급되었거나, 구매 기록이 있으면 삭제 불가!
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
-        productRepository.delete(product);
+        if (!product.getImages().isEmpty()) {
+            productImageRepository.deleteAll(product.getImages());
+        }
+        if (product.getCpuSpec() != null) cpuSpecRepository.delete(product.getCpuSpec());
+        if (product.getGpuSpec() != null) gpuSpecRepository.delete(product.getGpuSpec());
+        if (product.getRamSpec() != null) ramSpecRepository.delete(product.getRamSpec());
+        if (product.getSsdSpec() != null) ssdSpecRepository.delete(product.getSsdSpec());
+        if (product.getHddSpec() != null) hddSpecRepository.delete(product.getHddSpec());
+        try {
+            productRepository.delete(product);
+        } catch (Exception e) {
+            throw new ProductException(ProductResponseStatus.PRODUCT_DELETE_FAIL);
+        }
         return ProductDeleteResponseDto.from(productId);
     }
 
+    @Transactional
     public ProductResponseDto updateProduct(Long productId, ProductRequestDto requestDto) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
 
-        // 재고 변경 감지: 기존 재고가 0이고 새 재고가 1 이상이면 재입고라고 판단
+        // --- 알림 판단을 위한 이전 상태 ---
         int beforeStock = product.getStock();
         int afterStock = requestDto.getStock();
 
-        // 할인율 변경 감지 : 기존 할인율보다 높아지거나, 할인율이 0 -> 양수로 변경했을때 할인을 시작한다고 판단
         int oldDiscount = product.getDiscount() != null ? product.getDiscount() : 0;
         int newDiscount = requestDto.getDiscount() != null ? requestDto.getDiscount() : 0;
-        System.out.println("새로운 할인율 ! : " + newDiscount);
-        product.update(requestDto);
 
-        // 재입고 발생 시 위시리스트 사용자에게 알림 발송
+        // --- 제품 정보 업데이트 ---
+        product.update(requestDto);
+        product = productRepository.save(product);
+
+        // --- 재입고 알림 처리 ---
         if (beforeStock == 0 && afterStock > 0) {
             List<Long> userIdxList = wishlistRepository.findUserIdxByProductIdx(productId);
             for (Long userIdx : userIdxList) {
@@ -162,11 +181,9 @@ public class ProductService {
             }
         }
 
-
+        // --- 가격 인하 알림 처리 ---
         if (newDiscount > oldDiscount) {
-            // 위시리스트 등록된 사용자 가져오기
             List<Long> userIdxList = wishlistRepository.findUserIdxByProductIdx(productId);
-
             for (Long userIdx : userIdxList) {
                 notificationProducerService.sendPriceDropNotification(
                         product.getProductIdx(),
@@ -175,6 +192,61 @@ public class ProductService {
                         userIdx
                 );
             }
+        }
+
+        // --- 사양 업데이트 ---
+        if (requestDto.getCpuSpec() != null) {
+            CpuSpec cpuSpec = product.getCpuSpec();
+            if (cpuSpec == null) {
+                cpuSpec = new CpuSpec();
+                cpuSpec.setProduct(product);
+            }
+            cpuSpec.update(requestDto.getCpuSpec());
+            cpuSpecRepository.save(cpuSpec);
+        }
+
+        if (requestDto.getGpuSpec() != null) {
+            GpuSpec gpuSpec = product.getGpuSpec();
+            if (gpuSpec != null) {
+                gpuSpecRepository.delete(gpuSpec);
+                gpuSpec = new GpuSpec();
+                gpuSpec.setProduct(product);
+            }
+            gpuSpec.update(requestDto.getGpuSpec());
+            gpuSpecRepository.save(gpuSpec);
+        }
+
+        if (requestDto.getRamSpec() != null) {
+            RamSpec ramSpec = product.getRamSpec();
+            if (ramSpec != null) {
+                ramSpecRepository.delete(ramSpec);
+                ramSpec = new RamSpec();
+                ramSpec.setProduct(product);
+            }
+            ramSpec.update(requestDto.getRamSpec());
+            ramSpecRepository.save(ramSpec);
+        }
+
+        if (requestDto.getSsdSpec() != null) {
+            SsdSpec ssdSpec = product.getSsdSpec();
+            if (ssdSpec != null) {
+                ssdSpecRepository.delete(ssdSpec);
+                ssdSpec = new SsdSpec();
+                ssdSpec.setProduct(product);
+            }
+            ssdSpec.update(requestDto.getSsdSpec());
+            ssdSpecRepository.save(ssdSpec);
+        }
+
+        if (requestDto.getHddSpec() != null) {
+            HddSpec hddSpec = product.getHddSpec();
+            if (hddSpec != null) {
+                hddSpecRepository.delete(hddSpec);
+                hddSpec = new HddSpec();
+                hddSpec.setProduct(product);
+            }
+            hddSpec.update(requestDto.getHddSpec());
+            hddSpecRepository.save(hddSpec);
         }
 
         return ProductResponseDto.from(product);

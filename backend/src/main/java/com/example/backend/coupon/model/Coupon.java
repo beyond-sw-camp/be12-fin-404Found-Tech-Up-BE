@@ -1,5 +1,6 @@
 package com.example.backend.coupon.model;
 
+import com.example.backend.coupon.model.dto.request.UserCouponCreateRequestDto;
 import com.example.backend.coupon.model.dto.response.CouponInfoDto;
 import com.example.backend.product.model.Product;
 import jakarta.persistence.*;
@@ -8,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.*;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +35,14 @@ public class Coupon {
     private List<UserCoupon> userCoupons;
 
     public CouponInfoDto toDto() {
-        return CouponInfoDto.builder().couponIdx(this.couponIdx).couponName(this.couponName).couponDiscountRate(this.couponDiscountRate).productIdx(product.getProductIdx()).couponValidDate(this.couponValidDate).build();
+        return CouponInfoDto.builder().couponIdx(this.couponIdx).couponName(this.couponName).couponDiscountRate(this.couponDiscountRate).productIdx(product.getProductIdx()).couponValidDate(this.couponValidDate.toInstant().atZone(ZoneId.systemDefault())).build();
+    }
+
+    public void update(UserCouponCreateRequestDto dto) {
+        couponName = dto.getCouponName();
+        couponDiscountRate = dto.getDiscount();
+        String[] dateString = dto.getExpiryDate().split("-");
+        ZonedDateTime time = ZonedDateTime.of(LocalDate.of(Integer.parseInt(dateString[0]), Integer.parseInt(dateString[1]),Integer.parseInt(dateString[2])).atStartOfDay(), ZoneId.systemDefault());
+        couponValidDate = Date.from(time.toInstant());
     }
 }

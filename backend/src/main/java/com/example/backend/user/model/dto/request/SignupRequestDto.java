@@ -29,9 +29,9 @@ public class SignupRequestDto {
     @Email
     @NotBlank
     private String userEmail;
-//    @Schema(description="이메일 인증으로 받은 고유 문자열, 필수",required = true,  example = "142857")
-//    @NotBlank
-//    private String validatedString;
+    @Schema(description="이메일 인증 코드, 필수",required = true,  example = "123456")
+    @NotBlank
+    private String inputCode;
     @Schema(description="비밀번호, 영문 소문자 및 숫자로 8자 이상, 필수",required = true,  example = "abcd142857")
     @Pattern(regexp = "[0-9a-z]{8,}", message="signup wrong pass")
     private String userPassword;

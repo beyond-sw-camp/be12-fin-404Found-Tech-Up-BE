@@ -15,6 +15,7 @@ public class ProductImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productImageIdx;
+    @Column(length=511)
     private String imageUrl;
 
     @ManyToOne

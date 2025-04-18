@@ -1,4 +1,4 @@
-package com.example.backend.wishlist.dto;
+package com.example.backend.wishlist.model.dto;
 
 import com.example.backend.common.dto.ProductSummaryDto;
 import com.example.backend.wishlist.model.Wishlist;
