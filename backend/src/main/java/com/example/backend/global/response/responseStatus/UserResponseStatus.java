@@ -12,7 +12,7 @@ public enum UserResponseStatus implements BaseResponseStatus {
     NICKNAME_NOT_FOUND(false, 2001, "별명 중복 확인이 필요합니다."),
     INVALID_PASSWORD(false, 2002, "비밀번호가 일치하지 않습니다."),
 //    DUPLICATE_USER(false, 2002, "이미 존재하는 사용자입니다."),
-//    INVALID_USER_ID(false, 2003, "잘못된 사용자 ID입니다."),
+    INVALID_USER_ID(false, 2003, "잘못된 사용자 ID입니다."),
 //    UNAUTHORIZED_USER(false, 2004, "인증되지 않은 사용자입니다."),
 //    FORBIDDEN_USER(false, 2005, "접근 권한이 없습니다."),
 //    INVALID_LOGIN_CREDENTIALS(false, 2006, "아이디 또는 비밀번호가 올바르지 않습니다."),
