@@ -19,7 +19,7 @@ public enum UserResponseStatus implements BaseResponseStatus {
 //    ACCOUNT_LOCKED(false, 2007, "계정이 잠겼습니다."),
 //    ACCOUNT_EXPIRED(false, 2008, "계정이 만료되었습니다."),
 //    PASSWORD_EXPIRED(false, 2009, "비밀번호가 만료되었습니다."),
-//    INVALID_PASSWORD(false, 2010, "잘못된 비밀번호입니다."),
+    INVALID_PASSWORD_FAIL(false, 2010, "잘못된 비밀번호입니다."),
     // 2011 - 2020 사용자 이메일 인증 관련 에러
     INVALID_EMAIL_FORMAT(false, 2011, "유효하지 않은 이메일 형식입니다."),
     EMAIL_ALREADY_IN_USE(false, 2012, "해당 이메일은 이미 사용 중입니다."),

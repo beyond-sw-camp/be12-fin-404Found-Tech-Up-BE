@@ -111,6 +111,20 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
+    public void updatePwd(User loginUser, UpdatePwdRequestDto dto) {
+        User user = userRepository.findByUserEmail(loginUser.getUserEmail()).orElseThrow();
+        if (!passwordEncoder.matches(dto.getUserCurrentPassword(), user.getUserPassword())) {
+            throw new UserException(UserResponseStatus.INVALID_PASSWORD_FAIL);
+        }
+
+        if (!dto.getUserConfirmPassword().equals(dto.getUserPassword())) {
+            throw new UserException(UserResponseStatus.INVALID_PASSWORD);
+        }
+
+        user.setUserPassword(passwordEncoder.encode(dto.getUserPassword()));
+        userRepository.save(user);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // TODO: 소셜 로그인 관련 이슈 해결
