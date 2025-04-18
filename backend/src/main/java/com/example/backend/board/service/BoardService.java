@@ -87,17 +87,32 @@ public class BoardService {
     }
 
 
+    public BoardPageResponse getBoardList(int page,
+                                          int size,
+                                          String sort,
+                                          String direction,
+                                          String category,
+                                          String search,
+                                          String type) {
 
-    public BoardPageResponse getBoardList(int page, int size, String sort, String direction) {
+
+        // sort 필드와 direction (asc/desc) 에 따른 Sort 객체 생성
         Sort sorting = direction.equalsIgnoreCase("asc")
                 ? Sort.by(sort).ascending()
                 : Sort.by(sort).descending();
 
         Pageable pageable = PageRequest.of(page, size, sorting);
-        Page<Board> boardPage = boardRepository.findAll(pageable);
 
+        // Repository 로 위 조건 모두 전달
+        Page<Board> boardPage = boardRepository.searchBoards(
+                category, search, type, pageable
+        );
+
+        // 정렬 필드·방향을 response 에도 담아줄 수 있습니다.
         return BoardPageResponse.from(boardPage, sort, direction);
     }
+
+
 
 
     @Transactional

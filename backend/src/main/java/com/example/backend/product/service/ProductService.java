@@ -2,6 +2,7 @@ package com.example.backend.product.service;
 
 import com.example.backend.global.exception.ProductException;
 import com.example.backend.global.response.responseStatus.ProductResponseStatus;
+import com.example.backend.notification.service.NotificationProducerService;
 import com.example.backend.product.model.Product;
 import com.example.backend.product.model.ProductImage;
 import com.example.backend.product.model.dto.ProductDeleteResponseDto;
@@ -10,6 +11,8 @@ import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.dto.ProductResponseDto;
 import com.example.backend.product.model.spec.*;
 import com.example.backend.product.repository.*;
+import com.example.backend.wishlist.repository.WishlistRepository;
+import com.example.backend.review.repository.ReviewRepository;
 import com.example.backend.user.repository.UserProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +34,14 @@ public class ProductService {
     private final SsdSpecRepository ssdSpecRepository;
     private final HddSpecRepository hddSpecRepository;
     private final ProductImageRepository productImageRepository;
-    // TODO: 실수로 잘못 등록한 기기에 대해 내 기기 등록한 사용자가 있는 경우를 대비해 강제 삭제하기 위한 리포지토리
+    // TODO: 실수로 잘못 등록한 기기에 대해 내 기기 등록한 사용자/리뷰한 사용자가 있는 경우를 대비해 강제 삭제하기 위한 리포지토리
     // private final UserProductRepository userProductRepository;
+    // private final ReviewRepository reviewRepository;
+
+    // 재입고 알림 발행을 위해
+    private final WishlistRepository wishlistRepository;
+    // 카프카 알림 발행
+    private final NotificationProducerService notificationProducerService;
 
     public List<ProductResponseDto> getProductList() {
         return productRepository.findAll()
@@ -132,7 +141,7 @@ public class ProductService {
         // Note: 쿠폰이 발급되었거나, 구매 기록이 있으면 삭제 불가!
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
-        if (product.getImages().size() > 0) {
+        if (!product.getImages().isEmpty()) {
             productImageRepository.deleteAll(product.getImages());
         }
         if (product.getCpuSpec() != null) cpuSpecRepository.delete(product.getCpuSpec());
@@ -152,9 +161,40 @@ public class ProductService {
     public ProductResponseDto updateProduct(Long productId, ProductRequestDto requestDto) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
+
+        // --- 알림 판단을 위한 이전 상태 ---
+        int beforeStock = product.getStock();
+        int afterStock = requestDto.getStock();
+
+        int oldDiscount = product.getDiscount() != null ? product.getDiscount() : 0;
+        int newDiscount = requestDto.getDiscount() != null ? requestDto.getDiscount() : 0;
+
+        // --- 제품 정보 업데이트 ---
         product.update(requestDto);
         product = productRepository.save(product);
 
+        // --- 재입고 알림 처리 ---
+        if (beforeStock == 0 && afterStock > 0) {
+            List<Long> userIdxList = wishlistRepository.findUserIdxByProductIdx(productId);
+            for (Long userIdx : userIdxList) {
+                notificationProducerService.sendRestockNotification(productId, product.getName(), userIdx);
+            }
+        }
+
+        // --- 가격 인하 알림 처리 ---
+        if (newDiscount > oldDiscount) {
+            List<Long> userIdxList = wishlistRepository.findUserIdxByProductIdx(productId);
+            for (Long userIdx : userIdxList) {
+                notificationProducerService.sendPriceDropNotification(
+                        product.getProductIdx(),
+                        product.getName(),
+                        newDiscount,
+                        userIdx
+                );
+            }
+        }
+
+        // --- 사양 업데이트 ---
         if (requestDto.getCpuSpec() != null) {
             CpuSpec cpuSpec = product.getCpuSpec();
             if (cpuSpec == null) {
@@ -164,6 +204,7 @@ public class ProductService {
             cpuSpec.update(requestDto.getCpuSpec());
             cpuSpecRepository.save(cpuSpec);
         }
+
         if (requestDto.getGpuSpec() != null) {
             GpuSpec gpuSpec = product.getGpuSpec();
             if (gpuSpec != null) {
@@ -174,6 +215,7 @@ public class ProductService {
             gpuSpec.update(requestDto.getGpuSpec());
             gpuSpecRepository.save(gpuSpec);
         }
+
         if (requestDto.getRamSpec() != null) {
             RamSpec ramSpec = product.getRamSpec();
             if (ramSpec != null) {
@@ -184,6 +226,7 @@ public class ProductService {
             ramSpec.update(requestDto.getRamSpec());
             ramSpecRepository.save(ramSpec);
         }
+
         if (requestDto.getSsdSpec() != null) {
             SsdSpec ssdSpec = product.getSsdSpec();
             if (ssdSpec != null) {
@@ -191,10 +234,10 @@ public class ProductService {
                 ssdSpec = new SsdSpec();
                 ssdSpec.setProduct(product);
             }
-
             ssdSpec.update(requestDto.getSsdSpec());
             ssdSpecRepository.save(ssdSpec);
         }
+
         if (requestDto.getHddSpec() != null) {
             HddSpec hddSpec = product.getHddSpec();
             if (hddSpec != null) {
@@ -208,5 +251,6 @@ public class ProductService {
 
         return ProductResponseDto.from(product);
     }
+
 
 }

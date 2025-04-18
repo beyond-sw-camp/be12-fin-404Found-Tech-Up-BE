@@ -1,6 +1,6 @@
-package com.example.backend.noti.model.dto;
+package com.example.backend.notification.model.dto;
 
-import com.example.backend.noti.model.Noti;
+import com.example.backend.notification.model.Notification;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,14 +27,4 @@ public class NotiResponseDto {
     @Schema(description = "알림 확인 여부", example = "False")
     private LocalDateTime notiChecked;
 
-    public static NotiResponseDto from(Noti noti) {
-        return NotiResponseDto.builder()
-                .idx(noti.getIdx())
-                .notiTitle(noti.getNotiTitle())
-                .notiContent(noti.getNotiContent())
-//                .writer(board.getUser().getName())
-                .notiCreated(noti.getNotiCreated())
-                .notiChecked(noti.getNotiChecked())
-                .build();
-    }
 }
