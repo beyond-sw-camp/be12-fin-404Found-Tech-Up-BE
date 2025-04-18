@@ -118,6 +118,7 @@ public class CouponController {
     @Operation(summary = "선착순 쿠폰 발급 이벤트 등록", description = "선착순 쿠폰 발급 이벤트를 등록합니다")
     @PostMapping("/events")
     public BaseResponse<Object> registerEvents(@RequestBody EventCouponCreateRequestDto request) {
+        couponService.createEvent(request);
         return new BaseResponseServiceImpl().getSuccessResponse(CouponResponseStatus.SUCCESS);
     }
 

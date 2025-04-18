@@ -11,8 +11,10 @@ import com.example.backend.coupon.model.dto.response.CouponListResponseDto;
 import com.example.backend.coupon.repository.CouponRepository;
 import com.example.backend.coupon.repository.UserCouponRepository;
 import com.example.backend.global.exception.CouponException;
+import com.example.backend.global.exception.ProductException;
 import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.responseStatus.CouponResponseStatus;
+import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.product.model.Product;
 import com.example.backend.product.repository.ProductRepository;
@@ -56,7 +58,7 @@ public class CouponService {
         String[] dates = request.getExpiryDate().split("-");
         if (coupon == null) { // 아직 한 번도 발급한 적 없는 종류의 쿠폰을 발급하는 경우
             ZonedDateTime expiry = LocalDate.of(Integer.parseInt(dates[0]), Integer.parseInt(dates[1]), Integer.parseInt(dates[2])).atStartOfDay().atZone(ZoneOffset.ofHours(9)); // +09:00
-            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).product(product).build();
+            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).couponQuantity(-1).product(product).build();
             couponRepository.save(coupon);
         }
         UserCoupon issuedCoupon = UserCoupon.builder().user(user).coupon(coupon).couponUsed(false).build();
@@ -78,7 +80,7 @@ public class CouponService {
         String[] dates = request.getExpiryDate().split("\\-");
         if (coupon == null) { // 아직 한 번도 발급한 적 없는 종류의 쿠폰을 발급하는 경우
             ZonedDateTime expiry = LocalDate.of(Integer.parseInt(dates[0]), Integer.parseInt(dates[1]), Integer.parseInt(dates[2])).atStartOfDay().atZone(ZoneOffset.ofHours(9)); // +09:00
-            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).couponQuantity(0).product(product).build();
+            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).couponQuantity(-1).product(product).build();
             couponRepository.save(coupon);
         }
         List<Long> result = new ArrayList<>();
@@ -112,13 +114,13 @@ public class CouponService {
         Coupon coupon = couponRepository.findById(couponIdx).orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
         return CouponInfoDto.from(coupon);
     }
-
+    @Transactional
     public void updateCoupon(Long idx, UserCouponCreateRequestDto request) {
         Coupon coupon = couponRepository.findById(idx).orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
         coupon.update(request);
         couponRepository.save(coupon);
     }
-
+    @Transactional
     public Boolean deleteCoupon(Long couponIdx) {
         Coupon coupon = couponRepository.findById(couponIdx).orElseThrow(()-> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
         List<UserCoupon> issuedCoupons = coupon.getUserCoupons();
@@ -149,6 +151,14 @@ public class CouponService {
         // 발급된 쿠폰 DB에 저장
         userCouponRepository.save(coupon);
         return true;
+    }
+    @Transactional
+    public void createEvent(EventCouponCreateRequestDto request) {
+        Product product = productRepository.findById(request.getProductIdx()).orElseThrow(()-> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
+        String[] dates = request.getExpiryDate().split("\\-");
+        ZonedDateTime expiry = LocalDate.of(Integer.parseInt(dates[0]), Integer.parseInt(dates[1]), Integer.parseInt(dates[2])).atStartOfDay().atZone(ZoneOffset.ofHours(9)); // +09:00
+        Coupon coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).couponQuantity(request.getQuantity()).product(product).build();
+        couponRepository.save(coupon);
     }
 
     @Transactional

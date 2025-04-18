@@ -25,7 +25,7 @@ public class CouponInfoDto {
     private int couponDiscountRate;
     @Schema(description = "쿠폰 만료 기한")
     private ZonedDateTime couponValidDate;
-    @Schema(description = "이벤트 쿠폰인 경우 발급 수량 개수, 일반 쿠폰은 0으로 고정")
+    @Schema(description = "이벤트 쿠폰인 경우 발급 수량 개수, 일반 쿠폰은 -1으로 고정")
     private Integer couponStock;
     @Schema(description = "이 쿠폰을 쓸 수 있는 제품의 DB 테이블 Idx", example="210")
     private Long productIdx;
