@@ -73,7 +73,7 @@ public class CouponService {
         String[] dates = request.getExpiryDate().split("\\-");
         if (coupon == null) { // 아직 한 번도 발급한 적 없는 종류의 쿠폰을 발급하는 경우
             ZonedDateTime expiry = LocalDate.of(Integer.parseInt(dates[0]), Integer.parseInt(dates[1]), Integer.parseInt(dates[2])).atStartOfDay().atZone(ZoneOffset.ofHours(9)); // +09:00
-            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).product(product).build();
+            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).couponQuantity(0).product(product).build();
             couponRepository.save(coupon);
         }
         List<Long> result = new ArrayList<>();
@@ -90,7 +90,7 @@ public class CouponService {
         Long limit = couponListInfo.getTotalElements();
         Integer pageLength = couponListInfo.getTotalPages();
         List<CouponInfoDto> couponList = couponListInfo.getContent().stream()
-                .map(coupon -> CouponInfoDto.from(coupon))
+                .map(CouponInfoDto::from)
                 .toList();
         return CouponListResponseDto.builder().couponList(couponList).total(pageLength).limit(limit).offset(offset).build();
     }

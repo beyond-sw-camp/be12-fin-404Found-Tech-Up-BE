@@ -25,6 +25,7 @@ public class Coupon {
     private String couponName;
     private int couponDiscountRate;
     private Date couponValidDate;
+    private Integer couponQuantity; // 남은 발급 가능 횟수
 
     // 제품과 다대일 맵핑
     @ManyToOne
