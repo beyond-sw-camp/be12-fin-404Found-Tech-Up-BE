@@ -10,6 +10,7 @@ import com.example.backend.global.response.responseStatus.OrderResponseStatus;
 import com.example.backend.order.model.OrderDetail;
 import com.example.backend.order.model.Orders;
 import com.example.backend.order.model.dto.OrderCancelResponseDto;
+import com.example.backend.order.model.dto.OrderRequestDto;
 import com.example.backend.order.repository.OrderRepository;
 import com.example.backend.product.model.Product;
 import com.example.backend.user.model.User;
@@ -36,7 +37,9 @@ public class OrderService {
      * 3. 주문의 총 금액 및 주문 날짜, 주문 상태를 설정하여 Orders 엔티티 생성
      * 4. 주문 후 장바구니를 비움
      */
-    public Orders placeOrder(User user) {
+    public Orders placeOrder(User user, OrderRequestDto dto) {
+        // 사용자의 주문 정보(이름, 주소, 전화번호 등)을 저장 <- User.java 참조
+
         // 사용자의 장바구니를 조회 (CartRepository에서 사용자 기준으로 찾음)
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new CartException(CartResponseStatus.CART_IS_EMPTY));
