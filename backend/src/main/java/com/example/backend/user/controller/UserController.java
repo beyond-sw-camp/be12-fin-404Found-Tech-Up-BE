@@ -126,8 +126,9 @@ public class UserController {
     @ApiResponse(responseCode="400", description="요청이 이상하여 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @DeleteMapping("/delete")
-    private ResponseEntity<String> deleteUser(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok("Good Bye!");
+    private BaseResponse<String> deleteUser(@AuthenticationPrincipal User user) {
+        userService.deleteUser(user);
+        return  baseResponseService.getSuccessResponse("User Deletes success", UserResponseStatus.SUCCESS);
     }
 
     @Operation(summary="로그아웃 리다이렉션", description = "로그아웃 리다이렉션")
