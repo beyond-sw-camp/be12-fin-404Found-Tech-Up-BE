@@ -4,12 +4,14 @@ package com.example.backend.user.controller;
 import com.example.backend.common.dto.ErrorResponseDto;
 import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseServiceImpl;
+import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.user.model.User;
 import com.example.backend.user.model.dto.request.SignupRequestDto;
 import com.example.backend.user.model.dto.request.UserUpdateRequestDto;
 import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
 import com.example.backend.user.model.dto.request.VerifyNickNameRequestDto;
+import com.example.backend.user.model.dto.response.MyProfileResponseDto;
 import com.example.backend.user.model.dto.response.SignupResponseDto;
 import com.example.backend.user.model.dto.response.UserInfoResponseDto;
 import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
@@ -112,6 +114,20 @@ public class UserController {
         return baseResponseService.getSuccessResponse("로그아웃 성공", UserResponseStatus.SUCCESS );
     }
 
+    // 유저 개인 정보 프론트로 넘기기는 메소드
+
+    @GetMapping("/auth/me")
+    public BaseResponse<Object> getMe(
+            @AuthenticationPrincipal User user
+    ) {
+        return baseResponseService.getSuccessResponse(
+                MyProfileResponseDto.builder()
+                        .userIdx(user.getUserIdx())
+                        .userNickname("유저닉네임 테스트")
+                        .build(), CommonResponseStatus.SUCCESS);
+    }
+
+
     // --------------------- 여기서부터 관리자 전용 ----------------------------
 
     @Operation(summary="전체 회원 정보 반환", description = "회원 정보를 30개 단위로 반환합니다")
@@ -133,5 +149,7 @@ public class UserController {
         // TODO: 서비스에서 페이징된 정보 가져오기
         return ResponseEntity.ok(List.of());
     }
+
+
 
 }
