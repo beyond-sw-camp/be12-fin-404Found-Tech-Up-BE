@@ -20,6 +20,7 @@ public enum UserResponseStatus implements BaseResponseStatus {
 //    ACCOUNT_EXPIRED(false, 2008, "계정이 만료되었습니다."),
 //    PASSWORD_EXPIRED(false, 2009, "비밀번호가 만료되었습니다."),
     INVALID_PASSWORD_FAIL(false, 2010, "잘못된 비밀번호입니다."),
+
     // 2011 - 2020 사용자 이메일 인증 관련 에러
     INVALID_EMAIL_FORMAT(false, 2011, "유효하지 않은 이메일 형식입니다."),
     EMAIL_ALREADY_IN_USE(false, 2012, "해당 이메일은 이미 사용 중입니다."),
@@ -31,6 +32,8 @@ public enum UserResponseStatus implements BaseResponseStatus {
     // 2021 - 2030 사용자 마이페이지 관련 에러
     USER_UPDATE_FAIL(false, 2021, "사용자 정보가 변경되지 않았습니다."),
     USER_DELETE_FAIL(false, 2022, "사용자 탈퇴가 실패하였습니다."),
+    USER_PRODUCT_FAIL(false, 2023, "사용자의 제품을 찾을 수 없습니다."),
+    USER_PRODUCT_IN_USE(false, 2024, "이미 등록된 사용자의 제품입니다."),
 
     // 2100 - 기타 에러
     TOO_MANY_FAILED_ATTEMPTS(false, 2101, "로그인 시도 횟수가 초과되었습니다."),
