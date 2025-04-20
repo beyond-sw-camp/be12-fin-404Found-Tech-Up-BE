@@ -1,8 +1,10 @@
 package com.example.backend.notification.repository;
 
+import com.example.backend.notification.model.Notification;
 import com.example.backend.notification.model.UserNotification;
 import com.example.backend.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -16,4 +18,6 @@ public interface UserNotificationRepository extends JpaRepository<UserNotificati
 
     // 읽은 알림
     List<UserNotification> findByUserAndIsReadTrueOrderByCreatedAtDesc(User user);
+
+    List<UserNotification> findByTemplate(Notification notification);
 }

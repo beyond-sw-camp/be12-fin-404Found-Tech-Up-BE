@@ -1,6 +1,7 @@
 package com.example.backend.notification.model.dto;
 
 import com.example.backend.notification.model.Notification;
+import com.example.backend.notification.model.UserNotification;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,5 +27,4 @@ public class NotiResponseDto {
     private LocalDateTime notiCreated;
     @Schema(description = "알림 확인 여부", example = "False")
     private LocalDateTime notiChecked;
-
 }

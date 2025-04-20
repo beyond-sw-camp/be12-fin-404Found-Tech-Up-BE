@@ -11,8 +11,8 @@ public enum UserResponseStatus implements BaseResponseStatus {
     // 2001 - 2010 사용자 로그인 관련 에러
     NICKNAME_NOT_FOUND(false, 2001, "별명 중복 확인이 필요합니다."),
     INVALID_PASSWORD(false, 2002, "비밀번호가 일치하지 않습니다."),
+
     UNDEFINED_USER(false, 2003, "로그인된 사용자가 없습니다."),
-//    INVALID_USER_ID(false, 2003, "잘못된 사용자 ID입니다."),
 //    UNAUTHORIZED_USER(false, 2004, "인증되지 않은 사용자입니다."),
 //    FORBIDDEN_USER(false, 2005, "접근 권한이 없습니다."),
 //    INVALID_LOGIN_CREDENTIALS(false, 2006, "아이디 또는 비밀번호가 올바르지 않습니다."),
@@ -40,6 +40,9 @@ public enum UserResponseStatus implements BaseResponseStatus {
     PHONE_NUMBER_ALREADY_IN_USE(false, 2102, "해당 전화번호는 이미 사용 중입니다."),
     UNIDENTIFIED_ROLE(false, 2103, "유효하지 않은 직책입니다"),
     USER_SAVE_FAIL(false, 2104, "유저 정보를 저장하는데 실패했습니다");
+  
+    // 2200 - 병합 충돌날 경우 임시로 여기 보관함
+    INVALID_USER_ID(false, 2203, "잘못된 사용자 ID입니다."),
 
     private final boolean isSuccess;
     private final int code;

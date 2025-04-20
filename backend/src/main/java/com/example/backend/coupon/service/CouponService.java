@@ -3,17 +3,29 @@ package com.example.backend.coupon.service;
 import com.example.backend.coupon.model.Coupon;
 import com.example.backend.coupon.model.UserCoupon;
 import com.example.backend.coupon.model.dto.request.AllCouponCreateRequestDto;
+import com.example.backend.coupon.model.dto.request.EventCouponCreateRequestDto;
+import com.example.backend.coupon.model.dto.request.EventCouponIssueRequestDto;
 import com.example.backend.coupon.model.dto.request.UserCouponCreateRequestDto;
 import com.example.backend.coupon.model.dto.response.CouponInfoDto;
 import com.example.backend.coupon.model.dto.response.CouponListResponseDto;
 import com.example.backend.coupon.repository.CouponRepository;
 import com.example.backend.coupon.repository.UserCouponRepository;
 import com.example.backend.global.exception.CouponException;
+import com.example.backend.global.exception.ProductException;
+import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.responseStatus.CouponResponseStatus;
+import com.example.backend.global.response.responseStatus.ProductResponseStatus;
+import com.example.backend.global.response.responseStatus.UserResponseStatus;
+import com.example.backend.notification.model.Notification;
+import com.example.backend.notification.model.NotificationType;
+import com.example.backend.notification.model.UserNotification;
+import com.example.backend.notification.repository.NotificationRepository;
+import com.example.backend.notification.repository.UserNotificationRepository;
 import com.example.backend.product.model.Product;
 import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.user.model.User;
 import com.example.backend.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +48,8 @@ public class CouponService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final UserCouponRepository userCouponRepository;
+    private final NotificationRepository notificationRepository;
+    private final UserNotificationRepository userNotificationRepository;
 
     public Long CreateCouponForUser(UserCouponCreateRequestDto request){
         // 발급할 사용자 엔티티 찾기
@@ -51,11 +65,19 @@ public class CouponService {
         String[] dates = request.getExpiryDate().split("-");
         if (coupon == null) { // 아직 한 번도 발급한 적 없는 종류의 쿠폰을 발급하는 경우
             ZonedDateTime expiry = LocalDate.of(Integer.parseInt(dates[0]), Integer.parseInt(dates[1]), Integer.parseInt(dates[2])).atStartOfDay().atZone(ZoneOffset.ofHours(9)); // +09:00
-            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).product(product).build();
+            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).couponQuantity(-1).product(product).build();
             couponRepository.save(coupon);
         }
         UserCoupon issuedCoupon = UserCoupon.builder().user(user).coupon(coupon).couponUsed(false).build();
         userCouponRepository.save(issuedCoupon);
+        // 알림
+        String title = "이벤트 쿠폰 :"+ coupon.getCouponName();
+        String content = coupon.getCouponDiscountRate()+"% 할인, 만료일: "+ coupon.getCouponValidDate();
+        Notification notification = Notification.builder().title(title).content(content).notificationType(NotificationType.PERSONAL).cronExpression("").createdAt(LocalDateTime.now()).build();
+        notificationRepository.save(notification);
+        UserNotification userNotification = UserNotification.builder().notificationType(NotificationType.PERSONAL).user(user).createdAt(LocalDateTime.now()).title(title).content(content).template(notification).isRead(false).build();
+        userNotificationRepository.save(userNotification);
+
         return issuedCoupon.getUserCouponIdx();
     }
 
@@ -73,14 +95,23 @@ public class CouponService {
         String[] dates = request.getExpiryDate().split("\\-");
         if (coupon == null) { // 아직 한 번도 발급한 적 없는 종류의 쿠폰을 발급하는 경우
             ZonedDateTime expiry = LocalDate.of(Integer.parseInt(dates[0]), Integer.parseInt(dates[1]), Integer.parseInt(dates[2])).atStartOfDay().atZone(ZoneOffset.ofHours(9)); // +09:00
-            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).product(product).build();
+            coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).couponQuantity(-1).product(product).build();
             couponRepository.save(coupon);
         }
+        String title = "이벤트 쿠폰 :"+ coupon.getCouponName();
+        String content = coupon.getCouponDiscountRate()+"% 할인, 만료일: "+ coupon.getCouponValidDate();
+        // 알림 템플릿 생성
+        Notification notification = Notification.builder().title(title).content(content).notificationType(NotificationType.PERSONAL).cronExpression("").createdAt(LocalDateTime.now()).build();
+        notificationRepository.save(notification);
         List<Long> result = new ArrayList<>();
         for (User user : users) {
+            // 사용자 별 쿠폰 발급
             UserCoupon issuedCoupon = UserCoupon.builder().user(user).coupon(coupon).couponUsed(false).build();
             userCouponRepository.save(issuedCoupon);
             result.add(issuedCoupon.getUserCouponIdx());
+            // 쿠폰 생성 알림
+            UserNotification userNotification = UserNotification.builder().notificationType(NotificationType.PERSONAL).user(user).createdAt(LocalDateTime.now()).title(title).content(content).template(notification).isRead(false).build();
+            userNotificationRepository.save(userNotification);
         }
         return result;
     }
@@ -90,7 +121,7 @@ public class CouponService {
         Long limit = couponListInfo.getTotalElements();
         Integer pageLength = couponListInfo.getTotalPages();
         List<CouponInfoDto> couponList = couponListInfo.getContent().stream()
-                .map(coupon -> CouponInfoDto.from(coupon))
+                .map(CouponInfoDto::from)
                 .toList();
         return CouponListResponseDto.builder().couponList(couponList).total(pageLength).limit(limit).offset(offset).build();
     }
@@ -107,13 +138,13 @@ public class CouponService {
         Coupon coupon = couponRepository.findById(couponIdx).orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
         return CouponInfoDto.from(coupon);
     }
-
+    @Transactional
     public void updateCoupon(Long idx, UserCouponCreateRequestDto request) {
         Coupon coupon = couponRepository.findById(idx).orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
         coupon.update(request);
         couponRepository.save(coupon);
     }
-
+    @Transactional
     public Boolean deleteCoupon(Long couponIdx) {
         Coupon coupon = couponRepository.findById(couponIdx).orElseThrow(()-> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
         List<UserCoupon> issuedCoupons = coupon.getUserCoupons();
@@ -132,4 +163,49 @@ public class CouponService {
         List<CouponInfoDto> result = couponList.stream().map(Coupon::toDto).toList();
         return CouponListResponseDto.builder().couponList(result).total(pageLength).limit(limit).offset(0).build();
     }
+
+    @Transactional
+    public synchronized Boolean issueEventCoupon(User user, Long eventCouponIdx) {
+        Coupon couponEvent = couponRepository.findById(eventCouponIdx).orElseThrow(()-> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
+        if (couponEvent.getCouponQuantity() == 0) return false;
+        UserCoupon coupon = UserCoupon.builder().user(user).coupon(couponEvent).couponUsed(false).build();
+        // 갯수 갱신
+        couponEvent.setCouponQuantity(couponEvent.getCouponQuantity()-1);
+        couponRepository.save(couponEvent);
+        // 발급된 쿠폰 DB에 저장
+        userCouponRepository.save(coupon);
+        // 알림 생성
+        String title = "이벤트 쿠폰 :"+ couponEvent.getCouponName();
+        String content = couponEvent.getCouponDiscountRate()+"% 할인, 만료일: "+ couponEvent.getCouponValidDate();
+        Notification notification = Notification.builder().title(title).content(content).notificationType(NotificationType.PERSONAL).cronExpression("").createdAt(LocalDateTime.now()).build();
+        notificationRepository.save(notification);
+        UserNotification userNotification = UserNotification.builder().notificationType(NotificationType.PERSONAL).user(user).createdAt(LocalDateTime.now()).title(title).content(content).template(notification).isRead(false).build();
+        userNotificationRepository.save(userNotification);
+        return true;
+    }
+    @Transactional
+    public void createEvent(EventCouponCreateRequestDto request) {
+        Product product = productRepository.findById(request.getProductIdx()).orElseThrow(()-> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
+        String[] dates = request.getExpiryDate().split("\\-");
+        ZonedDateTime expiry = LocalDate.of(Integer.parseInt(dates[0]), Integer.parseInt(dates[1]), Integer.parseInt(dates[2])).atStartOfDay().atZone(ZoneOffset.ofHours(9)); // +09:00
+        Coupon coupon = Coupon.builder().couponName(request.getCouponName()).couponDiscountRate(request.getDiscount()).couponValidDate(Date.from(expiry.toInstant())).couponQuantity(request.getQuantity()).product(product).build();
+        couponRepository.save(coupon);
+    }
+
+    @Transactional
+    public void updateEvent(Long eventIdx, EventCouponCreateRequestDto request) {
+        Coupon event = couponRepository.findById(eventIdx).orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
+        event.updateEvent(request);
+        couponRepository.save(event);
+    }
+
+    @Transactional
+    public void forceDeleteEvent(Long eventIdx) {
+        Coupon coupon = couponRepository.findById(eventIdx).orElseThrow(()-> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
+        // 사용한 것만 빼고 전부 제거
+        List<UserCoupon> issuedCoupons = coupon.getUserCoupons().stream().filter(userCoupon -> !userCoupon.getCouponUsed()).toList();
+        userCouponRepository.deleteAll(issuedCoupons);
+        couponRepository.delete(coupon);
+    }
+
 }
