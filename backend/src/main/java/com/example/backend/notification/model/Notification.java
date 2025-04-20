@@ -1,6 +1,7 @@
 package com.example.backend.notification.model;
 
 import com.example.backend.user.model.User;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @Table(name = "notification")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

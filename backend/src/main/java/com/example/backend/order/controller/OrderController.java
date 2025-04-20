@@ -8,6 +8,7 @@ import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.global.response.responseStatus.OrderResponseStatus;
 import com.example.backend.order.model.Orders;
 import com.example.backend.order.model.dto.OrderCancelResponseDto;
+import com.example.backend.order.model.dto.OrderRequestDto;
 import com.example.backend.order.model.dto.OrderResponseDto;
 import com.example.backend.order.service.OrderService;
 import com.example.backend.user.model.User;
@@ -29,26 +30,26 @@ public class OrderController {
     private final BaseResponseService baseResponseService;
 
     @Operation(summary = "상품 주문", description = "장바구니에서 선택한 상품을 주문합니다.")
-    @PostMapping
+    @PostMapping("")
     public BaseResponse<OrderResponseDto> placeOrder(
-            @AuthenticationPrincipal User loginUser
+            @AuthenticationPrincipal User loginUser,
+            @RequestBody OrderRequestDto dto
     ) {
-        Orders order = orderService.placeOrder(loginUser);
+        Orders order = orderService.placeOrder(loginUser, dto);
         OrderResponseDto response = OrderResponseDto.from(order);
         return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
     }
 
     @Operation(summary = "상품 결제", description = "주문한 상품을 결제합니다. 결제 식별자(paymentId)를 사용해 PortOne API 로 결제 금액을 검증합니다.")
-    @PostMapping("/payment/{orderId}")
+    @PostMapping("/payment/{orderIdx}")
     public BaseResponse<OrderResponseDto> payOrder(
             @AuthenticationPrincipal User loginUser,
-            @RequestParam @PathVariable Long orderId
+            @PathVariable Long orderIdx
     ) {
-        Orders order = orderService.payOrder(loginUser, orderId);
+        Orders order = orderService.payOrder(loginUser, orderIdx);
         OrderResponseDto response = OrderResponseDto.from(order);
         return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
     }
-
 
     @Operation(summary = "주문 취소", description = "회원의 주문을 취소합니다.")
     @PostMapping("/cancel/{orderId}")

@@ -87,15 +87,28 @@ public class UserController {
         return baseResponseService.getSuccessResponse(res, UserResponseStatus.SUCCESS );
     }
 
-    @Operation(summary="비밀번호 변경", description = "비밀번호를 변경합니다")
+    @Operation(summary="비밀번호 찾기", description = "이메일 인증 후 비밀번호를 변경합니다")
     @ApiResponse(responseCode="200", description="변경 성공, 성공 문자열을 반환합니다.", content= @Content(schema = @Schema(implementation = String.class, example="Signup success")))
     @ApiResponse(responseCode="400", description="변경 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @PostMapping("/edit/password")
     public BaseResponse<String> editPwd(
-            @Parameter(description="비밀번호 변경")
+            @Parameter(description="비밀번호 찾기")
             @Valid @RequestBody EditPwdRequestDto request) {
         userService.editPwd(request);
+        return baseResponseService.getSuccessResponse("비밀번호 변경에 성공했습니다.", UserResponseStatus.SUCCESS );
+    }
+
+    @Operation(summary="비밀번호 변경", description = "사용자의 비밀번호를 변경합니다")
+    @ApiResponse(responseCode="200", description="변경 성공, 성공 문자열을 반환합니다.", content= @Content(schema = @Schema(implementation = String.class, example="Signup success")))
+    @ApiResponse(responseCode="400", description="변경 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
+    @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
+    @PostMapping("/update/password")
+    public BaseResponse<String> updatePwd(
+            @Parameter(description="비밀번호 찾기")
+            @Valid @RequestBody UpdatePwdRequestDto request,
+            @AuthenticationPrincipal User user) {
+        userService.updatePwd(user, request);
         return baseResponseService.getSuccessResponse("비밀번호 변경에 성공했습니다.", UserResponseStatus.SUCCESS );
     }
 
@@ -126,8 +139,9 @@ public class UserController {
     @ApiResponse(responseCode="400", description="요청이 이상하여 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @DeleteMapping("/delete")
-    private ResponseEntity<String> deleteUser(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok("Good Bye!");
+    private BaseResponse<String> deleteUser(@AuthenticationPrincipal User user) {
+        userService.deleteUser(user);
+        return  baseResponseService.getSuccessResponse("User Deletes success", UserResponseStatus.SUCCESS);
     }
 
     @Operation(summary="로그아웃 리다이렉션", description = "로그아웃 리다이렉션")
