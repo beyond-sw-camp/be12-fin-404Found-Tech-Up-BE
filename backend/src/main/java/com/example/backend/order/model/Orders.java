@@ -18,6 +18,9 @@ public class Orders {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderIdx;
     private double orderTotalPrice;
+    private double shipCost;
+    private String paymentMethod;
+    private String shippingMethod;
     private String orderStatus;
     private Date orderDate;
 

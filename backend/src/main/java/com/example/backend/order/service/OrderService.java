@@ -108,13 +108,16 @@ public class OrderService {
 
         // Orders 엔티티 생성
         Orders order = Orders.builder()
-                .orderDate(new Date())
-                .orderStatus("PLACED")
                 .orderTotalPrice(totalPrice)
-                .user(user)
-                .orderDetails(orderDetails)
+                .shipCost(dto.getShipCost())
+                .paymentMethod(dto.getPaymentMethod())
+                .shippingMethod(dto.getShippingMethod())
+                .orderStatus("PLACED")
+                .orderDate(new Date())
                 .storeId(storeId)
                 .channelKey(channelKey)
+                .user(user)
+                .orderDetails(orderDetails)
                 .build();
 
         // 양방향 매핑을 위해 OrderDetail에도 Order를 세팅
@@ -147,7 +150,7 @@ public class OrderService {
 
         // PortOne API를 통해 실제 결제한 금액 조회
         double portoneTotal = HttpClientUtil.getTotalAmount(paymentId);
-        double orderTotal   = order.getOrderTotalPrice();
+        double orderTotal   = order.getOrderTotalPrice() + order.getShipCost();
 
         if (portoneTotal != orderTotal) {
             // 결제한 금액이랑 실제 금액이랑 다름
