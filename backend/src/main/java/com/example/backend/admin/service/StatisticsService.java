@@ -1,12 +1,11 @@
 package com.example.backend.admin.service;
 
 import com.example.backend.admin.model.StatisticsResponseDto;
-import com.example.backend.admin.model.TopSalesDto;
+import com.example.backend.admin.model.TopSales;
 import com.example.backend.admin.model.TopWishListDto;
 import com.example.backend.order.model.Orders;
 import com.example.backend.order.repository.OrderDetailRepository;
 import com.example.backend.order.repository.OrderRepository;
-import com.example.backend.product.model.dto.ProductResponseDto;
 import com.example.backend.user.repository.UserRepository;
 import com.example.backend.wishlist.repository.WishlistRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,7 @@ public class StatisticsService {
         for (Orders order : totalOrder) {
             totalSales += order.getOrderTotalPrice();
         }
-        List<TopSalesDto> tops = orderDetailRepository.countTopSales(new Date(startDate.toEpochDay()), PageRequest.of(0,10)).getContent();
+        List<TopSales> tops = orderDetailRepository.countTopSales(new Date(startDate.toEpochDay()), PageRequest.of(0,10)).getContent();
         List<TopWishListDto> topw = wishlistRepository.countWishlistGroupByProduct();
         Integer newcomers = userRepository.findAllByCreatedAtAfter(startDate.atStartOfDay()).size();
         Integer totalRefunds = orderRepository.findAllByOrderStatusAndOrderDateAfter("취소됨", new Date(startDate.toEpochDay())).size();
@@ -80,7 +79,7 @@ public class StatisticsService {
         return orderRepository.findAllByOrderStatusAndOrderDateAfter("취소됨", new Date(startDate.toEpochDay())).size();
     }
 
-    public List<TopSalesDto> getTopSales() {
+    public List<TopSales> getTopSales() {
         LocalDate today = LocalDate.now();
         int month = today.getMonthValue();
         int year = today.getYear();

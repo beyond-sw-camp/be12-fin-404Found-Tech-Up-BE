@@ -14,7 +14,7 @@ public class StatisticsResponseDto {
     Double totalSales; //
     Integer totalRefunds; //
     List<ProductResponseDto> topViews; // TODO: 조회수 기록 필요
-    List<TopSalesDto> topSales; //
+    List<TopSales> topSales; //
     List<TopWishListDto> topWishList; //
     List<String> topKeywords; // TODO: 구현 타이밍 모호함
     Integer newCustomers; //
