@@ -10,6 +10,7 @@ public enum OrderResponseStatus implements BaseResponseStatus {
     PAYMENT_AMOUNT_MISMATCH(false, 4003, "결제 금액이 주문 총액과 일치하지 않습니다."),
     ORDER_CANCEL_FAIL(false, 4004, "주문 취소에 실패했습니다."),
     REFUND_REQUEST_FAIL(false, 4005, "환불 요청에 실패했습니다."),
+    ORDER_STOCK_INSUFFICIENT(false, 4006, "상품 수량이 부족합니다."),
     ORDER_USER_MISMATCH(false, 4010, "사용자와 주문이 일치하지 않습니다."),
     ORDER_TOTAL_MISMATCH(false, 4011, "결제 금액이 주문 총액과 일치하지 않습니다."),
 
