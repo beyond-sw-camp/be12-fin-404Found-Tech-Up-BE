@@ -16,6 +16,7 @@ import com.example.backend.order.model.dto.OrderResponseDto;
 import com.example.backend.order.repository.OrderRepository;
 import com.example.backend.order.repository.ShippingAddressRepository;
 import com.example.backend.product.model.Product;
+import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.user.model.User;
 import com.example.backend.user.repository.UserRepository;
 import com.example.backend.util.HttpClientUtil;
@@ -36,6 +37,7 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final ShippingAddressRepository shippingAddressRepository;
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     @Value("${portone.store-id}")
     private String storeId;
@@ -121,13 +123,12 @@ public class OrderService {
         }
 
         // 주문 엔티티 저장
-        Orders savedOrder = orderRepository.save(order);
 
         // 주문 완료 후 사용자의 장바구니 비우기
 //        cart.getCartItems().clear();
 //        cartRepository.save(cart);
 
-        return savedOrder;
+        return orderRepository.save(order);
     }
 
     /**
@@ -148,12 +149,27 @@ public class OrderService {
         double portoneTotal = HttpClientUtil.getTotalAmount(paymentId);
         double orderTotal   = order.getOrderTotalPrice();
 
-        if (portoneTotal == orderTotal) {
-            order.setOrderStatus("PAID");
-        } else {
-            // 금액 불일치 시 예외 처리 또는 상태를 실패로 업데이트
+        if (portoneTotal != orderTotal) {
+            // 결제한 금액이랑 실제 금액이랑 다름
+            order.setOrderStatus("UNPAID");
             throw new OrderException(OrderResponseStatus.ORDER_TOTAL_MISMATCH);
         }
+        order.setOrderStatus("PAID");
+
+        // 검증 성공 시 각 상품 해당 상품의 주문 수만큼 차감
+        for (OrderDetail detail : order.getOrderDetails()) {
+            Product product = detail.getProduct();
+            int remaining = product.getStock() - detail.getOrderDetailQuantity();
+            if (remaining < 0) {
+                throw new OrderException(OrderResponseStatus.ORDER_STOCK_INSUFFICIENT);
+            }
+            product.setStock(remaining);
+            productRepository.save(product);
+        }
+
+        // 검증 성공 시 쿠폰 사용했다면 해당 쿠폰 상태 수정(couponUsed = true)
+
+
         return orderRepository.save(order);
     }
 
