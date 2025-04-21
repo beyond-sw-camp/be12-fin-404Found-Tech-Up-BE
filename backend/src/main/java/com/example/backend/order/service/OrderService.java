@@ -145,8 +145,8 @@ public class OrderService {
         }
 
         // PortOne API를 통해 실제 결제한 금액 조회
-        int portoneTotal = HttpClientUtil.getTotalAmount(orderId.toString());
-        int orderTotal = (int) order.getOrderTotalPrice();
+        double portoneTotal = HttpClientUtil.getTotalAmount(paymentId);
+        double orderTotal   = order.getOrderTotalPrice();
 
         if (portoneTotal == orderTotal) {
             order.setOrderStatus("PAID");

@@ -10,6 +10,7 @@ import com.example.backend.order.model.Orders;
 import com.example.backend.order.model.dto.OrderCancelResponseDto;
 import com.example.backend.order.model.dto.OrderRequestDto;
 import com.example.backend.order.model.dto.OrderResponseDto;
+import com.example.backend.order.model.dto.OrderVerifyRequestDto;
 import com.example.backend.order.service.OrderService;
 import com.example.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,9 +46,9 @@ public class OrderController {
     public BaseResponse<OrderResponseDto> payOrder(
             @AuthenticationPrincipal User loginUser,
             @PathVariable Long orderIdx,
-            @RequestBody String paymentId
+            @RequestBody OrderVerifyRequestDto dto
     ) {
-        Orders order = orderService.verify(loginUser, orderIdx, paymentId);
+        Orders order = orderService.verify(loginUser, orderIdx, dto.getPaymentId());
         OrderResponseDto response = OrderResponseDto.from(order);
         return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
     }
