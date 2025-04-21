@@ -182,7 +182,7 @@ public class CouponService {
         notificationRepository.save(notification);
         UserNotification userNotification = UserNotification.builder().notificationType(NotificationType.PERSONAL).user(user).createdAt(LocalDateTime.now()).title(title).content(content).template(notification).isRead(false).build();
         userNotificationRepository.save(userNotification);
-        */ㄴ
+        */
         return true;
     }
     @Transactional
