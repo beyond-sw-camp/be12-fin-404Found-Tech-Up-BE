@@ -18,4 +18,6 @@ public class StatisticsResponseDto {
     List<TopWishList> topWishList; //
     List<String> topKeywords; // TODO: 구현 타이밍 모호함
     Integer newCustomers; //
+    List<Integer> incomeData;
+    List<String> xAxisData;
 }

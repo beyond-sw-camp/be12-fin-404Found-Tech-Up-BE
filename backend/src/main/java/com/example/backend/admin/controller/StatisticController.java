@@ -46,8 +46,8 @@ public class StatisticController {
         return ResponseEntity.ok(statisticsService.getTopSales());
     }
 
-    @PostMapping("/view")
-    public void increaseView(@RequestBody ViewRequestDto request) {
-        // TODO: product 테이블에 view 필드 추가되면 구현
+    @GetMapping("/incomes")
+    public ResponseEntity<List<Integer>> getTopIncomes() {
+        return ResponseEntity.ok(statisticsService.getRecentEarningList());
     }
 }
