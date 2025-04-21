@@ -18,6 +18,7 @@ import com.example.backend.user.model.User;
 import com.example.backend.user.repository.UserRepository;
 import com.example.backend.util.HttpClientUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,6 +33,12 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
+
+    @Value("${portone.store-id}")
+    private String storeId;
+
+    @Value("${portone.channel-key}")
+    private String channelKey;
 
     /**
      * 주문 기능 구현
@@ -77,6 +84,8 @@ public class OrderService {
                 .orderTotalPrice(totalPrice)
                 .user(user)
                 .orderDetails(orderDetails)
+                .storeId(storeId)
+                .channelKey(channelKey)
                 .build();
 
         // 양방향 매핑을 위해 OrderDetail에도 Order를 세팅
@@ -100,7 +109,7 @@ public class OrderService {
      * @param orderId 주문 고유 ID
      * @return 결제 완료된 Orders 엔티티
      */
-    public Orders payOrder(User user, Long orderId) {
+    public Orders verify(User user, Long orderId, String paymentId) {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
         if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
