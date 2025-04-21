@@ -21,6 +21,9 @@ public class Orders {
     private String orderStatus;
     private Date orderDate;
 
+    private String storeId;
+    private String channelKey;
+
     // 유저와 다대일 맵핑
     @ManyToOne
     @JoinColumn(name = "user_idx")

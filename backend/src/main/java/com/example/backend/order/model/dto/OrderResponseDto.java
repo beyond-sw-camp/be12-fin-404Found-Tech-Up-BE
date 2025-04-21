@@ -17,6 +17,9 @@ public class OrderResponseDto {
     private Date orderDate;
     private List<OrderDetailResponseDto> orderDetails;
 
+    private String storeId;
+    private String channelKey;
+
     public static OrderResponseDto from(Orders order) {
         return OrderResponseDto.builder()
                 .orderIdx(order.getOrderIdx())
@@ -26,6 +29,8 @@ public class OrderResponseDto {
                 .orderDetails(order.getOrderDetails().stream()
                         .map(OrderDetailResponseDto::from)
                         .collect(Collectors.toList()))
+                .storeId(order.getStoreId())
+                .channelKey(order.getChannelKey())
                 .build();
     }
 }
