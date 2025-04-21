@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 public class OrderResponseDto {
     private Long orderIdx;
     private double orderTotalPrice;
+    private double shipCost;
+    private String paymentMethod;
+    private String shippingMethod;
     private String orderStatus;
     private Date orderDate;
     private List<OrderDetailResponseDto> orderDetails;
@@ -24,6 +27,9 @@ public class OrderResponseDto {
         return OrderResponseDto.builder()
                 .orderIdx(order.getOrderIdx())
                 .orderTotalPrice(order.getOrderTotalPrice())
+                .shipCost(order.getShipCost())
+                .paymentMethod(order.getPaymentMethod())
+                .shippingMethod(order.getShippingMethod())
                 .orderStatus(order.getOrderStatus())
                 .orderDate(order.getOrderDate())
                 .orderDetails(order.getOrderDetails().stream()
