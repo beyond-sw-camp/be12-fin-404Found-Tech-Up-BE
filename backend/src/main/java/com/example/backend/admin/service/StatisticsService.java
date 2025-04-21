@@ -35,7 +35,7 @@ public class StatisticsService {
         for (Orders order : totalOrder) {
             totalSales += order.getOrderTotalPrice();
         }
-        List<TopSales> tops = orderDetailRepository.countTopSales(new Date(startDate.toEpochDay()), PageRequest.of(0,10)).getContent();
+        List<TopSales> tops = orderDetailRepository.countTopSales(new Date(startDate.toEpochDay()));
         List<TopWishListDto> topw = wishlistRepository.countWishlistGroupByProduct();
         Integer newcomers = userRepository.findAllByCreatedAtAfter(startDate.atStartOfDay()).size();
         Integer totalRefunds = orderRepository.findAllByOrderStatusAndOrderDateAfter("취소됨", new Date(startDate.toEpochDay())).size();
@@ -84,7 +84,7 @@ public class StatisticsService {
         int month = today.getMonthValue();
         int year = today.getYear();
         LocalDate startDate = LocalDate.of(year, month, 1);
-        return orderDetailRepository.countTopSales(new Date(startDate.toEpochDay()), PageRequest.of(0,10)).getContent();
+        return orderDetailRepository.countTopSales(new Date(startDate.toEpochDay()));
     }
 
     // TODO: view 기록하는 기능 추가 후 구현
