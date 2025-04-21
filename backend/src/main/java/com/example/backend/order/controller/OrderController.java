@@ -1,7 +1,10 @@
 package com.example.backend.order.controller;
 
+import com.example.backend.global.exception.BaseException;
+import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseService;
+import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.global.response.responseStatus.OrderResponseStatus;
 import com.example.backend.order.model.Orders;
 import com.example.backend.order.model.dto.OrderCancelResponseDto;
@@ -90,5 +93,19 @@ public class OrderController {
     ) {
         OrderCancelResponseDto response = orderService.requestRefund(loginUser, orderId);
         return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
+    }
+
+
+
+    // ------------------- 여기서부터 관리자 기능 ---------------------
+
+    @Operation(summary="관리자의 사용자 주문 내역 조회", description="관리자가 사용자 주문 내역들을 볼 때 사용합니다.")
+    @GetMapping("/orderlist/{idx}")
+    public BaseResponse<List<OrderResponseDto>> getOrderList(@PathVariable Long idx) {
+        if (idx == null) {
+            throw new BaseException(CommonResponseStatus.BAD_REQUEST);
+        }
+        List<OrderResponseDto> result = orderService.getOrdersByUserId(idx);
+        return baseResponseService.getSuccessResponse(result, OrderResponseStatus.SUCCESS);
     }
 }

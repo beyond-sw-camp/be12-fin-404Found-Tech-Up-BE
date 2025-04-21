@@ -32,6 +32,16 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+
+	// Kafka 의존성
+	implementation 'org.springframework.kafka:spring-kafka'
+
+	// WebSocket 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	// JSON 처리
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
 	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.3.0'
 
 	compileOnly 'org.projectlombok:lombok:1.18.36'
