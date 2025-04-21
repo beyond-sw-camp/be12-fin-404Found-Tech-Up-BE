@@ -39,10 +39,10 @@ public enum UserResponseStatus implements BaseResponseStatus {
     TOO_MANY_FAILED_ATTEMPTS(false, 2101, "로그인 시도 횟수가 초과되었습니다."),
     PHONE_NUMBER_ALREADY_IN_USE(false, 2102, "해당 전화번호는 이미 사용 중입니다."),
     UNIDENTIFIED_ROLE(false, 2103, "유효하지 않은 직책입니다"),
-    USER_SAVE_FAIL(false, 2104, "유저 정보를 저장하는데 실패했습니다");
+    USER_SAVE_FAIL(false, 2104, "유저 정보를 저장하는데 실패했습니다"),
   
     // 2200 - 병합 충돌날 경우 임시로 여기 보관함
-    INVALID_USER_ID(false, 2203, "잘못된 사용자 ID입니다."),
+    INVALID_USER_ID(false, 2203, "잘못된 사용자 ID입니다.");
 
     private final boolean isSuccess;
     private final int code;
