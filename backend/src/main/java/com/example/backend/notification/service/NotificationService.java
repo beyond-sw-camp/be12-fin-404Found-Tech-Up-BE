@@ -98,7 +98,7 @@ public class NotificationService {
     }
 
     public Notification generateNotificationEntity(NotiRequestDto notiRequestDto) {
-        Notification newNotification = Notification.builder().title(notiRequestDto.getNotiTitle()).content(notiRequestDto.getNotiContent()).createdAt(LocalDateTime.now()).cronExpression("").notificationType(NotificationType.GLOBAL).build();
+        Notification newNotification = Notification.builder().title(notiRequestDto.getNotiTitle()).content(notiRequestDto.getNotiContent()).createdAt(LocalDateTime.now()).cronExpression("").notificationType(NotificationType.NOTIFICATION).build();
         return notificationRepository.save(newNotification);
     }
     // 전체 알림 삭제
