@@ -124,7 +124,7 @@ public class OrderService {
     public OrderCancelResponseDto cancelOrder(User user, Long orderId) {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
-        if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
+        if (!user.getIsAdmin()) {
             throw new OrderException(OrderResponseStatus.ORDER_USER_MISMATCH);
         }
         order.setOrderStatus("CANCELED");
