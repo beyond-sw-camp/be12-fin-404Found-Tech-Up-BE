@@ -3,7 +3,7 @@ package com.example.backend.wishlist.repository;
 import com.example.backend.wishlist.model.Wishlist;
 import com.example.backend.user.model.User;
 import com.example.backend.product.model.Product;
-import com.example.backend.admin.model.TopWishListDto;
+import com.example.backend.admin.model.TopWishList;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,7 +15,7 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
     List<Wishlist> findByUser(User user);
   
     @Query("SELECT w.product.name brand, count(w.wishlistIdx) cw FROM Wishlist w GROUP BY w.product ORDER by cw DESC")
-    List<TopWishListDto> countWishlistGroupByProduct();
+    List<TopWishList> countWishlistGroupByProduct();
 
     // 알림 발행을 위해, 이 제품에 위시리스트 추가한 사람들 가져오기
     @Query("SELECT w.user.userIdx FROM Wishlist w WHERE w.product.productIdx = :productId")

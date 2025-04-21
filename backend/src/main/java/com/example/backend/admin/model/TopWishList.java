@@ -1,6 +1,6 @@
 package com.example.backend.admin.model;
 
-public interface TopWishListDto {
+public interface TopWishList {
     String getBrand();
     Integer getCw();
 }

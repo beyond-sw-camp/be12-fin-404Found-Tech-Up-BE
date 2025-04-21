@@ -2,14 +2,13 @@ package com.example.backend.admin.service;
 
 import com.example.backend.admin.model.StatisticsResponseDto;
 import com.example.backend.admin.model.TopSales;
-import com.example.backend.admin.model.TopWishListDto;
+import com.example.backend.admin.model.TopWishList;
 import com.example.backend.order.model.Orders;
 import com.example.backend.order.repository.OrderDetailRepository;
 import com.example.backend.order.repository.OrderRepository;
 import com.example.backend.user.repository.UserRepository;
 import com.example.backend.wishlist.repository.WishlistRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -36,7 +35,7 @@ public class StatisticsService {
             totalSales += order.getOrderTotalPrice();
         }
         List<TopSales> tops = orderDetailRepository.countTopSales(new Date(startDate.toEpochDay()));
-        List<TopWishListDto> topw = wishlistRepository.countWishlistGroupByProduct();
+        List<TopWishList> topw = wishlistRepository.countWishlistGroupByProduct();
         Integer newcomers = userRepository.findAllByCreatedAtAfter(startDate.atStartOfDay()).size();
         Integer totalRefunds = orderRepository.findAllByOrderStatusAndOrderDateAfter("취소됨", new Date(startDate.toEpochDay())).size();
         return StatisticsResponseDto.builder().totalOrders(totalOrder.size()).totalSales(totalSales).totalRefunds(totalRefunds).topSales(tops).topWishList(topw).newCustomers(newcomers).build();
@@ -108,7 +107,7 @@ public class StatisticsService {
         //List<OrderDetail> orderDetails = orderDetailRepository.
     }
     */
-    public List<TopWishListDto> getTopWishList() {
+    public List<TopWishList> getTopWishList() {
         LocalDate today = LocalDate.now();
         int month = today.getMonthValue();
         int year = today.getYear();
