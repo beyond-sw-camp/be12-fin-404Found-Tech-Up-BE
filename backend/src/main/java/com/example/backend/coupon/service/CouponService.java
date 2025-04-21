@@ -174,13 +174,16 @@ public class CouponService {
         couponRepository.save(couponEvent);
         // 발급된 쿠폰 DB에 저장
         userCouponRepository.save(coupon);
-        // 알림 생성
+        // TODO: 알림 생성이 여기서 필요한지 논의
+        /*
         String title = "이벤트 쿠폰 :"+ couponEvent.getCouponName();
         String content = couponEvent.getCouponDiscountRate()+"% 할인, 만료일: "+ couponEvent.getCouponValidDate();
         Notification notification = Notification.builder().title(title).content(content).notificationType(NotificationType.PERSONAL).cronExpression("").createdAt(LocalDateTime.now()).build();
         notificationRepository.save(notification);
         UserNotification userNotification = UserNotification.builder().notificationType(NotificationType.PERSONAL).user(user).createdAt(LocalDateTime.now()).title(title).content(content).template(notification).isRead(false).build();
         userNotificationRepository.save(userNotification);
+        */
+         */
         return true;
     }
     @Transactional
