@@ -74,6 +74,7 @@ public class CouponController {
         Long couponIdx = couponService.CreateCouponForUser(request);
         log.info("issue coupon {}", couponIdx);
         // TODO: 사용자 알림 생성
+
         return new BaseResponseServiceImpl().getSuccessResponse(couponIdx.toString() + "번 쿠폰 발행 성공", CouponResponseStatus.SUCCESS);
     }
 

@@ -1,16 +1,24 @@
 package com.example.backend.product.service;
 
+import com.example.backend.common.s3.S3Service;
 import com.example.backend.product.model.Product;
 import com.example.backend.product.model.ProductImage;
 import com.example.backend.product.model.dto.ProductImageSaveRequestDto;
 import com.example.backend.product.repository.ProductImageRepository;
 import com.example.backend.product.repository.ProductRepository;
+import com.example.backend.util.HttpClientUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -46,4 +54,6 @@ public class ProductImageService {
         String lowerName = filename.toLowerCase();
         return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd/")) + UUID.randomUUID().toString() + "_" + lowerName;
     }
+
+    // 제품 이미지 삭제는 ProductService에서 한다.
 }

@@ -1,8 +1,8 @@
 package com.example.backend.admin.controller;
 
 import com.example.backend.admin.model.StatisticsResponseDto;
-import com.example.backend.admin.model.TopSalesDto;
-import com.example.backend.admin.model.TopWishListDto;
+import com.example.backend.admin.model.TopSales;
+import com.example.backend.admin.model.TopWishList;
 import com.example.backend.admin.model.ViewRequestDto;
 import com.example.backend.admin.service.StatisticsService;
 import com.example.backend.global.response.BaseResponse;
@@ -27,7 +27,7 @@ public class StatisticController {
 
     // ---- 이 아래는 테스트용 api로 규칙을 따르지 않음----
     @GetMapping("/wishlist")
-    public ResponseEntity<List<TopWishListDto>> getTopWishList() {
+    public ResponseEntity<List<TopWishList>> getTopWishList() {
         return ResponseEntity.ok(statisticsService.getTopWishList());
     }
 
@@ -42,12 +42,12 @@ public class StatisticController {
     }
 
     @GetMapping("/topsales")
-    public ResponseEntity<List<TopSalesDto>> getTopSales() {
+    public ResponseEntity<List<TopSales>> getTopSales() {
         return ResponseEntity.ok(statisticsService.getTopSales());
     }
 
-    @PostMapping("/view")
-    public void increaseView(@RequestBody ViewRequestDto request) {
-        // TODO: product 테이블에 view 필드 추가되면 구현
+    @GetMapping("/incomes")
+    public ResponseEntity<List<Integer>> getTopIncomes() {
+        return ResponseEntity.ok(statisticsService.getRecentEarningList());
     }
 }
