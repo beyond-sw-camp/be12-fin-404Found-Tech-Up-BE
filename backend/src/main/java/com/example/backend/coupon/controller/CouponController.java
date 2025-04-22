@@ -39,9 +39,7 @@ public class CouponController {
     @GetMapping("/events/{idx}")
     public BaseResponse<Object> issueEventCoupon(@AuthenticationPrincipal User user, @PathVariable Long idx) {
         // 중복 발행 방지
-        if (user.getUserCoupons() != null && user.getUserCoupons().stream().anyMatch(coupon -> coupon.getCoupon().getCouponIdx().equals(idx))) {
-            return new BaseResponseServiceImpl().getFailureResponse(CouponResponseStatus.DUPLICATED_EVENT_COUPON);
-        }
+        if (user == null) return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
         Boolean result = couponService.issueEventCoupon(user,idx);
         if (!result) { // 쿠폰 재고 소진됨
             return new BaseResponseServiceImpl().getFailureResponse(CouponResponseStatus.OUT_OF_COUPON_STOCK);

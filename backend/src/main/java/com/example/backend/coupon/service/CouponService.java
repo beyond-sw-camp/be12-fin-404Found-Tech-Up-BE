@@ -14,6 +14,7 @@ import com.example.backend.coupon.repository.UserCouponRepository;
 import com.example.backend.global.exception.CouponException;
 import com.example.backend.global.exception.ProductException;
 import com.example.backend.global.exception.UserException;
+import com.example.backend.global.response.BaseResponseServiceImpl;
 import com.example.backend.global.response.responseStatus.CouponResponseStatus;
 import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
@@ -180,7 +181,11 @@ public class CouponService {
     }
 
     @Transactional
-    public synchronized Boolean issueEventCoupon(User user, Long eventCouponIdx) {
+    public synchronized Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) {
+        User user = userRepository.findById(requestUser.getUserIdx()).orElseThrow(()-> new UserException(UserResponseStatus.INVALID_USER_ID));
+        if (user.getUserCoupons() != null && user.getUserCoupons().stream().anyMatch(coupon -> coupon.getCoupon().getCouponIdx().equals(eventCouponIdx))) {
+            return false;
+        }
         Coupon couponEvent = couponRepository.findById(eventCouponIdx).orElseThrow(()-> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
         if (couponEvent.getCouponQuantity() == 0) return false;
         UserCoupon coupon = UserCoupon.builder().user(user).coupon(couponEvent).couponUsed(false).build();
