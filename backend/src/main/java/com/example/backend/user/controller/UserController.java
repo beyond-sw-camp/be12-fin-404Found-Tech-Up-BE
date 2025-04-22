@@ -7,10 +7,7 @@ import com.example.backend.global.response.BaseResponseServiceImpl;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.user.model.User;
 import com.example.backend.user.model.dto.request.*;
-import com.example.backend.user.model.dto.response.ReducedUserInfoDto;
-import com.example.backend.user.model.dto.response.SignupResponseDto;
-import com.example.backend.user.model.dto.response.UserInfoResponseDto;
-import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
+import com.example.backend.user.model.dto.response.*;
 import com.example.backend.user.service.EmailVerifyService;
 import com.example.backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -169,6 +166,29 @@ public class UserController {
             return baseResponseService.getFailureResponse(UserResponseStatus.UNDEFINED_USER);
         }
         return baseResponseService.getSuccessResponse(user, UserResponseStatus.SUCCESS);
+    }
+
+    @GetMapping("/alarm")
+    public BaseResponse<AlarmSettingResponseDto> getAlarmSetting(
+            @AuthenticationPrincipal User user
+    ) {
+        if (user == null) {
+            return baseResponseService.getFailureResponse(UserResponseStatus.UNDEFINED_USER);
+        }
+        AlarmSettingResponseDto dto = userService.getAlarmSetting(user.getUserIdx());
+        return baseResponseService.getSuccessResponse(dto, UserResponseStatus.SUCCESS);
+    }
+
+    @PatchMapping("/alarm")
+    public BaseResponse<AlarmSettingResponseDto> updateAlarmSetting(
+            @AuthenticationPrincipal User user,
+            @RequestBody AlarmSettingRequestDto request
+    ) {
+        if (user == null) {
+            return baseResponseService.getFailureResponse(UserResponseStatus.UNDEFINED_USER);
+        }
+        AlarmSettingResponseDto dto = userService.updateAlarmSetting(user.getUserIdx(), request);
+        return baseResponseService.getSuccessResponse(dto, UserResponseStatus.SUCCESS);
     }
 
     // --------------------- 여기서부터 관리자 전용 ----------------------------
