@@ -50,4 +50,23 @@ public class HttpClientUtil {
         }
     }
 
+    public static boolean requestRefund(String paymentId) {
+        String secret = System.getenv("PORTONE_SECRET");
+        String url    = "https://api.portone.io/payments/" + paymentId + "/cancel";
+
+        try {
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Authorization", "PortOne " + secret)
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();
+            HttpResponse<String> resp = HttpClient.newHttpClient()
+                    .send(req, HttpResponse.BodyHandlers.ofString());
+
+            // 200번대 응답이면 OK
+            return resp.statusCode() >= 200 && resp.statusCode() < 300;
+        } catch (Exception e) {
+            throw new RuntimeException("Refund request failed", e);
+        }
+    }
 }
