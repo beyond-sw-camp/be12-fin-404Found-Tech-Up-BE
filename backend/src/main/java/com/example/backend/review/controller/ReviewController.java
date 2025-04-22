@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "리뷰 기능", description = "리뷰 기능 API")
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +23,15 @@ import org.springframework.web.bind.annotation.*;
 public class ReviewController {
     private final ReviewService reviewService;
     private final BaseResponseService baseResponseService;
+
+    @Operation(summary="상품별 리뷰 조회", description="특정 상품에 달린 리뷰들을 날짜 최신순으로 가져옵니다.")
+    @GetMapping("/product/{productIdx}")
+    public BaseResponse<List<ReviewResponseDto>> listByProduct(
+            @PathVariable Long productIdx
+    ) {
+        List<ReviewResponseDto> dtos = reviewService.getReviewsByProduct(productIdx);
+        return baseResponseService.getSuccessResponse(dtos, ReviewResponseStatus.SUCCESS);
+    }
 
     @Operation(
             summary = "리뷰 작성하기",
