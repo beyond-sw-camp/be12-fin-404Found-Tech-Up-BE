@@ -14,6 +14,11 @@ import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +26,18 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
+
+    @Transactional(readOnly=true)
+    public List<ReviewResponseDto> getReviewsByProduct(Long productIdx) {
+        Product p = productRepository.findById(productIdx)
+                .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
+
+        return reviewRepository.findAll().stream()
+                .filter(r -> r.getProduct().getProductIdx().equals(productIdx))
+                .sorted(Comparator.comparing(Review::getReviewDate).reversed())
+                .map(ReviewResponseDto::from)
+                .collect(Collectors.toList());
+    }
 
     // 리뷰 작성
     public ReviewResponseDto createReview(User loginUser, Integer productIdx, ReviewRequestDto dto) {
