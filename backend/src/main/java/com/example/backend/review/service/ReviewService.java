@@ -14,6 +14,10 @@ import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +26,20 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
 
+    @Transactional(readOnly=true)
+    public List<ReviewResponseDto> getReviewsByProduct(Long productIdx) {
+        Product p = productRepository.findById(productIdx)
+                .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
+
+        List<Review> reviews = reviewRepository.findAllByProductOrderByReviewDateDesc(p);
+        return reviews.stream()
+                .map(ReviewResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
     // 리뷰 작성
     public ReviewResponseDto createReview(User loginUser, Integer productIdx, ReviewRequestDto dto) {
-        // 구매 검증 로직 추가 필요. 구매한 사람만 리뷰 작성 가능.
+        // 구매한 사람만 리뷰 작성 가능하다면 구매 검증 로직 추가 필요
         Product product = productRepository.findById(productIdx.longValue())
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
         Review review = dto.toEntity(loginUser, product);
