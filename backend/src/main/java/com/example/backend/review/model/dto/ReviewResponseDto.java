@@ -27,13 +27,21 @@ public class ReviewResponseDto {
 
     // 리뷰 작성후 결과 반환
     public static ReviewResponseDto from(Review review) {
+        String userName;
+
+        if (review.getUser() == null || review.getUser().getUserNickname() == null) {
+            userName = "의문의 유저";
+        } else {
+            userName = review.getUser().getUserNickname();
+        }
+
         return ReviewResponseDto.builder()
                 .reviewIdx(review.getReviewIdx())
                 .reviewRating(review.getReviewRating())
                 .reviewContent(review.getReviewContent())
                 .reviewImg(review.getReviewImg())
                 .reviewDate(review.getReviewDate())
-                .userName(review.getUser().getUserNickname())
+                .userName(userName)
                 .build();
     }
 }

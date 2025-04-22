@@ -32,16 +32,15 @@ public class ReviewService {
         Product p = productRepository.findById(productIdx)
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
 
-        return reviewRepository.findAll().stream()
-                .filter(r -> r.getProduct().getProductIdx().equals(productIdx))
-                .sorted(Comparator.comparing(Review::getReviewDate).reversed())
+        List<Review> reviews = reviewRepository.findAllByProductOrderByReviewDateDesc(p);
+        return reviews.stream()
                 .map(ReviewResponseDto::from)
                 .collect(Collectors.toList());
     }
 
     // 리뷰 작성
     public ReviewResponseDto createReview(User loginUser, Integer productIdx, ReviewRequestDto dto) {
-        // 구매 검증 로직 추가 필요. 구매한 사람만 리뷰 작성 가능.
+        // 구매한 사람만 리뷰 작성 가능하다면 구매 검증 로직 추가 필요
         Product product = productRepository.findById(productIdx.longValue())
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
         Review review = dto.toEntity(loginUser, product);
