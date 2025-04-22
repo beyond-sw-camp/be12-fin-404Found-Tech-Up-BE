@@ -28,6 +28,26 @@ import java.util.List;
 public class CouponController {
     private final CouponService couponService;
 
+    @Operation( summary="이벤트 목록 조회", description="현재 진행 중인 이벤트 목록을 봅니다.")
+    @GetMapping("/events")
+    public BaseResponse<CouponListResponseDto> getEventList() {
+        return new BaseResponseServiceImpl().getSuccessResponse(couponService.getEventList(), CouponResponseStatus.SUCCESS);
+    }
+
+    @Operation( summary= "이벤트 쿠폰 발급", description="이벤트에서 쿠폰을 발행하고 이벤트 쿠폰 재고를 차감합니다")
+    @GetMapping("/events/{idx}")
+    public BaseResponse<Object> issueEventCoupon(@AuthenticationPrincipal User user, @PathVariable Long idx) {
+        // 중복 발행 방지
+        if (user.getUserCoupons().stream().anyMatch(coupon -> coupon.getCoupon().getCouponIdx().equals(idx))) {
+            return new BaseResponseServiceImpl().getFailureResponse(CouponResponseStatus.DUPLICATED_EVENT_COUPON);
+        }
+        Boolean result = couponService.issueEventCoupon(user,idx);
+        if (!result) { // 쿠폰 재고 소진됨
+            return new BaseResponseServiceImpl().getFailureResponse(CouponResponseStatus.OUT_OF_COUPON_STOCK);
+        }
+        return new BaseResponseServiceImpl().getSuccessResponse(CouponResponseStatus.SUCCESS);
+    }
+
     @Operation(summary = "쿠폰 목록 조회", description = "전체 발급된 쿠폰 목록을 전부 조회합니다.")
     @GetMapping
     public BaseResponse<CouponListResponseDto> getCouponList() {
@@ -50,20 +70,6 @@ public class CouponController {
     public BaseResponse<CouponInfoDto> getCouponList(@PathVariable Long idx) {
         CouponInfoDto result = couponService.getCouponInfo(idx);
         return new BaseResponseServiceImpl().getSuccessResponse(result, CouponResponseStatus.SUCCESS);
-    }
-
-    @Operation( summary= "이벤트 쿠폰 발급", description="이벤트에서 쿠폰을 발행하고 이벤트 쿠폰 재고를 차감합니다")
-    @GetMapping("/events/{idx}")
-    public BaseResponse<Object> issueEventCoupon(@AuthenticationPrincipal User user, @PathVariable Long idx) {
-        // 중복 발행 방지
-        if (user.getUserCoupons().stream().anyMatch(coupon -> coupon.getCoupon().getCouponIdx().equals(idx))) {
-            return new BaseResponseServiceImpl().getFailureResponse(CouponResponseStatus.DUPLICATED_EVENT_COUPON);
-        }
-        Boolean result = couponService.issueEventCoupon(user,idx);
-        if (!result) { // 쿠폰 재고 소진됨
-            return new BaseResponseServiceImpl().getFailureResponse(CouponResponseStatus.OUT_OF_COUPON_STOCK);
-        }
-        return new BaseResponseServiceImpl().getSuccessResponse(CouponResponseStatus.SUCCESS);
     }
 
     // ---------------- 관리자 ---------------------

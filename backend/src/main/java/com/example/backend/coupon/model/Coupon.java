@@ -35,7 +35,7 @@ public class Coupon {
     private List<UserCoupon> userCoupons;
 
     public CouponInfoDto toDto() {
-        return CouponInfoDto.builder().couponIdx(this.couponIdx).couponName(this.couponName).couponDiscountRate(this.couponDiscountRate).productIdx(product.getProductIdx()).couponValidDate(this.couponValidDate.toInstant().atZone(ZoneId.systemDefault())).build();
+        return CouponInfoDto.builder().couponIdx(this.couponIdx).couponName(this.couponName).couponDiscountRate(this.couponDiscountRate).productIdx(product.getProductIdx()).productName(product.getName()).couponStock(couponQuantity).couponValidDate(this.couponValidDate.toInstant().atZone(ZoneId.systemDefault())).build();
     }
 
     public void update(UserCouponCreateRequestDto dto) {
