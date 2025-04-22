@@ -38,7 +38,7 @@ public class CouponController {
     @GetMapping("/events/{idx}")
     public BaseResponse<Object> issueEventCoupon(@AuthenticationPrincipal User user, @PathVariable Long idx) {
         // 중복 발행 방지
-        if (user.getUserCoupons().stream().anyMatch(coupon -> coupon.getCoupon().getCouponIdx().equals(idx))) {
+        if (user.getUserCoupons() != null && user.getUserCoupons().stream().anyMatch(coupon -> coupon.getCoupon().getCouponIdx().equals(idx))) {
             return new BaseResponseServiceImpl().getFailureResponse(CouponResponseStatus.DUPLICATED_EVENT_COUPON);
         }
         Boolean result = couponService.issueEventCoupon(user,idx);
