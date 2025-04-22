@@ -10,6 +10,7 @@ import com.example.backend.order.model.Orders;
 import com.example.backend.order.model.dto.OrderCancelResponseDto;
 import com.example.backend.order.model.dto.OrderRequestDto;
 import com.example.backend.order.model.dto.OrderResponseDto;
+import com.example.backend.order.model.dto.OrderVerifyRequestDto;
 import com.example.backend.order.service.OrderService;
 import com.example.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,13 +41,14 @@ public class OrderController {
         return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
     }
 
-    @Operation(summary = "상품 결제", description = "주문한 상품을 결제합니다. 결제 식별자(paymentId)를 사용해 PortOne API 로 결제 금액을 검증합니다.")
-    @PostMapping("/payment/{orderIdx}")
+    @Operation(summary = "결제 검증", description = "결제 내역을 검증합니다. 결제 식별자(paymentId)를 사용해 PortOne API 로 결제 금액을 검증합니다.")
+    @PostMapping("/verify/{orderIdx}")
     public BaseResponse<OrderResponseDto> payOrder(
             @AuthenticationPrincipal User loginUser,
-            @PathVariable Long orderIdx
+            @PathVariable Long orderIdx,
+            @RequestBody OrderVerifyRequestDto dto
     ) {
-        Orders order = orderService.payOrder(loginUser, orderIdx);
+        Orders order = orderService.verify(loginUser, orderIdx, dto.getPaymentId());
         OrderResponseDto response = OrderResponseDto.from(order);
         return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
     }

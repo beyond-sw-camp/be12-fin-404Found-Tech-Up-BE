@@ -18,8 +18,14 @@ public class Orders {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderIdx;
     private double orderTotalPrice;
+    private double shipCost;
+    private String paymentMethod;
+    private String shippingMethod;
     private String orderStatus;
     private Date orderDate;
+
+    private String storeId;
+    private String channelKey;
 
     // 유저와 다대일 맵핑
     @ManyToOne

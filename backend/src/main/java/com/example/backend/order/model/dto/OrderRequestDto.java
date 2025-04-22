@@ -18,7 +18,8 @@ public class OrderRequestDto {
     private String phone;
     private String email;
     private String memo;
-    private double shippingCost;
+    private double shipCost;
     private String paymentMethod;
+    private String shippingMethod;
     private List<OrderDetailRequestDto> items;
 }
