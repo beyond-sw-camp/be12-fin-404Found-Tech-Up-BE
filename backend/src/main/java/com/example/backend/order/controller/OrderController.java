@@ -53,16 +53,6 @@ public class OrderController {
         return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
     }
 
-    @Operation(summary = "주문 취소", description = "회원의 주문을 취소합니다.")
-    @PostMapping("/cancel/{orderId}")
-    public BaseResponse<OrderCancelResponseDto> cancelOrder(
-            @AuthenticationPrincipal User loginUser,
-            @PathVariable Long orderId
-    ) {
-        OrderCancelResponseDto response = orderService.cancelOrder(loginUser, orderId);
-        return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
-    }
-
     @Operation(summary = "주문 내역 조회", description = "회원의 주문 내역을 조회합니다.")
     @GetMapping("/history")
     public BaseResponse<List<OrderResponseDto>> getOrderHistory(
@@ -93,9 +83,21 @@ public class OrderController {
         return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
     }
 
-
-
     // ------------------- 여기서부터 관리자 기능 ---------------------
+
+    @Operation(
+            summary     = "주문 취소",
+            description = "회원이 자신의 주문을 취소합니다. 이미 결제된 경우 재고를 복원하고 환불을 요청합니다."
+    )
+    @PostMapping("/cancel/{orderId}")
+    public BaseResponse<OrderResponseDto> cancelOrder(
+            @AuthenticationPrincipal User loginUser,
+            @PathVariable Long orderId
+    ) {
+        Orders order = orderService.cancelOrder(loginUser, orderId);
+        OrderResponseDto response = OrderResponseDto.from(order);
+        return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
+    }
 
     @Operation(summary="관리자의 사용자 주문 내역 조회", description="관리자가 사용자 주문 내역들을 볼 때 사용합니다.")
     @GetMapping("/orderlist/{idx}")
