@@ -26,6 +26,7 @@ public class Orders {
 
     private String storeId;
     private String channelKey;
+    private String paymentId;
 
     // 유저와 다대일 맵핑
     @ManyToOne

@@ -5,8 +5,10 @@ import com.example.backend.cart.model.CartItem;
 import com.example.backend.cart.repository.CartRepository;
 import com.example.backend.global.exception.CartException;
 import com.example.backend.global.exception.OrderException;
+import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.responseStatus.CartResponseStatus;
 import com.example.backend.global.response.responseStatus.OrderResponseStatus;
+import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.order.model.OrderDetail;
 import com.example.backend.order.model.Orders;
 import com.example.backend.order.model.ShippingAddress;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -158,6 +161,7 @@ public class OrderService {
             throw new OrderException(OrderResponseStatus.ORDER_TOTAL_MISMATCH);
         }
         order.setOrderStatus("PAID");
+        order.setPaymentId(paymentId);
 
         // 검증 성공 시 각 상품 해당 상품의 주문 수만큼 차감
         for (OrderDetail detail : order.getOrderDetails()) {
@@ -177,15 +181,45 @@ public class OrderService {
     }
 
     // 주문 취소
-    public OrderCancelResponseDto cancelOrder(User user, Long orderId) {
+    public Orders cancelOrder(User user, Long orderId) {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
-        if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
-            throw new OrderException(OrderResponseStatus.ORDER_USER_MISMATCH);
+
+        // 관리자가 아니라면 취소 못함.
+        if (!user.getIsAdmin()) {
+            throw new UserException(UserResponseStatus.UNIDENTIFIED_ROLE);
         }
+
+        String status = order.getOrderStatus();
+        if ("CANCELED".equals(status)) {
+            throw new OrderException(OrderResponseStatus.ORDER_ALREADY_CANCELED);
+        }
+        if (!Objects.equals("PAID", status)) {
+            // 이미 환불 요청 중이거나 배송 중이면 취소 불가
+            throw new OrderException(OrderResponseStatus.ORDER_CANNOT_CANCEL);
+        }
+
+        // 재고 복원
+        for (OrderDetail detail : order.getOrderDetails()) {
+            Product p = detail.getProduct();
+            p.setStock(p.getStock() + detail.getOrderDetailQuantity());
+            productRepository.save(p);
+        }
+
+        // 결제된 상태였다면, 환불 요청
+        if ("PAID".equals(status)) {
+            String paymentId = order.getPaymentId(); // assume you stored it
+            boolean refundOk = HttpClientUtil.requestRefund(paymentId);
+            if (!refundOk) {
+                throw new OrderException(OrderResponseStatus.ORDER_REFUND_FAILED);
+            }
+        }
+
+        // 쿠폰을 사용했다면, 사용한 쿠폰 롤백
+
+        // 최종 상태 업데이트
         order.setOrderStatus("CANCELED");
-        orderRepository.save(order);
-        return OrderCancelResponseDto.from(orderId, "CANCELED");
+        return orderRepository.save(order);
     }
 
     // 주문 내역 조회 (사용자 기준)
