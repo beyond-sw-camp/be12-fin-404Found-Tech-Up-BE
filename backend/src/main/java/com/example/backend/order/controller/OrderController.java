@@ -4,6 +4,7 @@ import com.example.backend.global.exception.BaseException;
 import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseService;
+import com.example.backend.global.response.BaseResponseServiceImpl;
 import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.global.response.responseStatus.OrderResponseStatus;
 import com.example.backend.order.model.Orders;
@@ -87,7 +88,7 @@ public class OrderController {
 
     @Operation(
             summary     = "주문 취소",
-            description = "회원이 자신의 주문을 취소합니다. 이미 결제된 경우 재고를 복원하고 환불을 요청합니다."
+            description = "회원의 주문을 취소합니다. 이미 결제된 경우 재고를 복원하고 환불을 요청합니다."
     )
     @PostMapping("/cancel/{orderId}")
     public BaseResponse<OrderResponseDto> cancelOrder(
@@ -101,7 +102,10 @@ public class OrderController {
 
     @Operation(summary="관리자의 사용자 주문 내역 조회", description="관리자가 사용자 주문 내역들을 볼 때 사용합니다.")
     @GetMapping("/orderlist/{idx}")
-    public BaseResponse<List<OrderResponseDto>> getOrderList(@PathVariable Long idx) {
+    public BaseResponse<List<OrderResponseDto>> getOrderList(@AuthenticationPrincipal User user, @PathVariable Long idx) {
+        if (user == null || !user.getIsAdmin()) {
+            return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
+        }
         if (idx == null) {
             throw new BaseException(CommonResponseStatus.BAD_REQUEST);
         }

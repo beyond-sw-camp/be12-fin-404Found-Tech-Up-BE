@@ -76,7 +76,10 @@ public class NotificationController {
     @Operation( summary = "전체 알림 등록", description = "모든 사용자에게 가는 알림을 등록합니다" )
     @PostMapping("/all")
     @Transactional
-    public BaseResponse<Object> registerAllUserNotification(@RequestBody NotiRequestDto request) {
+    public BaseResponse<Object> registerAllUserNotification(@AuthenticationPrincipal User user, @RequestBody NotiRequestDto request) {
+        if (user == null || !user.getIsAdmin()) {
+            return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
+        }
         Notification notification = notificationService.generateNotificationEntity(request);
         notificationService.generateFromNotification(notification);
         return new BaseResponseServiceImpl().getSuccessResponse(CommonResponseStatus.SUCCESS);
@@ -84,14 +87,20 @@ public class NotificationController {
 
     @Operation( summary = "수동 알림 목록 보기", description= "모든 사용자에게 간 모든 알림을 하나씩 목록으로 반환합니다")
     @GetMapping("/all")
-    public BaseResponse<List<NotiResponseDto>> getAllUserNotification() {
+    public BaseResponse<List<NotiResponseDto>> getAllUserNotification(@AuthenticationPrincipal User user) {
+        if (user == null || !user.getIsAdmin()) {
+            return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
+        }
         List<NotiResponseDto> result = notificationService.getAllNotificationHistory();
         return new BaseResponseServiceImpl().getSuccessResponse(result ,CommonResponseStatus.SUCCESS);
     }
 
     @Operation(summary= "수동 알림/이벤트 알림 지우기", description="모든 사용자에게 간 알림을 제거합니다.")
     @DeleteMapping("/all")
-    public BaseResponse<Object> deleteAllUserNotification(@RequestParam Long idx) {
+    public BaseResponse<Object> deleteAllUserNotification(@AuthenticationPrincipal User user, @RequestParam Long idx) {
+        if (user == null || !user.getIsAdmin()) {
+            return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
+        }
         notificationService.deleteAllNotification(idx);
         return new BaseResponseServiceImpl().getSuccessResponse(CommonResponseStatus.SUCCESS);
     }
