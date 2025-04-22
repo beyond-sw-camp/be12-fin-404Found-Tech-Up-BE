@@ -8,7 +8,9 @@ import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.product.model.dto.ProductImageSaveRequestDto;
 import com.example.backend.product.service.ProductImageService;
+import com.example.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,14 +25,20 @@ public class ProductImageController {
     private final ProductImageService productImageService;
 
     @GetMapping("/presignedUrl")
-    public BaseResponse<String> getPresignedUrl(@RequestParam("filename") String filename) {
+    public BaseResponse<String> getPresignedUrl(@AuthenticationPrincipal User user, @RequestParam("filename") String filename) {
+        if (user == null || !user.getIsAdmin()) {
+            return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
+        }
         String filetype = productImageService.getFileType(filename);
         String fileKey = productImageService.getFileKey(filename);
         return new BaseResponseServiceImpl().getSuccessResponse(preSignedUrlService.generatePreSignedUrl(fileKey, filetype), CommonResponseStatus.SUCCESS);
     }
 
     @PutMapping("/upload")
-    public BaseResponse<String> upload(@RequestParam("file") MultipartFile file) {
+    public BaseResponse<String> upload(@AuthenticationPrincipal User user,@RequestParam("file") MultipartFile file) {
+        if (user == null || !user.getIsAdmin()) {
+            return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
+        }
         if (file.getOriginalFilename() == null || file.getOriginalFilename().isEmpty()) {
             return new BaseResponseServiceImpl().getFailureResponse(ProductResponseStatus.PRODUCT_SAVE_FAIL);
         }
@@ -42,8 +50,11 @@ public class ProductImageController {
     }
 
     @PostMapping
-    public BaseResponse<String> saveFileKey(@RequestBody ProductImageSaveRequestDto requestBody) {
+    public BaseResponse<String> saveFileKey(@AuthenticationPrincipal User user, @RequestBody ProductImageSaveRequestDto requestBody) {
         try {
+            if (user == null || !user.getIsAdmin()) {
+                return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
+            }
             productImageService.saveFileInfo(requestBody);
         } catch (Exception e) {
             return new BaseResponseServiceImpl().getFailureResponse(ProductResponseStatus.PRODUCT_SAVE_FAIL);

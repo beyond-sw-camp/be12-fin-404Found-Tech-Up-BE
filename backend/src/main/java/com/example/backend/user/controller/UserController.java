@@ -4,6 +4,7 @@ package com.example.backend.user.controller;
 import com.example.backend.common.dto.ErrorResponseDto;
 import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseServiceImpl;
+import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.user.model.User;
 import com.example.backend.user.model.dto.request.*;
@@ -170,7 +171,10 @@ public class UserController {
     @ApiResponse(responseCode="400", description="요청이 이상하여 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @GetMapping("/alluser")
-    private BaseResponse<List<ReducedUserInfoDto>> getAllUser(/*@AuthenticationPrincipal User user, @RequestParam Integer offset*/) {
+    private BaseResponse<List<ReducedUserInfoDto>> getAllUser(@AuthenticationPrincipal User user) {
+        if (user == null || !user.getIsAdmin()) {
+            return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
+        }
         List<ReducedUserInfoDto> userInfoList = userService.getAllUsersForAdmin();
         // TODO: 서비스에서 페이징된 정보 가져오기
         return new BaseResponseServiceImpl().getSuccessResponse(userInfoList, UserResponseStatus.SUCCESS);
@@ -181,8 +185,11 @@ public class UserController {
     @ApiResponse(responseCode="400", description="요청이 이상하여 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @GetMapping("/finduser")
-    private BaseResponse<List<ReducedUserInfoDto>> searchUser(/*@AuthenticationPrincipal User user, @RequestParam Integer offset, */ @RequestParam String keyword) {
+    private BaseResponse<List<ReducedUserInfoDto>> searchUser(@AuthenticationPrincipal User user, @RequestParam String keyword) {
         // TODO: 서비스에서 페이징된 정보 가져오기
+        if (user == null || !user.getIsAdmin()) {
+            return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
+        }
         List<ReducedUserInfoDto> userInfoList = userService.searchUsers(keyword);
         return new BaseResponseServiceImpl().getSuccessResponse(userInfoList, UserResponseStatus.SUCCESS);
     }
