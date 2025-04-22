@@ -1,9 +1,13 @@
 package com.example.backend.notification.controller;
 
+import com.example.backend.global.response.BaseResponse;
+import com.example.backend.global.response.BaseResponseService;
+import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.notification.model.Notification;
 import com.example.backend.notification.model.UserNotification;
 import com.example.backend.notification.model.dto.NotiRequestDto;
 import com.example.backend.notification.model.dto.NotiResponseDto;
+import com.example.backend.notification.model.dto.NotificationPageResponse;
 import com.example.backend.notification.repository.NotificationRepository;
 import com.example.backend.notification.service.NotificationService;
 import com.example.backend.user.model.User;
@@ -25,6 +29,8 @@ public class NotificationController {
 
     private final NotificationRepository notificationRepo;
 
+    private final BaseResponseService baseResponseService;
+
     @PostMapping("/test-noti/{id}")
     public void testTemplateSend(@PathVariable Long id) {
         Notification tpl = notificationRepo.findById(id)
@@ -34,29 +40,28 @@ public class NotificationController {
 
 
     @GetMapping
-    public List<UserNotification> getAll(@AuthenticationPrincipal User loginUser) {
-        if (loginUser == null) {
-            return List.of();
-        }
-        return notificationService.getAllNotifications(loginUser.getUserIdx());
+    public BaseResponse<?> getAll(@AuthenticationPrincipal User loginUser,
+                                  @RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "10") int size) {
+        NotificationPageResponse response = notificationService.getAllNotifications(loginUser.getUserIdx(), page, size);
+        return baseResponseService.getSuccessResponse(response, CommonResponseStatus.SUCCESS);
     }
 
     @GetMapping("/read")
-    public List<UserNotification> getRead(@AuthenticationPrincipal User loginUser) {
-        if (loginUser == null) {
-            return List.of();
-        }
-        return notificationService.getReadNotifications(loginUser.getUserIdx());
+    public BaseResponse<?> getRead(@AuthenticationPrincipal User loginUser,
+                                   @RequestParam(defaultValue = "0") int page,
+                                   @RequestParam(defaultValue = "10") int size) {
+        NotificationPageResponse response = notificationService.getReadNotifications(loginUser.getUserIdx(), page, size);
+        return baseResponseService.getSuccessResponse(response, CommonResponseStatus.SUCCESS);
     }
 
     @GetMapping("/unread")
-    public List<UserNotification> getUnread(@AuthenticationPrincipal User loginUser) {
-        if (loginUser == null) {
-            return List.of();
-        }
-        return notificationService.getUnreadNotifications(loginUser.getUserIdx());
+    public BaseResponse<?> getUnread(@AuthenticationPrincipal User loginUser,
+                                     @RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "10") int size) {
+        NotificationPageResponse response = notificationService.getUnreadNotifications(loginUser.getUserIdx(), page, size);
+        return baseResponseService.getSuccessResponse(response, CommonResponseStatus.SUCCESS);
     }
-
 
     @Operation(
             summary = "알림 읽음 처리",

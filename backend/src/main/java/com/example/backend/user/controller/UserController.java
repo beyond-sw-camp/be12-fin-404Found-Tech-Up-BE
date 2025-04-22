@@ -163,6 +163,14 @@ public class UserController {
         return baseResponseService.getSuccessResponse(response, UserResponseStatus.SUCCESS);
     }
 
+    @GetMapping("/auth/me")
+    public BaseResponse<Object> getCurrentUser(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return baseResponseService.getFailureResponse(UserResponseStatus.UNDEFINED_USER);
+        }
+        return baseResponseService.getSuccessResponse(user, UserResponseStatus.SUCCESS);
+    }
+
     // --------------------- 여기서부터 관리자 전용 ----------------------------
 
     @Operation(summary="전체 회원 정보 반환", description = "회원 정보를 30개 단위로 반환합니다")
