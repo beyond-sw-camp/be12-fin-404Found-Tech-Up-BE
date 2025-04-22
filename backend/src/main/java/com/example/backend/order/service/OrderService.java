@@ -184,26 +184,25 @@ public class OrderService {
     public Orders cancelOrder(User user, Long orderId) {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
+      // 관리자가 아니라면 취소 못함.
+      if (!user.getIsAdmin()) {
+          throw new UserException(UserResponseStatus.UNIDENTIFIED_ROLE);
+      }
 
-        // 관리자가 아니라면 취소 못함.
-        if (!user.getIsAdmin()) {
-            throw new UserException(UserResponseStatus.UNIDENTIFIED_ROLE);
-        }
+      String status = order.getOrderStatus();
+      if ("CANCELED".equals(status)) {
+          throw new OrderException(OrderResponseStatus.ORDER_ALREADY_CANCELED);
+      }
+      if (!Objects.equals("REFUND_REQUESTED", status)) {
+          // 요청 받은 상태가 아니라면 환불하지 않는다.
+          throw new OrderException(OrderResponseStatus.ORDER_CANNOT_CANCEL);
+      }
 
-        String status = order.getOrderStatus();
-        if ("CANCELED".equals(status)) {
-            throw new OrderException(OrderResponseStatus.ORDER_ALREADY_CANCELED);
-        }
-        if (!Objects.equals("REFUND_REQUESTED", status)) {
-            // 요청 받은 상태가 아니라면 환불하지 않는다.
-            throw new OrderException(OrderResponseStatus.ORDER_CANNOT_CANCEL);
-        }
-
-        // 재고 복원
-        for (OrderDetail detail : order.getOrderDetails()) {
-            Product p = detail.getProduct();
-            p.setStock(p.getStock() + detail.getOrderDetailQuantity());
-            productRepository.save(p);
+      // 재고 복원
+      for (OrderDetail detail : order.getOrderDetails()) {
+          Product p = detail.getProduct();
+          p.setStock(p.getStock() + detail.getOrderDetailQuantity());
+          productRepository.save(p);
         }
 
         // 결제된 상태가 아니라면 환불 요청안되므로 무조건 환불

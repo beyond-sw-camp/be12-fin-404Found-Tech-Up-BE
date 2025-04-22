@@ -41,7 +41,7 @@ public class StatisticsService {
         List<TopSales> tops = orderDetailRepository.countTopSales(new Date(startDate.toEpochDay()));
         List<TopWishList> topw = wishlistRepository.countWishlistGroupByProduct();
         Integer newcomers = userRepository.findAllByCreatedAtAfter(startDate.atStartOfDay()).size();
-        Integer totalRefunds = orderRepository.findAllByOrderStatusAndOrderDateAfter("취소됨", new Date(startDate.toEpochDay())).size();
+        Integer totalRefunds = getTotalRefunds();
         List<Integer> incomeData = getRecentEarningList();
         List<String> incomeXAxis = getIncomeGraphXAxis(today);
         return StatisticsResponseDto.builder()
@@ -88,7 +88,8 @@ public class StatisticsService {
         int month = today.getMonthValue();
         int year = today.getYear();
         LocalDate startDate = LocalDate.of(year, month, 1);
-        return orderRepository.findAllByOrderStatusAndOrderDateAfter("취소됨", new Date(startDate.toEpochDay())).size();
+        return orderRepository.findAllByOrderStatusAndOrderDateAfter("CANCELED", new Date(startDate.toEpochDay())).size()
+                + orderRepository.findAllByOrderStatusAndOrderDateAfter("REFUND_REQUESTED", new Date(startDate.toEpochDay())).size();
     }
 
     public List<TopSales> getTopSales() {
@@ -134,11 +135,11 @@ public class StatisticsService {
         int month = today.getMonthValue();
         int year = today.getYear();
         ZonedDateTime startDate3 = ZonedDateTime.of(year, month, 1, 0,0,0,0, ZoneId.systemDefault());
-        ZonedDateTime endDate3 = startDate3.plusMonths(1).minusNanos(1);
+        ZonedDateTime endDate3 = startDate3.plusMonths(1).minusSeconds(1);
         ZonedDateTime startDate2 = startDate3.minusMonths(1);
-        ZonedDateTime endDate2 = startDate3.minusNanos(1);
+        ZonedDateTime endDate2 = startDate3.minusSeconds(1);
         ZonedDateTime startDate1 = startDate2.minusMonths(1);
-        ZonedDateTime endDate1 = endDate2.minusNanos(1);
+        ZonedDateTime endDate1 = endDate2.minusSeconds(1);
 
         List<Orders> totalOrder1 = orderRepository.findAllByOrderDateBetween(java.sql.Timestamp.valueOf(startDate1.toLocalDateTime()), java.sql.Timestamp.valueOf(endDate1.toLocalDateTime()));
         List<Orders> totalOrder2 = orderRepository.findAllByOrderDateBetween(java.sql.Timestamp.valueOf(startDate2.toLocalDateTime()), java.sql.Timestamp.valueOf(endDate2.toLocalDateTime()));
@@ -148,35 +149,37 @@ public class StatisticsService {
         if (totalOrder1.isEmpty()) {
             result.add(0);
         } else {
+            Integer total = 0;
             for (Orders order : totalOrder1) {
-                Integer total = 0;
                 List<OrderDetail> details = order.getOrderDetails();
                 for (OrderDetail orderDetail : details) {
                     total += orderDetail.getOrderDetailPrice() * orderDetail.getOrderDetailQuantity();
                 }
-                result.add(total);
             }
+            result.add(total);
         }
         if (totalOrder2.isEmpty()) {
             result.add(0);
         } else {
+            Integer total = 0;
             for (Orders order : totalOrder2) {
-                Integer total = 0;
+
                 List<OrderDetail> details = order.getOrderDetails();
                 for (OrderDetail orderDetail : details) {
                     total += orderDetail.getOrderDetailPrice() * orderDetail.getOrderDetailQuantity();
                 }
-                result.add(total);
             }
+            result.add(total);
         }
+        Integer total = 0;
         for (Orders order : totalOrder3) {
-            Integer total = 0;
+
             List<OrderDetail> details = order.getOrderDetails();
             for (OrderDetail orderDetail : details) {
                 total += orderDetail.getOrderDetailPrice() * orderDetail.getOrderDetailQuantity();
             }
-            result.add(total);
         }
+        result.add(total);
 
         return result;
     }
@@ -185,11 +188,8 @@ public class StatisticsService {
         int month = today.getMonthValue();
         int year = today.getYear();
         ZonedDateTime startDate3 = ZonedDateTime.of(year, month, 1, 0,0,0,0, ZoneId.systemDefault());
-        ZonedDateTime endDate3 = startDate3.plusMonths(1).minusNanos(1);
         ZonedDateTime startDate2 = startDate3.minusMonths(1);
-        ZonedDateTime endDate2 = startDate3.minusNanos(1);
         ZonedDateTime startDate1 = startDate2.minusMonths(1);
-        ZonedDateTime endDate1 = endDate2.minusNanos(1);
         List<String> result = new ArrayList<>();
         result.add(startDate1.getYear()+ "-" +startDate1.getMonthValue());
         result.add(startDate2.getYear()+ "-" +startDate2.getMonthValue());

@@ -45,6 +45,7 @@ public class ProductService {
     private final NotificationProducerService notificationProducerService;
     // 제품 이미지 파일 삭제는 이곳에서 처리
     private final S3Service s3Service;
+    private final ProductImageService productImageService;
 
     public List<ProductResponseDto> getProductList() {
         return productRepository.findAll()
@@ -145,7 +146,7 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
         if (!product.getImages().isEmpty()) {
-            List<String> productImages = product.getImages().stream().map(ProductImage::getImageUrl).toList();
+            List<String> productImages = product.getImages().stream().map(image -> productImageService.getFileKeyForDelete(image.getImageUrl())).toList();
             s3Service.deleteFiles(productImages);
             productImageRepository.deleteAll(product.getImages());
         }
@@ -253,6 +254,8 @@ public class ProductService {
             hddSpec.update(requestDto.getHddSpec());
             hddSpecRepository.save(hddSpec);
         }
+
+
 
         return ProductResponseDto.from(product);
     }

@@ -8,6 +8,7 @@ import com.example.backend.coupon.model.dto.request.EventCouponIssueRequestDto;
 import com.example.backend.coupon.model.dto.request.UserCouponCreateRequestDto;
 import com.example.backend.coupon.model.dto.response.CouponInfoDto;
 import com.example.backend.coupon.model.dto.response.CouponListResponseDto;
+import com.example.backend.coupon.model.dto.response.MyCouponInfoResponseDto;
 import com.example.backend.coupon.repository.CouponRepository;
 import com.example.backend.coupon.repository.UserCouponRepository;
 import com.example.backend.global.exception.CouponException;
@@ -50,6 +51,20 @@ public class CouponService {
     private final UserCouponRepository userCouponRepository;
     private final NotificationRepository notificationRepository;
     private final UserNotificationRepository userNotificationRepository;
+
+    public CouponListResponseDto getEventList() {
+        List<Coupon> coupons = couponRepository.findAllByCouponQuantityGreaterThanEqual(0);
+        // 만료 기한 끝난 이벤트는 제거
+        List<CouponInfoDto> couponInfoList = coupons.stream().filter(value -> value.getCouponValidDate().toInstant().compareTo(ZonedDateTime.now().toInstant()) > 0 ).map(Coupon::toDto).toList();
+        return CouponListResponseDto.builder().offset(0).total(couponInfoList.size()).limit((long) couponInfoList.size()).couponList(couponInfoList).build();
+    }
+
+    public List<MyCouponInfoResponseDto> getMyCouponList(User user) {
+        List<UserCoupon> myCoupons = userCouponRepository.findAllByUser(user);
+        return myCoupons.stream().map(UserCoupon::toDto).toList();
+    }
+
+    // --------------------------- 관리자 전용 -------------------------
 
     public Long CreateCouponForUser(UserCouponCreateRequestDto request){
         // 발급할 사용자 엔티티 찾기

@@ -1,5 +1,6 @@
 package com.example.backend.coupon.model;
 
+import com.example.backend.coupon.model.dto.response.MyCouponInfoResponseDto;
 import com.example.backend.order.model.OrderDetail;
 import com.example.backend.user.model.User;
 import jakarta.persistence.*;
@@ -30,4 +31,8 @@ public class UserCoupon {
     // 오더디테일과 일대일 맵핑
     @OneToOne(mappedBy = "userCoupon")
     private OrderDetail orderDetail;
+
+    public MyCouponInfoResponseDto toDto() {
+        return MyCouponInfoResponseDto.builder().couponIdx(userCouponIdx).couponUsed(couponUsed).couponInfo(getCoupon().toDto()).build();
+    }
 }
