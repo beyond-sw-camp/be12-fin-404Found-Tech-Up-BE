@@ -47,21 +47,6 @@ public class ReviewService {
         return ReviewResponseDto.from(review);
     }
 
-    // 리뷰 수정 (작성자인지 확인)
-    public ReviewResponseDto updateReview(User loginUser, Long reviewIdx, ReviewRequestDto dto) {
-        Review review = reviewRepository.findById(reviewIdx)
-                .orElseThrow(() -> new ReviewException(ReviewResponseStatus.REVIEW_NOT_FOUND));
-        if (!review.getUser().getUserIdx().equals(loginUser.getUserIdx())) {
-            throw new ReviewException(ReviewResponseStatus.REVIEW_USER_MISMATCH);
-        }
-        // 리뷰 내용을 업데이트합니다.
-        review.setReviewContent(dto.getReviewContent());
-        review.setReviewRating(dto.getReviewRating());
-        review.setReviewImg(dto.getReviewImg());
-        review = reviewRepository.save(review);
-        return ReviewResponseDto.from(review);
-    }
-
     // 리뷰 삭제 (작성자인지 확인)
     public ReviewDeleteResponseDto deleteReview(User loginUser, Long reviewIdx) {
         Review review = reviewRepository.findById(reviewIdx)
