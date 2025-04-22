@@ -189,9 +189,10 @@ public class OrderService {
     }
 
     // 주문 내역 조회 (사용자 기준)
-    public List<Orders> getOrderHistory(User user) {
-        return orderRepository.findAll().stream()
-                .filter(order -> order.getUser().getUserIdx().equals(user.getUserIdx()))
+    public List<OrderResponseDto> getOrderHistory(User user) {
+        List<Orders> orders = orderRepository.findAllByUserWithDetails(user.getUserIdx());
+        return orders.stream()
+                .map(OrderResponseDto::from)
                 .collect(Collectors.toList());
     }
 

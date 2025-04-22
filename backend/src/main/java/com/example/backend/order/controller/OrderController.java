@@ -68,10 +68,7 @@ public class OrderController {
     public BaseResponse<List<OrderResponseDto>> getOrderHistory(
             @AuthenticationPrincipal User loginUser
     ) {
-        List<Orders> orders = orderService.getOrderHistory(loginUser);
-        List<OrderResponseDto> responses = orders.stream()
-                .map(OrderResponseDto::from)
-                .collect(Collectors.toList());
+        List<OrderResponseDto> responses = orderService.getOrderHistory(loginUser);
         return baseResponseService.getSuccessResponse(responses, OrderResponseStatus.SUCCESS);
     }
 
