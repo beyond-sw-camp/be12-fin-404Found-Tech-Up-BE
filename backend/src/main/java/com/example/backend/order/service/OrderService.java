@@ -153,7 +153,7 @@ public class OrderService {
 
         // PortOne API를 통해 실제 결제한 금액 조회
         double portoneTotal = HttpClientUtil.getTotalAmount(paymentId);
-        double orderTotal   = order.getOrderTotalPrice() + order.getShipCost();
+        double orderTotal = order.getOrderTotalPrice() + order.getShipCost();
 
         if (portoneTotal != orderTotal) {
             // 결제한 금액이랑 실제 금액이랑 다름
@@ -194,8 +194,8 @@ public class OrderService {
         if ("CANCELED".equals(status)) {
             throw new OrderException(OrderResponseStatus.ORDER_ALREADY_CANCELED);
         }
-        if (!Objects.equals("PAID", status)) {
-            // 이미 환불 요청 중이거나 배송 중이면 취소 불가
+        if (!Objects.equals("REFUND_REQUESTED", status)) {
+            // 요청 받은 상태가 아니라면 환불하지 않는다.
             throw new OrderException(OrderResponseStatus.ORDER_CANNOT_CANCEL);
         }
 
@@ -206,13 +206,11 @@ public class OrderService {
             productRepository.save(p);
         }
 
-        // 결제된 상태였다면, 환불 요청
-        if ("PAID".equals(status)) {
-            String paymentId = order.getPaymentId(); // assume you stored it
-            boolean refundOk = HttpClientUtil.requestRefund(paymentId);
-            if (!refundOk) {
-                throw new OrderException(OrderResponseStatus.ORDER_REFUND_FAILED);
-            }
+        // 결제된 상태가 아니라면 환불 요청안되므로 무조건 환불
+        String paymentId = order.getPaymentId(); // assume you stored it
+        boolean refundOk = HttpClientUtil.requestRefund(paymentId);
+        if (!refundOk) {
+            throw new OrderException(OrderResponseStatus.ORDER_REFUND_FAILED);
         }
 
         // 쿠폰을 사용했다면, 사용한 쿠폰 롤백
@@ -247,13 +245,20 @@ public class OrderService {
         if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
             throw new OrderException(OrderResponseStatus.ORDER_USER_MISMATCH);
         }
+
+        // 결제된 상태가 아니라면 환불 요청 받지 않음
+        String status = order.getOrderStatus();
+        if ("PAID".equals(status)) {
+            throw new OrderException(OrderResponseStatus.ORDER_CANCEL_FAIL);
+        }
+
         order.setOrderStatus("REFUND_REQUESTED");
         orderRepository.save(order);
         return OrderCancelResponseDto.from(orderId, "REFUND_REQUESTED");
     }
 
     public List<OrderResponseDto> getOrdersByUserId(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
         return orderRepository.findAllByUserOrderByOrderDateDesc(user).stream().map(OrderResponseDto::from).toList();
     }
 }
