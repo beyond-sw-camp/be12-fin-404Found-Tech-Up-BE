@@ -3,6 +3,8 @@ package com.example.backend.order.service;
 import com.example.backend.cart.model.Cart;
 import com.example.backend.cart.model.CartItem;
 import com.example.backend.cart.repository.CartRepository;
+import com.example.backend.coupon.model.UserCoupon;
+import com.example.backend.coupon.repository.UserCouponRepository;
 import com.example.backend.global.exception.CartException;
 import com.example.backend.global.exception.OrderException;
 import com.example.backend.global.exception.UserException;
@@ -15,6 +17,7 @@ import com.example.backend.order.model.ShippingAddress;
 import com.example.backend.order.model.dto.OrderCancelResponseDto;
 import com.example.backend.order.model.dto.OrderRequestDto;
 import com.example.backend.order.model.dto.OrderResponseDto;
+import com.example.backend.order.model.dto.OrderVerifyRequestDto;
 import com.example.backend.order.repository.OrderRepository;
 import com.example.backend.order.repository.ShippingAddressRepository;
 import com.example.backend.product.model.Product;
@@ -26,10 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +38,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
+    private final UserCouponRepository userCouponRepository;
     private final ShippingAddressRepository shippingAddressRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
@@ -90,20 +91,45 @@ public class OrderService {
             throw new CartException(CartResponseStatus.CART_IS_EMPTY);
         }
 
-        double totalPrice = 0.0;
+        int totalPrice = 0;
         List<OrderDetail> orderDetails = new ArrayList<>();
+
+        // 쿠폰을 사용하였을 경우
+        UserCoupon userCoupon = null;
+        if (dto.getCouponIdx() != null) {
+            Optional<UserCoupon> getCoupon = userCouponRepository.findById(dto.getCouponIdx());
+            if (getCoupon.isPresent()) {
+                userCoupon = getCoupon.get();
+            }
+        }
 
         // 각 장바구니 항목을 OrderDetail로 변환
         for (CartItem cartItem : cartItems) {
             Product product = cartItem.getProduct();
+
             int quantity = cartItem.getCartItemQuantity();
-            // 주문 상세 금액: 단가 * 수량
+            int discount = 0;
+            if (cartItem.getProduct().getDiscount() != null) {
+                discount = cartItem.getProduct().getDiscount();
+            }
+            // 주문 상세 금액: 단가 * 수량 * 할인율
             int price = product.getPrice().intValue();
-            totalPrice += price * quantity;
+            double base = price * (1 - discount / 100.0);
+
+            // 쿠폰 적용 금액
+            if (userCoupon != null
+                    && product.getProductIdx().equals(userCoupon.getCoupon().getProduct().getProductIdx())) {
+                double couponAmt = price
+                        * userCoupon.getCoupon().getCouponDiscountRate()
+                        / 100.0;
+                base -= couponAmt;
+            }
+            totalPrice += base * quantity;
 
             OrderDetail orderDetail = OrderDetail.builder()
                     .orderDetailQuantity(quantity)
                     .orderDetailPrice(price)
+                    .orderDetailDiscount(discount)
                     .product(product)
                     .build();
             orderDetails.add(orderDetail);
@@ -129,11 +155,6 @@ public class OrderService {
         }
 
         // 주문 엔티티 저장
-
-        // 주문 완료 후 사용자의 장바구니 비우기
-//        cart.getCartItems().clear();
-//        cartRepository.save(cart);
-
         return orderRepository.save(order);
     }
 
@@ -144,7 +165,7 @@ public class OrderService {
      * @param orderId 주문 고유 ID
      * @return 결제 완료된 Orders 엔티티
      */
-    public Orders verify(User user, Long orderId, String paymentId) {
+    public Orders verify(User user, Long orderId, OrderVerifyRequestDto dto) {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
         if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
@@ -152,11 +173,11 @@ public class OrderService {
         }
 
         // PortOne API를 통해 실제 결제한 금액 조회
-        double portoneTotal = HttpClientUtil.getTotalAmount(paymentId);
+        double portoneTotal = HttpClientUtil.getTotalAmount(dto.getPaymentId());
         double orderTotal = order.getOrderTotalPrice() + order.getShipCost();
 
         //50000원 이하인데 배송비가 무료면 해킹임
-        if(order.getOrderTotalPrice() < 50000 && order.getShipCost() == 0){
+        if (order.getOrderTotalPrice() < 50000 && order.getShipCost() == 0) {
             throw new OrderException(OrderResponseStatus.ORDER_TOTAL_MISMATCH);
         }
 
@@ -166,7 +187,7 @@ public class OrderService {
             throw new OrderException(OrderResponseStatus.ORDER_TOTAL_MISMATCH);
         }
         order.setOrderStatus("PAID");
-        order.setPaymentId(paymentId);
+        order.setPaymentId(dto.getPaymentId());
 
         // 검증 성공 시 각 상품 해당 상품의 주문 수만큼 차감
         for (OrderDetail detail : order.getOrderDetails()) {
@@ -180,7 +201,13 @@ public class OrderService {
         }
 
         // 검증 성공 시 쿠폰 사용했다면 해당 쿠폰 상태 수정(couponUsed = true)
-
+        if (dto.getCouponIdx() != null) {
+            userCouponRepository.findById(dto.getCouponIdx())
+                    .ifPresent(userCoupon -> {
+                        userCoupon.setCouponUsed(true);
+                        userCouponRepository.save(userCoupon);
+                    });
+        }
 
         return orderRepository.save(order);
     }
@@ -189,25 +216,25 @@ public class OrderService {
     public Orders cancelOrder(User user, Long orderId) {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
-      // 관리자가 아니라면 취소 못함.
-      if (!user.getIsAdmin()) {
-          throw new UserException(UserResponseStatus.UNIDENTIFIED_ROLE);
-      }
+        // 관리자가 아니라면 취소 못함.
+        if (!user.getIsAdmin()) {
+            throw new UserException(UserResponseStatus.UNIDENTIFIED_ROLE);
+        }
 
-      String status = order.getOrderStatus();
-      if ("CANCELED".equals(status)) {
-          throw new OrderException(OrderResponseStatus.ORDER_ALREADY_CANCELED);
-      }
-      if (!Objects.equals("REFUND_REQUESTED", status)) {
-          // 요청 받은 상태가 아니라면 환불하지 않는다.
-          throw new OrderException(OrderResponseStatus.ORDER_CANNOT_CANCEL);
-      }
+        String status = order.getOrderStatus();
+        if ("CANCELED".equals(status)) {
+            throw new OrderException(OrderResponseStatus.ORDER_ALREADY_CANCELED);
+        }
+        if (!Objects.equals("REFUND_REQUESTED", status)) {
+            // 요청 받은 상태가 아니라면 환불하지 않는다.
+            throw new OrderException(OrderResponseStatus.ORDER_CANNOT_CANCEL);
+        }
 
-      // 재고 복원
-      for (OrderDetail detail : order.getOrderDetails()) {
-          Product p = detail.getProduct();
-          p.setStock(p.getStock() + detail.getOrderDetailQuantity());
-          productRepository.save(p);
+        // 재고 복원
+        for (OrderDetail detail : order.getOrderDetails()) {
+            Product p = detail.getProduct();
+            p.setStock(p.getStock() + detail.getOrderDetailQuantity());
+            productRepository.save(p);
         }
 
         // 결제된 상태가 아니라면 환불 요청안되므로 무조건 환불
