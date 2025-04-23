@@ -1,7 +1,7 @@
 package com.example.backend.admin.model;
 
 public interface TopSales {
-    String getProductIdx();
+    Long getProductIdx();
     String getProductName();
     Integer getNumber();
 }
