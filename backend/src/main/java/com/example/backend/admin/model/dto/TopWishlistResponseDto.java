@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -16,6 +18,6 @@ public class TopWishlistResponseDto {
     private Double price;
     private String imageUrl;
     private Integer productDiscount;
-    private Integer cr; // count review
+    private List<Integer> reviews; // reviews
     private Integer cw; // count wishlist
 }

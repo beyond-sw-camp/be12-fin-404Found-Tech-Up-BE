@@ -2,6 +2,7 @@ package com.example.backend.product.model.dto;
 
 import com.example.backend.product.model.Product;
 import com.example.backend.product.model.ProductImage;
+import com.example.backend.review.model.Review;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,6 +34,8 @@ public class ProductResponseDto {
 
     private List<String> images;
 
+    private List<Integer> reviews;
+
     public static ProductResponseDto from(Product product) {
         return ProductResponseDto.builder()
                 .idx(product.getProductIdx())
@@ -49,6 +52,7 @@ public class ProductResponseDto {
                 .ssdSpec(product.getSsdSpec() != null ? SsdSpecDto.from(product.getSsdSpec()) : null)
                 .ramSpec(product.getRamSpec() != null ? RamSpecDto.from(product.getRamSpec()) : null)
                 .images(product.getImages() != null ? product.getImages().stream().map(ProductImage::getImageUrl).collect(Collectors.toList()): new ArrayList<String>())
+                .reviews(product.getReviews() != null ? product.getReviews().stream().map(Review::getReviewRating).toList(): null)
                 .build();
     }
 }

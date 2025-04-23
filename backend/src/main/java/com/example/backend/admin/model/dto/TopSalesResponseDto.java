@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -15,5 +17,5 @@ public class TopSalesResponseDto {
     private Double productPrice;
     private String productImageUrl;
     private Integer productDiscount;
-    private Integer reviewCount;
+    private List<Integer> reviews;
 }

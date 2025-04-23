@@ -13,6 +13,7 @@ import com.example.backend.order.repository.OrderDetailRepository;
 import com.example.backend.order.repository.OrderRepository;
 import com.example.backend.product.model.Product;
 import com.example.backend.product.repository.ProductRepository;
+import com.example.backend.review.model.Review;
 import com.example.backend.user.repository.UserRepository;
 import com.example.backend.wishlist.repository.WishlistRepository;
 import lombok.RequiredArgsConstructor;
@@ -109,8 +110,8 @@ public class StatisticsService {
         for (TopSales item : topSales) {
             Product product = productRepository.findById(item.getProductIdx()).orElseThrow(()-> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
             String productImageUrl = product.getImages() != null ? product.getImages().get(0).getImageUrl(): "";
-            Integer reviews = product.getReviews() != null ? product.getReviews().size() : 0;
-            result.add(TopSalesResponseDto.builder().productIdx(item.getProductIdx()).productImageUrl(productImageUrl).productName(product.getName()).productPrice(product.getPrice()).productDiscount(product.getDiscount()).reviewCount(reviews).build());
+            List<Integer> reviews = product.getReviews() != null ? product.getReviews().stream().map(Review::getReviewRating).toList() : null;
+            result.add(TopSalesResponseDto.builder().productIdx(item.getProductIdx()).productImageUrl(productImageUrl).productName(product.getName()).productPrice(product.getPrice()).productDiscount(product.getDiscount()).reviews(reviews).build());
         }
         return result;
     }
@@ -138,8 +139,8 @@ public class StatisticsService {
         for (TopWishList item : wishLists) {
             Product product = productRepository.findById(item.getProductIdx()).orElseThrow(()-> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
             String productImageUrl = product.getImages() != null ? product.getImages().get(0).getImageUrl(): "";
-            Integer reviews = product.getReviews() != null ? product.getReviews().size() : 0;
-            result.add(TopWishlistResponseDto.builder().productIdx(product.getProductIdx()).productName(product.getName()).productDiscount(product.getDiscount()).price(product.getPrice()).brand(product.getBrand()).imageUrl(productImageUrl).cr(reviews).cw(item.getCw()).build());
+            List<Integer> reviews = product.getReviews() != null ? product.getReviews().stream().map(Review::getReviewRating).toList() : null;
+            result.add(TopWishlistResponseDto.builder().productIdx(product.getProductIdx()).productName(product.getName()).productDiscount(product.getDiscount()).price(product.getPrice()).brand(product.getBrand()).imageUrl(productImageUrl).reviews(reviews).cw(item.getCw()).build());
         }
         return result;
     }
