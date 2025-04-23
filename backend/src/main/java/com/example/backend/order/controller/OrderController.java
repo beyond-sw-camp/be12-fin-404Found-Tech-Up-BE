@@ -49,7 +49,7 @@ public class OrderController {
             @PathVariable Long orderIdx,
             @RequestBody OrderVerifyRequestDto dto
     ) {
-        Orders order = orderService.verify(loginUser, orderIdx, dto.getPaymentId());
+        Orders order = orderService.verify(loginUser, orderIdx, dto);
         OrderResponseDto response = OrderResponseDto.from(order);
         return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
     }
