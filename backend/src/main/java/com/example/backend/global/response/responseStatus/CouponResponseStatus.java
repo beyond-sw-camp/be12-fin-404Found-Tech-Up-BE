@@ -3,19 +3,18 @@ package com.example.backend.global.response.responseStatus;
 import lombok.Getter;
 
 @Getter
-public enum WishlistResponseStatus implements BaseResponseStatus {
+public enum CouponResponseStatus implements BaseResponseStatus {
     // 11000번대 - Wishlist 관련
-    WISHLIST_NOT_FOUND(false, 11001, "위시리스트를 찾을 수 없습니다."),
-    WISHLIST_TOGGLE_FAIL(false, 11002, "위시리스트 갱신에 실패했습니다."),
-    USER_NOT_LOGGED(false, 11003, "사용자가 로그인하지 않았습니다."),
+    COUPON_NOT_FOUND(false, 8001, "쿠폰을 찾을 수 없습니다."),
+    CANNOT_DELETE_COUPON(false, 8002, "쿠폰을 삭제할 수 없습니다. 누군가가 이 쿠폰을 사용했습니다."),
 
-    SUCCESS(true, 11000, "요청이 성공적으로 처리되었습니다.");
+    SUCCESS(true, 8000, "요청이 성공적으로 처리되었습니다.");
 
     private final boolean isSuccess;
     private final int code;
     private final String message;
 
-    WishlistResponseStatus(boolean isSuccess, int code, String message) {
+    CouponResponseStatus(boolean isSuccess, int code, String message) {
         this.isSuccess = isSuccess;
         this.code = code;
         this.message = message;

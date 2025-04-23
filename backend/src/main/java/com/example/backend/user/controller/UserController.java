@@ -5,8 +5,12 @@ import com.example.backend.common.dto.ErrorResponseDto;
 import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseServiceImpl;
 import com.example.backend.global.response.responseStatus.CommonResponseStatus;
+import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.user.model.User;
+import com.example.backend.user.model.dto.request.*;
+import com.example.backend.user.model.dto.response.*;
+import com.example.backend.user.service.EmailVerifyService;
 import com.example.backend.user.model.dto.request.SignupRequestDto;
 import com.example.backend.user.model.dto.request.UserUpdateRequestDto;
 import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
@@ -25,10 +29,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name="회원 기능", description="회원 가입/회원 정보 변경 등의 작업")
 @RestController
@@ -114,6 +120,47 @@ public class UserController {
         return baseResponseService.getSuccessResponse("로그아웃 성공", UserResponseStatus.SUCCESS );
     }
 
+    @Operation(summary="로그인 확인", description = "유저 로그인 여부를 확인")
+    @ApiResponse(responseCode="200", description="로그인 확인 API.", content= @Content(schema = @Schema(implementation = String.class)))
+    @ApiResponse(responseCode="400", description="실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
+    @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
+    @GetMapping("/check-auth")
+    public BaseResponse<Map<String, Boolean>> checkAuth(Authentication authentication) {
+        Map<String, Boolean> response = userService.chekAuth(authentication);
+        return baseResponseService.getSuccessResponse(response, UserResponseStatus.SUCCESS);
+    }
+
+    @GetMapping("/auth/me")
+    public BaseResponse<Object> getCurrentUser(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return baseResponseService.getFailureResponse(UserResponseStatus.UNDEFINED_USER);
+        }
+        return baseResponseService.getSuccessResponse(user, UserResponseStatus.SUCCESS);
+    }
+
+    @GetMapping("/alarm")
+    public BaseResponse<AlarmSettingResponseDto> getAlarmSetting(
+            @AuthenticationPrincipal User user
+    ) {
+        if (user == null) {
+            return baseResponseService.getFailureResponse(UserResponseStatus.UNDEFINED_USER);
+        }
+        AlarmSettingResponseDto dto = userService.getAlarmSetting(user.getUserIdx());
+        return baseResponseService.getSuccessResponse(dto, UserResponseStatus.SUCCESS);
+    }
+
+    @PatchMapping("/alarm")
+    public BaseResponse<AlarmSettingResponseDto> updateAlarmSetting(
+            @AuthenticationPrincipal User user,
+            @RequestBody AlarmSettingRequestDto request
+    ) {
+        if (user == null) {
+            return baseResponseService.getFailureResponse(UserResponseStatus.UNDEFINED_USER);
+        }
+        AlarmSettingResponseDto dto = userService.updateAlarmSetting(user.getUserIdx(), request);
+        return baseResponseService.getSuccessResponse(dto, UserResponseStatus.SUCCESS);
+    }
+
     // 유저 개인 정보 프론트로 넘기기는 메소드
 
     @GetMapping("/auth/me")
@@ -149,7 +196,5 @@ public class UserController {
         // TODO: 서비스에서 페이징된 정보 가져오기
         return ResponseEntity.ok(List.of());
     }
-
-
 
 }

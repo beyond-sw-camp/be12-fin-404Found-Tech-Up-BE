@@ -10,9 +10,11 @@ import com.example.backend.global.response.responseStatus.OrderResponseStatus;
 import com.example.backend.order.model.OrderDetail;
 import com.example.backend.order.model.Orders;
 import com.example.backend.order.model.dto.OrderCancelResponseDto;
+import com.example.backend.order.model.dto.OrderResponseDto;
 import com.example.backend.order.repository.OrderRepository;
 import com.example.backend.product.model.Product;
 import com.example.backend.user.model.User;
+import com.example.backend.user.repository.UserRepository;
 import com.example.backend.util.HttpClientUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
+    private final UserRepository userRepository;
 
     /**
      * 주문 기능 구현
@@ -153,5 +156,10 @@ public class OrderService {
         order.setOrderStatus("REFUND_REQUESTED");
         orderRepository.save(order);
         return OrderCancelResponseDto.from(orderId, "REFUND_REQUESTED");
+    }
+
+    public List<OrderResponseDto> getOrdersByUserId(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()-> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
+        return orderRepository.findAllByUserOrderByOrderDateDesc(user).stream().map(OrderResponseDto::from).toList();
     }
 }

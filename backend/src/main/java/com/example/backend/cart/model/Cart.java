@@ -30,7 +30,8 @@ public class Cart {
     private User user;
 
     // 카트 아이템과 다대일 매핑
-    @OneToMany(mappedBy = "cart")
     @Schema(description = "카트에 포함된 장바구니 항목 목록")
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems;
+
 }

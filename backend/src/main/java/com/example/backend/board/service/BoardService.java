@@ -154,6 +154,14 @@ public class BoardService {
     }
 
 
+    public BoardPageResponse getMyBoardList(User loginUser, int page, int size) {
+        // 명시적 타입 사용
+        Pageable pageable = PageRequest.of(page, size, Sort.by("boardCreated").descending());
+        Page<Board> boardPage = boardRepository.findAllByUser(loginUser, pageable);
+        return BoardPageResponse.from(boardPage, "boardCreated", "desc");
+    }
+
+
 
     private String extractS3KeyFromUrl(String urlOrKey) {
         // 이미 key 형식이라면 그냥 반환

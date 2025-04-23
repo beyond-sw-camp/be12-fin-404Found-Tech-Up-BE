@@ -36,7 +36,7 @@ public class ProductImageService {
             throw new IOException("매칭되는 제품 없는 이미지");
         }
         for (String filepath: requestBody.getImagePath()) {
-            ProductImage productImage = ProductImage.builder().product(product).imageUrl(filepath).build();
+            ProductImage productImage = ProductImage.builder().product(product).imageUrl(filepath.split("\\?")[0]).build();
             productImageRepository.save(productImage);
         }
 

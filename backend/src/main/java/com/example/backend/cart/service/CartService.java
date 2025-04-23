@@ -43,6 +43,18 @@ public class CartService {
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
         int quantityToAdd = dto.getCartItemQuantity();
 
+        int currentQuantity = cart.getCartItems().stream()
+                .filter(item -> item.getProduct().getProductIdx().equals(productId))
+                .findFirst()
+                .map(CartItem::getCartItemQuantity)
+                .orElse(0);
+
+        // 재고 체크
+        if (currentQuantity + quantityToAdd > product.getStock()) {
+            throw new CartException(CartResponseStatus.CART_ITEM_ADD_FAIL);
+        }
+
+        // 재고가 남아있다면 진행한다.
         // 이미 해당 상품이 장바구니에 있는 경우
         Optional<CartItem> optionalItem = cart.getCartItems().stream()
                 .filter(item -> item.getProduct().getProductIdx().equals(productId))
@@ -61,6 +73,7 @@ public class CartService {
             cart.getCartItems().add(targetItem);
         }
         cartRepository.save(cart);
+
         return CartItemResponseDto.from(targetItem);
     }
 
@@ -78,28 +91,51 @@ public class CartService {
         return CartItemUpdateResponseDto.from(cartItemId);
     }
 
+    public CartItemUpdateResponseDto clearCart(User user) {
+        Cart cart = getOrCreateCart(user);
+        cart.getCartItems().clear();
+        cartRepository.save(cart);
+        return CartItemUpdateResponseDto.from();
+    }
+
     // 장바구니 항목 수량 업데이트
     public CartItemUpdateResponseDto updateCartItemQuantity(User user, Long productId, int deltaQuantity) {
         Cart cart = getOrCreateCart(user);
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
+
         Optional<CartItem> optionalItem = cart.getCartItems().stream()
                 .filter(item -> item.getProduct().getProductIdx().equals(productId))
                 .findFirst();
+
         if (optionalItem.isPresent()) {
             CartItem item = optionalItem.get();
-            int newQuantity = item.getCartItemQuantity() + deltaQuantity;
+            int currentQty = item.getCartItemQuantity();
+            int newQuantity = currentQty + deltaQuantity;
+
+            // 재고 확인
+            if (deltaQuantity > 0 && newQuantity > product.getStock()) {
+                throw new CartException(CartResponseStatus.CART_ITEM_ADD_FAIL);
+            }
+
             if (newQuantity > 0) {
                 item.setCartItemQuantity(newQuantity);
             } else {
                 cart.getCartItems().remove(item);
             }
+
             cartRepository.save(cart);
+
             // 반환하는 DTO의 cartItemIdx는 수정되었거나 삭제된 항목의 idx
             return CartItemUpdateResponseDto.from(item.getCartItemIdx());
         } else {
             // 만약 수정할 항목이 없고, deltaQuantity가 양수이면 신규 추가
             if (deltaQuantity > 0) {
-                Product product = productRepository.findById(productId)
-                        .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
+                // 재고 확인
+                if (deltaQuantity > product.getStock()) {
+                    throw new CartException(CartResponseStatus.CART_ITEM_ADD_FAIL);
+                }
                 CartItem newItem = CartItem.builder()
                         .cartItemQuantity(deltaQuantity)
                         .product(product)
