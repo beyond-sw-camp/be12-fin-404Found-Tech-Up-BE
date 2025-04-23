@@ -12,14 +12,15 @@ import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.dto.ProductResponseDto;
 import com.example.backend.product.model.spec.*;
 import com.example.backend.product.repository.*;
+import com.example.backend.review.model.Review;
 import com.example.backend.wishlist.repository.WishlistRepository;
 import com.example.backend.review.repository.ReviewRepository;
-import com.example.backend.user.repository.UserProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,7 @@ public class ProductService {
     private final ProductImageRepository productImageRepository;
     // TODO: 실수로 잘못 등록한 기기에 대해 내 기기 등록한 사용자/리뷰한 사용자가 있는 경우를 대비해 강제 삭제하기 위한 리포지토리
     // private final UserProductRepository userProductRepository;
-    // private final ReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository;
 
     // 재입고 알림 발행을 위해
     private final WishlistRepository wishlistRepository;
@@ -260,5 +261,23 @@ public class ProductService {
         return ProductResponseDto.from(product);
     }
 
+    //@Scheduled(cron = "0 0 */2 * * *")
+    @Scheduled(fixedRate = 60 * 60 * 1000)
+    public void recomputeAllProductRatings() {
+        List<Product> products = productRepository.findAll();
+        for (Product p : products) {
+            List<Review> reviews = reviewRepository.findByProduct(p);
+            if (reviews.isEmpty()) continue;
 
+            // compute average
+            IntSummaryStatistics stats = reviews.stream()
+                    .mapToInt(Review::getReviewRating)
+                    .summaryStatistics();
+
+            double avg = stats.getAverage();
+            // persist as a double with one decimal
+            p.setRating(Math.round(avg * 100.0) / 100.0);
+            productRepository.save(p);
+        }
+    }
 }
