@@ -2,12 +2,15 @@ package com.example.backend.product.controller;
 
 import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseService;
+import com.example.backend.global.response.BaseResponseServiceImpl;
+import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.product.model.dto.ProductDeleteResponseDto;
 import com.example.backend.product.model.dto.ProductFilterRequestDto;
 import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.dto.ProductResponseDto;
 import com.example.backend.product.service.ProductService;
+import com.example.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -17,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -107,7 +111,10 @@ public class ProductController {
 
     @Operation(summary = "상품 등록", description = "신규 상품을 등록합니다.")
     @PostMapping("/register")
-    public BaseResponse<ProductResponseDto> registerProduct(@RequestBody ProductRequestDto requestDto) {
+    public BaseResponse<ProductResponseDto> registerProduct(@AuthenticationPrincipal User user, @RequestBody ProductRequestDto requestDto) {
+        if (user == null || !user.getIsAdmin()) {
+            return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
+        }
         ProductResponseDto response = productService.registerProduct(requestDto);
         return baseResponseService.getSuccessResponse(response, ProductResponseStatus.SUCCESS);
     }
@@ -120,7 +127,10 @@ public class ProductController {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 상품")
     })
     @DeleteMapping("/{productId}")
-    public BaseResponse<ProductDeleteResponseDto> deleteProduct(@PathVariable Long productId) {
+    public BaseResponse<ProductDeleteResponseDto> deleteProduct(@AuthenticationPrincipal User user, @PathVariable Long productId) {
+        if (user == null || !user.getIsAdmin()) {
+            return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
+        }
         ProductDeleteResponseDto response = productService.deleteProduct(productId);
         return baseResponseService.getSuccessResponse(response, ProductResponseStatus.SUCCESS);
     }
@@ -128,9 +138,13 @@ public class ProductController {
     @Operation(summary = "상품 수정", description = "상품 ID를 기준으로 상품 정보를 수정합니다.")
     @PutMapping("/update/{productId}")
     public BaseResponse<ProductResponseDto> updateProduct(
+            @AuthenticationPrincipal User user,
             @PathVariable Long productId,
             @RequestBody ProductRequestDto requestDto
     ) {
+        if (user == null || !user.getIsAdmin()) {
+            return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
+        }
         ProductResponseDto response = productService.updateProduct(productId, requestDto);
         return baseResponseService.getSuccessResponse(response, ProductResponseStatus.SUCCESS);
     }

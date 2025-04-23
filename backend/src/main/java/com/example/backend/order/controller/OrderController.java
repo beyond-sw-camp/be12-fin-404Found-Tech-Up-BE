@@ -4,11 +4,14 @@ import com.example.backend.global.exception.BaseException;
 import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseService;
+import com.example.backend.global.response.BaseResponseServiceImpl;
 import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.global.response.responseStatus.OrderResponseStatus;
 import com.example.backend.order.model.Orders;
 import com.example.backend.order.model.dto.OrderCancelResponseDto;
+import com.example.backend.order.model.dto.OrderRequestDto;
 import com.example.backend.order.model.dto.OrderResponseDto;
+import com.example.backend.order.model.dto.OrderVerifyRequestDto;
 import com.example.backend.order.service.OrderService;
 import com.example.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,34 +32,25 @@ public class OrderController {
     private final BaseResponseService baseResponseService;
 
     @Operation(summary = "상품 주문", description = "장바구니에서 선택한 상품을 주문합니다.")
-    @PostMapping
+    @PostMapping("")
     public BaseResponse<OrderResponseDto> placeOrder(
-            @AuthenticationPrincipal User loginUser
+            @AuthenticationPrincipal User loginUser,
+            @RequestBody OrderRequestDto dto
     ) {
-        Orders order = orderService.placeOrder(loginUser);
+        Orders order = orderService.placeOrder(loginUser, dto);
         OrderResponseDto response = OrderResponseDto.from(order);
         return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
     }
 
-    @Operation(summary = "상품 결제", description = "주문한 상품을 결제합니다. 결제 식별자(paymentId)를 사용해 PortOne API 로 결제 금액을 검증합니다.")
-    @PostMapping("/payment/{orderId}")
+    @Operation(summary = "결제 검증", description = "결제 내역을 검증합니다. 결제 식별자(paymentId)를 사용해 PortOne API 로 결제 금액을 검증합니다.")
+    @PostMapping("/verify/{orderIdx}")
     public BaseResponse<OrderResponseDto> payOrder(
             @AuthenticationPrincipal User loginUser,
-            @RequestParam @PathVariable Long orderId
+            @PathVariable Long orderIdx,
+            @RequestBody OrderVerifyRequestDto dto
     ) {
-        Orders order = orderService.payOrder(loginUser, orderId);
+        Orders order = orderService.verify(loginUser, orderIdx, dto.getPaymentId());
         OrderResponseDto response = OrderResponseDto.from(order);
-        return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
-    }
-
-
-    @Operation(summary = "주문 취소", description = "회원의 주문을 취소합니다.")
-    @PostMapping("/cancel/{orderId}")
-    public BaseResponse<OrderCancelResponseDto> cancelOrder(
-            @AuthenticationPrincipal User loginUser,
-            @PathVariable Long orderId
-    ) {
-        OrderCancelResponseDto response = orderService.cancelOrder(loginUser, orderId);
         return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
     }
 
@@ -65,10 +59,7 @@ public class OrderController {
     public BaseResponse<List<OrderResponseDto>> getOrderHistory(
             @AuthenticationPrincipal User loginUser
     ) {
-        List<Orders> orders = orderService.getOrderHistory(loginUser);
-        List<OrderResponseDto> responses = orders.stream()
-                .map(OrderResponseDto::from)
-                .collect(Collectors.toList());
+        List<OrderResponseDto> responses = orderService.getOrderHistory(loginUser);
         return baseResponseService.getSuccessResponse(responses, OrderResponseStatus.SUCCESS);
     }
 
@@ -93,13 +84,28 @@ public class OrderController {
         return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
     }
 
-
-
     // ------------------- 여기서부터 관리자 기능 ---------------------
+
+    @Operation(
+            summary     = "주문 취소",
+            description = "회원의 주문을 취소합니다. 이미 결제된 경우 재고를 복원하고 환불을 요청합니다."
+    )
+    @PostMapping("/cancel/{orderId}")
+    public BaseResponse<OrderResponseDto> cancelOrder(
+            @AuthenticationPrincipal User loginUser,
+            @PathVariable Long orderId
+    ) {
+        Orders order = orderService.cancelOrder(loginUser, orderId);
+        OrderResponseDto response = OrderResponseDto.from(order);
+        return baseResponseService.getSuccessResponse(response, OrderResponseStatus.SUCCESS);
+    }
 
     @Operation(summary="관리자의 사용자 주문 내역 조회", description="관리자가 사용자 주문 내역들을 볼 때 사용합니다.")
     @GetMapping("/orderlist/{idx}")
-    public BaseResponse<List<OrderResponseDto>> getOrderList(@PathVariable Long idx) {
+    public BaseResponse<List<OrderResponseDto>> getOrderList(@AuthenticationPrincipal User user, @PathVariable Long idx) {
+        if (user == null || !user.getIsAdmin()) {
+            return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
+        }
         if (idx == null) {
             throw new BaseException(CommonResponseStatus.BAD_REQUEST);
         }

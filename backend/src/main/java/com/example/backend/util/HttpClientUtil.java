@@ -1,60 +1,72 @@
 package com.example.backend.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class HttpClientUtil {
     private static HttpClient client;
-    private static HttpRequest httpRequest;
     private static HttpResponse<String> httpResponse;
 
-    public static String sendPost(String url, String contentType, String body) {
-        try {
-            client = HttpClient.newHttpClient();
-
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Content-Type", contentType)
-                    .POST(HttpRequest.BodyPublishers.ofString(body))
-                    .build();
-            httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            return httpResponse.body();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static int getTotalAmount(String paymentId) {
+    public static double getTotalAmount(String paymentId) {
         try {
             String secret = System.getenv("PORTONE_SECRET");
-            client = HttpClient.newHttpClient();
+            HttpClient client = HttpClient.newHttpClient();
 
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.portone.io/payments/" +paymentId))
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.portone.io/payments/"
+                            + URLEncoder.encode(paymentId, StandardCharsets.UTF_8)))
                     .header("Authorization", "PortOne " + secret)
                     .GET()
                     .build();
-            httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            String responseBody = httpResponse.body();
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> map = objectMapper.readValue(responseBody, Map.class);
-            Map<String, Object> amount = objectMapper.readValue(map.get("amount").toString(), Map.class);
-            int total = Integer.parseInt(amount.get("total").toString());
+            HttpResponse<String> response = client.send(request,
+                    HttpResponse.BodyHandlers.ofString());
+            String body = response.body();
 
-            return total;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            // parse with Jackson tree for clarity
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root   = mapper.readTree(body);
+
+            JsonNode amountNode;
+            if (root.has("data") && root.path("data").has("amount")) {
+                amountNode = root.path("data").path("amount");
+            } else {
+                amountNode = root.path("amount");
+            }
+
+            return amountNode.path("total").asDouble();
+
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException("PortOne 조회 실패", e);
+        }
+    }
+
+    public static boolean requestRefund(String paymentId) {
+        String secret = System.getenv("PORTONE_SECRET");
+        String url    = "https://api.portone.io/payments/" + paymentId + "/cancel";
+
+        try {
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Authorization", "PortOne " + secret)
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();
+            HttpResponse<String> resp = HttpClient.newHttpClient()
+                    .send(req, HttpResponse.BodyHandlers.ofString());
+
+            // 200번대 응답이면 OK
+            return resp.statusCode() >= 200 && resp.statusCode() < 300;
+        } catch (Exception e) {
+            throw new RuntimeException("Refund request failed", e);
         }
     }
 }

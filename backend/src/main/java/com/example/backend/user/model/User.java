@@ -3,6 +3,7 @@ package com.example.backend.user.model;
 import com.example.backend.cart.model.Cart;
 import com.example.backend.coupon.model.UserCoupon;
 import com.example.backend.order.model.Orders;
+import com.example.backend.order.model.ShippingAddress;
 import com.example.backend.review.model.Review;
 import com.example.backend.wishlist.model.Wishlist;
 import jakarta.persistence.*;
@@ -70,6 +71,10 @@ public class User implements UserDetails {
     // Order와 일대다 맵핑
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Orders> orders;
+
+    // Order와 일대다 맵핑
+    @OneToMany(mappedBy = "user")
+    private List<ShippingAddress> shippingAddresses;
 
     // UserCoupon 과 일대다 맵핑
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

@@ -1,6 +1,7 @@
 package com.example.backend.notification.service;
 
 import com.example.backend.notification.model.Notification;
+import com.example.backend.notification.model.NotificationType;
 import com.example.backend.notification.model.UserNotification;
 import com.example.backend.notification.model.dto.NotiRequestDto;
 import com.example.backend.notification.model.dto.NotiResponseDto;
@@ -19,13 +20,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class NotificationService {
     private final UserNotificationRepository userNotificationRepository;
     private final UserRepository userRepository;
-
+    private final NotificationRepository notificationRepository;
 
 
     @Transactional
@@ -85,6 +87,7 @@ public class NotificationService {
         return NotificationPageResponse.from(pageResult);
     }
 
+
     public void markAsRead(Long id) {
         // 서비스 또는 컨트롤러
         userNotificationRepository.findById(id).ifPresent(n -> {
@@ -92,6 +95,32 @@ public class NotificationService {
             userNotificationRepository.save(n);
         });
 
+    }
+
+    // ------------------------- 관리자 ---------------------------------
+
+    // 전체 알림 이력 보기
+    public List<NotiResponseDto> getAllNotificationHistory() {
+        List<Notification> notiList = notificationRepository.findAllByOrderByIdxDesc();
+        return notiList.stream().map(noti -> NotiResponseDto.builder().idx(noti.getIdx()).notiTitle(noti.getTitle()).notiContent(noti.getContent()).notiCreated(noti.getCreatedAt()).build()).toList();
+    }
+
+    public Notification generateNotificationEntity(NotiRequestDto notiRequestDto) {
+        Notification newNotification = Notification.builder().title(notiRequestDto.getNotiTitle()).content(notiRequestDto.getNotiContent()).createdAt(LocalDateTime.now()).cronExpression("").notificationType(NotificationType.NOTIFICATION).build();
+        return notificationRepository.save(newNotification);
+    }
+    // 전체 알림 삭제
+    @Transactional
+    public void deleteAllNotification(Long idx) {
+        if (idx == null || idx <= 4) { // 스케줄링된 이벤트 제거 방지
+            throw new IllegalArgumentException("이 이벤트의 삭제는 유효한 동작이 아닙니다.");
+        }
+        Notification notification = notificationRepository.findById(idx).orElseThrow(()-> new IllegalArgumentException("찾을 수 없는 이벤트 번호입니다"));
+        List<UserNotification> issuedNotifications = userNotificationRepository.findByTemplate(notification);
+        if (!issuedNotifications.isEmpty()) {
+            userNotificationRepository.deleteAll(issuedNotifications);
+        }
+        notificationRepository.delete(notification);
     }
 
     public void deleteById(Long id, Long userIdx) {

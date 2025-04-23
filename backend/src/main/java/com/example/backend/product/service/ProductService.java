@@ -1,5 +1,6 @@
 package com.example.backend.product.service;
 
+import com.example.backend.common.s3.S3Service;
 import com.example.backend.global.exception.ProductException;
 import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.notification.service.NotificationProducerService;
@@ -42,6 +43,9 @@ public class ProductService {
     private final WishlistRepository wishlistRepository;
     // 카프카 알림 발행
     private final NotificationProducerService notificationProducerService;
+    // 제품 이미지 파일 삭제는 이곳에서 처리
+    private final S3Service s3Service;
+    private final ProductImageService productImageService;
 
     public List<ProductResponseDto> getProductList() {
         return productRepository.findAll()
@@ -142,6 +146,8 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
         if (!product.getImages().isEmpty()) {
+            List<String> productImages = product.getImages().stream().map(image -> productImageService.getFileKeyForDelete(image.getImageUrl())).toList();
+            s3Service.deleteFiles(productImages);
             productImageRepository.deleteAll(product.getImages());
         }
         if (product.getCpuSpec() != null) cpuSpecRepository.delete(product.getCpuSpec());
@@ -248,6 +254,8 @@ public class ProductService {
             hddSpec.update(requestDto.getHddSpec());
             hddSpecRepository.save(hddSpec);
         }
+
+
 
         return ProductResponseDto.from(product);
     }

@@ -5,23 +5,31 @@ import com.example.backend.cart.model.CartItem;
 import com.example.backend.cart.repository.CartRepository;
 import com.example.backend.global.exception.CartException;
 import com.example.backend.global.exception.OrderException;
+import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.responseStatus.CartResponseStatus;
 import com.example.backend.global.response.responseStatus.OrderResponseStatus;
+import com.example.backend.global.response.responseStatus.UserResponseStatus;
 import com.example.backend.order.model.OrderDetail;
 import com.example.backend.order.model.Orders;
+import com.example.backend.order.model.ShippingAddress;
 import com.example.backend.order.model.dto.OrderCancelResponseDto;
+import com.example.backend.order.model.dto.OrderRequestDto;
 import com.example.backend.order.model.dto.OrderResponseDto;
 import com.example.backend.order.repository.OrderRepository;
+import com.example.backend.order.repository.ShippingAddressRepository;
 import com.example.backend.product.model.Product;
+import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.user.model.User;
 import com.example.backend.user.repository.UserRepository;
 import com.example.backend.util.HttpClientUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +38,15 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
+    private final ShippingAddressRepository shippingAddressRepository;
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
+
+    @Value("${portone.store-id}")
+    private String storeId;
+
+    @Value("${portone.channel-key}")
+    private String channelKey;
 
     /**
      * 주문 기능 구현
@@ -39,7 +55,33 @@ public class OrderService {
      * 3. 주문의 총 금액 및 주문 날짜, 주문 상태를 설정하여 Orders 엔티티 생성
      * 4. 주문 후 장바구니를 비움
      */
-    public Orders placeOrder(User user) {
+    public Orders placeOrder(User user, OrderRequestDto dto) {
+        // 사용자의 주문 정보(이름, 주소, 전화번호 등)을 저장 <- User.java 참조
+        ShippingAddress address = shippingAddressRepository.findByUser(user)
+                .map(existing -> {
+                    existing.setRecipientName(dto.getRecipientName());
+                    existing.setAddressLine1(dto.getAddress());
+                    existing.setAddressLine2(dto.getAddressDetail());
+                    existing.setPostalCode(dto.getPostalCode());
+                    existing.setPhone(dto.getPhone());
+                    existing.setEmail(dto.getEmail());
+                    existing.setMemo(dto.getMemo());
+                    return existing;
+                })
+                .orElseGet(() -> ShippingAddress.builder()
+                        .recipientName(dto.getRecipientName())
+                        .addressLine1(dto.getAddress())
+                        .addressLine2(dto.getAddressDetail())
+                        .postalCode(dto.getPostalCode())
+                        .phone(dto.getPhone())
+                        .email(dto.getEmail())
+                        .memo(dto.getMemo())
+                        .user(user)
+                        .build()
+                );
+
+        shippingAddressRepository.save(address);
+
         // 사용자의 장바구니를 조회 (CartRepository에서 사용자 기준으로 찾음)
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new CartException(CartResponseStatus.CART_IS_EMPTY));
@@ -69,9 +111,14 @@ public class OrderService {
 
         // Orders 엔티티 생성
         Orders order = Orders.builder()
-                .orderDate(new Date())
-                .orderStatus("PLACED")
                 .orderTotalPrice(totalPrice)
+                .shipCost(dto.getShipCost())
+                .paymentMethod(dto.getPaymentMethod())
+                .shippingMethod(dto.getShippingMethod())
+                .orderStatus("PLACED")
+                .orderDate(new Date())
+                .storeId(storeId)
+                .channelKey(channelKey)
                 .user(user)
                 .orderDetails(orderDetails)
                 .build();
@@ -82,22 +129,22 @@ public class OrderService {
         }
 
         // 주문 엔티티 저장
-        Orders savedOrder = orderRepository.save(order);
 
         // 주문 완료 후 사용자의 장바구니 비우기
-        cart.getCartItems().clear();
-        cartRepository.save(cart);
+//        cart.getCartItems().clear();
+//        cartRepository.save(cart);
 
-        return savedOrder;
+        return orderRepository.save(order);
     }
 
     /**
      * 주문 결제 메서드 – PortOne API를 통해 결제 금액을 검증하고, 주문 상태를 업데이트합니다.
-     * @param user 로그인한 사용자
+     *
+     * @param user    로그인한 사용자
      * @param orderId 주문 고유 ID
      * @return 결제 완료된 Orders 엔티티
      */
-    public Orders payOrder(User user, Long orderId) {
+    public Orders verify(User user, Long orderId, String paymentId) {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
         if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
@@ -105,34 +152,78 @@ public class OrderService {
         }
 
         // PortOne API를 통해 실제 결제한 금액 조회
-        int portoneTotal = HttpClientUtil.getTotalAmount(orderId.toString());
-        int orderTotal = (int) order.getOrderTotalPrice();
+        double portoneTotal = HttpClientUtil.getTotalAmount(paymentId);
+        double orderTotal = order.getOrderTotalPrice() + order.getShipCost();
 
-        if (portoneTotal == orderTotal) {
-            order.setOrderStatus("PAID");
-        } else {
-            // 금액 불일치 시 예외 처리 또는 상태를 실패로 업데이트
+        if (portoneTotal != orderTotal) {
+            // 결제한 금액이랑 실제 금액이랑 다름
+            order.setOrderStatus("UNPAID");
             throw new OrderException(OrderResponseStatus.ORDER_TOTAL_MISMATCH);
         }
+        order.setOrderStatus("PAID");
+        order.setPaymentId(paymentId);
+
+        // 검증 성공 시 각 상품 해당 상품의 주문 수만큼 차감
+        for (OrderDetail detail : order.getOrderDetails()) {
+            Product product = detail.getProduct();
+            int remaining = product.getStock() - detail.getOrderDetailQuantity();
+            if (remaining < 0) {
+                throw new OrderException(OrderResponseStatus.ORDER_STOCK_INSUFFICIENT);
+            }
+            product.setStock(remaining);
+            productRepository.save(product);
+        }
+
+        // 검증 성공 시 쿠폰 사용했다면 해당 쿠폰 상태 수정(couponUsed = true)
+
+
         return orderRepository.save(order);
     }
 
     // 주문 취소
-    public OrderCancelResponseDto cancelOrder(User user, Long orderId) {
+    public Orders cancelOrder(User user, Long orderId) {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
-        if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
-            throw new OrderException(OrderResponseStatus.ORDER_USER_MISMATCH);
+      // 관리자가 아니라면 취소 못함.
+      if (!user.getIsAdmin()) {
+          throw new UserException(UserResponseStatus.UNIDENTIFIED_ROLE);
+      }
+
+      String status = order.getOrderStatus();
+      if ("CANCELED".equals(status)) {
+          throw new OrderException(OrderResponseStatus.ORDER_ALREADY_CANCELED);
+      }
+      if (!Objects.equals("REFUND_REQUESTED", status)) {
+          // 요청 받은 상태가 아니라면 환불하지 않는다.
+          throw new OrderException(OrderResponseStatus.ORDER_CANNOT_CANCEL);
+      }
+
+      // 재고 복원
+      for (OrderDetail detail : order.getOrderDetails()) {
+          Product p = detail.getProduct();
+          p.setStock(p.getStock() + detail.getOrderDetailQuantity());
+          productRepository.save(p);
         }
+
+        // 결제된 상태가 아니라면 환불 요청안되므로 무조건 환불
+        String paymentId = order.getPaymentId(); // assume you stored it
+        boolean refundOk = HttpClientUtil.requestRefund(paymentId);
+        if (!refundOk) {
+            throw new OrderException(OrderResponseStatus.ORDER_REFUND_FAILED);
+        }
+
+        // 쿠폰을 사용했다면, 사용한 쿠폰 롤백
+
+        // 최종 상태 업데이트
         order.setOrderStatus("CANCELED");
-        orderRepository.save(order);
-        return OrderCancelResponseDto.from(orderId, "CANCELED");
+        return orderRepository.save(order);
     }
 
     // 주문 내역 조회 (사용자 기준)
-    public List<Orders> getOrderHistory(User user) {
-        return orderRepository.findAll().stream()
-                .filter(order -> order.getUser().getUserIdx().equals(user.getUserIdx()))
+    public List<OrderResponseDto> getOrderHistory(User user) {
+        List<Orders> orders = orderRepository.findAllByUserWithDetails(user.getUserIdx());
+        return orders.stream()
+                .map(OrderResponseDto::from)
                 .collect(Collectors.toList());
     }
 
@@ -153,13 +244,20 @@ public class OrderService {
         if (!order.getUser().getUserIdx().equals(user.getUserIdx())) {
             throw new OrderException(OrderResponseStatus.ORDER_USER_MISMATCH);
         }
+
+        // 결제된 상태가 아니라면 환불 요청 받지 않음
+        String status = order.getOrderStatus();
+        if ("PAID".equals(status)) {
+            throw new OrderException(OrderResponseStatus.ORDER_CANCEL_FAIL);
+        }
+
         order.setOrderStatus("REFUND_REQUESTED");
         orderRepository.save(order);
         return OrderCancelResponseDto.from(orderId, "REFUND_REQUESTED");
     }
 
     public List<OrderResponseDto> getOrdersByUserId(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
         return orderRepository.findAllByUserOrderByOrderDateDesc(user).stream().map(OrderResponseDto::from).toList();
     }
 }

@@ -62,10 +62,13 @@ server:
 
 portone:
   secret: ${PORTONE_SECRET}
+  store-id: ${PORTONE_STOREID}
+  channel-key: ${PORTONE_CHANNEL_KEY}
 
 logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
 
-
+kafka:
+  enabled: false

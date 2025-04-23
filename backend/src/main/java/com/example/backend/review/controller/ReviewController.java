@@ -1,5 +1,6 @@
 package com.example.backend.review.controller;
 
+import com.example.backend.global.exception.ReviewException;
 import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseService;
 import com.example.backend.global.response.responseStatus.ReviewResponseStatus;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "리뷰 기능", description = "리뷰 기능 API")
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +24,15 @@ import org.springframework.web.bind.annotation.*;
 public class ReviewController {
     private final ReviewService reviewService;
     private final BaseResponseService baseResponseService;
+
+    @Operation(summary="상품별 리뷰 조회", description="특정 상품에 달린 리뷰들을 날짜 최신순으로 가져옵니다.")
+    @GetMapping("/product/{productIdx}")
+    public BaseResponse<List<ReviewResponseDto>> listByProduct(
+            @PathVariable Long productIdx
+    ) {
+        List<ReviewResponseDto> dtos = reviewService.getReviewsByProduct(productIdx);
+        return baseResponseService.getSuccessResponse(dtos, ReviewResponseStatus.SUCCESS);
+    }
 
     @Operation(
             summary = "리뷰 작성하기",
@@ -35,24 +47,10 @@ public class ReviewController {
             @PathVariable Integer productIdx,
             @AuthenticationPrincipal User loginUser
     ) {
+        if(loginUser == null) {
+            throw new ReviewException(ReviewResponseStatus.REVIEW_USER_NOT_FOUND);
+        }
         ReviewResponseDto response = reviewService.createReview(loginUser, productIdx, reviewRequestDto);
-        return baseResponseService.getSuccessResponse(response, ReviewResponseStatus.SUCCESS);
-    }
-
-    @Operation(
-            summary = "리뷰 수정하기",
-            description = """
-                reviewIdx 를 전달받고, 로그인한 유저가 해당 리뷰 작성자인지 확인합니다.
-                작성자 본인일 경우에만 리뷰 수정이 가능합니다.
-            """
-    )
-    @PatchMapping("/update/{reviewIdx}")
-    public BaseResponse<ReviewResponseDto> update(
-            @AuthenticationPrincipal User loginUser,
-            @PathVariable Long reviewIdx,
-            @RequestBody ReviewRequestDto reviewRequestDto
-    ) {
-        ReviewResponseDto response = reviewService.updateReview(loginUser, reviewIdx, reviewRequestDto);
         return baseResponseService.getSuccessResponse(response, ReviewResponseStatus.SUCCESS);
     }
 

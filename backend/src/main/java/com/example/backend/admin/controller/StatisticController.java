@@ -1,15 +1,17 @@
 package com.example.backend.admin.controller;
 
 import com.example.backend.admin.model.StatisticsResponseDto;
-import com.example.backend.admin.model.TopSalesDto;
-import com.example.backend.admin.model.TopWishListDto;
+import com.example.backend.admin.model.TopSales;
+import com.example.backend.admin.model.TopWishList;
 import com.example.backend.admin.model.ViewRequestDto;
 import com.example.backend.admin.service.StatisticsService;
 import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseServiceImpl;
 import com.example.backend.global.response.responseStatus.CommonResponseStatus;
+import com.example.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,33 +23,37 @@ public class StatisticController {
     private final StatisticsService statisticsService;
 
     @GetMapping
-    public BaseResponse<StatisticsResponseDto> statistics() {
+    public BaseResponse<StatisticsResponseDto> statistics(@AuthenticationPrincipal User user) {
+        if (user == null || !user.getIsAdmin()) {
+            return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
+        }
         return new BaseResponseServiceImpl().getSuccessResponse(statisticsService.getStatistics(), CommonResponseStatus.SUCCESS);
     }
 
     // ---- 이 아래는 테스트용 api로 규칙을 따르지 않음----
+
     @GetMapping("/wishlist")
-    public ResponseEntity<List<TopWishListDto>> getTopWishList() {
+    public ResponseEntity<List<TopWishList>> getTopWishList() {
         return ResponseEntity.ok(statisticsService.getTopWishList());
     }
-
+    /*
     @GetMapping("/refund")
     public ResponseEntity<Integer> getTotalRefund() {
         return ResponseEntity.ok(statisticsService.getTotalRefunds());
     }
-
+    */
     @GetMapping("/order")
     public ResponseEntity<Integer> getTotalOrder() {
         return ResponseEntity.ok(statisticsService.getTotalOrders());
     }
 
     @GetMapping("/topsales")
-    public ResponseEntity<List<TopSalesDto>> getTopSales() {
+    public ResponseEntity<List<TopSales>> getTopSales() {
         return ResponseEntity.ok(statisticsService.getTopSales());
     }
 
-    @PostMapping("/view")
-    public void increaseView(@RequestBody ViewRequestDto request) {
-        // TODO: product 테이블에 view 필드 추가되면 구현
+    @GetMapping("/incomes")
+    public ResponseEntity<List<Integer>> getTopIncomes() {
+        return ResponseEntity.ok(statisticsService.getRecentEarningList());
     }
 }

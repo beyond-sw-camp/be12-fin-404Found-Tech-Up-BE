@@ -9,7 +9,8 @@ public enum ReviewResponseStatus implements BaseResponseStatus {
     REVIEW_CREATION_FAIL(false, 10002, "리뷰 작성에 실패했습니다."),
     REVIEW_UPDATE_FAIL(false, 10003, "리뷰 수정에 실패했습니다."),
     REVIEW_DELETE_FAIL(false, 10004, "리뷰 삭제에 실패했습니다."),
-    REVIEW_USER_MISMATCH(false, 10004, "리뷰 삭제에 실패했습니다."),
+    REVIEW_USER_MISMATCH(false, 10005, "리뷰 작성자가 아닙니다."),
+    REVIEW_USER_NOT_FOUND(false, 10006, "접근 권한이 없습니다. 로그인해주세요."),
 
     SUCCESS(true, 10000, "요청이 성공적으로 처리되었습니다.");
 
