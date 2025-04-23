@@ -145,6 +145,7 @@ public class OrderService {
      * @param orderId 주문 고유 ID
      * @return 결제 완료된 Orders 엔티티
      */
+    @Transactional
     public Orders verify(User user, Long orderId, String paymentId) {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
