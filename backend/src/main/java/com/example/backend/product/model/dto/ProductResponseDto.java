@@ -25,6 +25,7 @@ public class ProductResponseDto {
     private Integer stock;
     private String description;
     private String category;
+    private Double rating;
 
     private CpuSpecDto cpuSpec;
     private GpuSpecDto gpuSpec;
@@ -46,6 +47,7 @@ public class ProductResponseDto {
                 .stock(product.getStock())
                 .description(product.getDescription())
                 .category(product.getCategory())
+                .rating(product.getRating())
                 .cpuSpec(product.getCpuSpec() != null ? CpuSpecDto.from(product.getCpuSpec()) : null)
                 .gpuSpec(product.getGpuSpec() != null ? GpuSpecDto.from(product.getGpuSpec()) : null)
                 .hddSpec(product.getHddSpec() != null ? HddSpecDto.from(product.getHddSpec()) : null)

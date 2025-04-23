@@ -4,13 +4,11 @@ import com.example.backend.coupon.model.dto.response.MyCouponInfoResponseDto;
 import com.example.backend.order.model.OrderDetail;
 import com.example.backend.user.model.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

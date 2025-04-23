@@ -9,4 +9,5 @@ import lombok.*;
 @Setter
 public class OrderVerifyRequestDto {
     private String paymentId;
+    private Long couponIdx;
 }

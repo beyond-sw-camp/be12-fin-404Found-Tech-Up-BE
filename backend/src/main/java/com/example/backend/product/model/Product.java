@@ -36,6 +36,7 @@ public class Product {
     private String description;
     @Column(nullable = false)
     private String category;
+    private Double rating;
 
     @OneToMany(mappedBy = "product")
     private List<ProductImage> images;
@@ -82,6 +83,7 @@ public class Product {
     public void update(ProductRequestDto dto) {
         this.name = dto.getName();
         this.price = dto.getPrice();
+        this.discount = dto.getDiscount();
         this.brand = dto.getBrand();
         this.stock = dto.getStock();
         this.description = dto.getDescription();

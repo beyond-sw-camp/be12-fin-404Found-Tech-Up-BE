@@ -18,6 +18,7 @@ public class Orders {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderIdx;
     private double orderTotalPrice;
+    private Long couponIdx;
     private double shipCost;
     private String paymentMethod;
     private String shippingMethod;
