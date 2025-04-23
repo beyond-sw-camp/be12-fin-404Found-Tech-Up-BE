@@ -155,6 +155,11 @@ public class OrderService {
         double portoneTotal = HttpClientUtil.getTotalAmount(paymentId);
         double orderTotal = order.getOrderTotalPrice() + order.getShipCost();
 
+        //50000원 이하인데 배송비가 무료면 해킹임
+        if(order.getOrderTotalPrice() < 50000 && order.getShipCost() == 0){
+            throw new OrderException(OrderResponseStatus.ORDER_TOTAL_MISMATCH);
+        }
+
         if (portoneTotal != orderTotal) {
             // 결제한 금액이랑 실제 금액이랑 다름
             order.setOrderStatus("UNPAID");
