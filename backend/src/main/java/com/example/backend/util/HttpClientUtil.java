@@ -58,7 +58,7 @@ public class HttpClientUtil {
             HttpRequest req = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("Authorization", "PortOne " + secret)
-                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .POST(HttpRequest.BodyPublishers.ofString("{\"reason\": \"User Request\"}"))
                     .build();
             HttpResponse<String> resp = HttpClient.newHttpClient()
                     .send(req, HttpResponse.BodyHandlers.ofString());
