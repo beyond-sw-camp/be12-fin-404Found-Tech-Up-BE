@@ -84,6 +84,7 @@ public class NotificationService {
         Page<UserNotification> pageResult = userNotificationRepository.findByUserAndIsReadFalse(user, pageable);
         return NotificationPageResponse.from(pageResult);
     }
+
     public void markAsRead(Long id) {
         // 서비스 또는 컨트롤러
         userNotificationRepository.findById(id).ifPresent(n -> {
@@ -92,4 +93,16 @@ public class NotificationService {
         });
 
     }
+
+    public void deleteById(Long id, Long userIdx) {
+        UserNotification notification = userNotificationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("알림이 존재하지 않습니다."));
+
+        if (!notification.getUser().getUserIdx().equals(userIdx)) {
+            throw new SecurityException("해당 알림에 대한 권한이 없습니다.");
+        }
+
+        userNotificationRepository.delete(notification);
+    }
+
 }

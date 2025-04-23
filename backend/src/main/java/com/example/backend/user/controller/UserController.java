@@ -161,20 +161,6 @@ public class UserController {
         return baseResponseService.getSuccessResponse(dto, UserResponseStatus.SUCCESS);
     }
 
-    // 유저 개인 정보 프론트로 넘기기는 메소드
-
-    @GetMapping("/auth/me")
-    public BaseResponse<Object> getMe(
-            @AuthenticationPrincipal User user
-    ) {
-        return baseResponseService.getSuccessResponse(
-                MyProfileResponseDto.builder()
-                        .userIdx(user.getUserIdx())
-                        .userNickname("유저닉네임 테스트")
-                        .build(), CommonResponseStatus.SUCCESS);
-    }
-
-
     // --------------------- 여기서부터 관리자 전용 ----------------------------
 
     @Operation(summary="전체 회원 정보 반환", description = "회원 정보를 30개 단위로 반환합니다")

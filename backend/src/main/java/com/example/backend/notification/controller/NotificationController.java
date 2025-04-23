@@ -68,8 +68,19 @@ public class NotificationController {
             description = "알림 ID를 기반으로 해당 알림을 읽음 처리합니다. 읽은 시간도 함께 기록됩니다."
     )
     @PatchMapping("/{id}/read")
-    public void markRead(@PathVariable Long id) {
+    public BaseResponse<Object> markRead(@PathVariable Long id) {
         notificationService.markAsRead(id);
+        return baseResponseService.getSuccessResponse(CommonResponseStatus.SUCCESS);
+    }
+
+    @Operation(
+            summary = "알림 삭제",
+            description = "알림 ID를 기반으로 해당 알림을 삭제합니다."
+    )
+    @DeleteMapping("/{id}")
+    public BaseResponse<Object> deleteNotification(@PathVariable Long id, @AuthenticationPrincipal User loginUser) {
+        notificationService.deleteById(id, loginUser.getUserIdx());
+        return baseResponseService.getSuccessResponse(CommonResponseStatus.DELETED);
     }
 
 }
