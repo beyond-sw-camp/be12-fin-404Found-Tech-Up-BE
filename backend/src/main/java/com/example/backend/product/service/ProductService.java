@@ -70,77 +70,278 @@ public class ProductService {
 
     public List<ProductResponseDto> filterProduct(ProductFilterRequestDto dto) {
         return productRepository.findAll().stream()
-                .filter(product -> dto.getBrand() == null || product.getBrand().equalsIgnoreCase(dto.getBrand()))
-                .filter(product -> dto.getCategory() == null || product.getCategory().equalsIgnoreCase(dto.getCategory()))
-                .filter(product -> dto.getDiscount() == null || product.getDiscount() >= dto.getDiscount())
-                .filter(product -> dto.getMinPrice() == null || product.getPrice() >= dto.getMinPrice())
-                .filter(product -> dto.getMaxPrice() == null || product.getPrice() <= dto.getMaxPrice())
-                .filter(product -> dto.getNameKeyword() == null || product.getName().toLowerCase().contains(dto.getNameKeyword().toLowerCase()))
+                // your other simple filters here…
                 .filter(product -> {
-                    String category = product.getCategory() == null ? "" : product.getCategory().toUpperCase();
+                    String cat = product.getCategory() != null
+                            ? product.getCategory().toUpperCase()
+                            : "";
 
-                    return switch (category) {
+                    return switch (cat) {
                         case "CPU" -> {
-                            if (product.getCpuSpec() == null) yield false;
-                            yield (dto.getCpuType() == null || product.getCpuSpec().getCpuType().equalsIgnoreCase(dto.getCpuType())) &&
-                                    (dto.getCpuCore() == null || product.getCpuSpec().getCpuCore().equals(dto.getCpuCore())) &&
-                                    (dto.getCpuThreads() == null || product.getCpuSpec().getCpuThreads().equals(dto.getCpuThreads()));
+                            var s = product.getCpuSpec();
+                            if (s == null) yield false;
+                            yield (
+                                    (dto.getAmdCpuType() == null || s.getAmdCpuType().equalsIgnoreCase(dto.getAmdCpuType())) &&
+                                            (dto.getSocketType() == null || s.getSocketType().equalsIgnoreCase(dto.getSocketType())) &&
+                                            (dto.getCoreCount() == null || s.getCoreCount().equals(dto.getCoreCount())) &&
+                                            (dto.getThreadCount() == null || s.getThreadCount().equals(dto.getThreadCount())) &&
+                                            (dto.getCpuMemorySpec() == null || s.getMemorySpec().equalsIgnoreCase(dto.getMemorySpec())) &&
+                                            (dto.getBuiltInGraphic() == null || s.getBuiltInGraphic().equalsIgnoreCase(dto.getBuiltInGraphic())) &&
+                                            (dto.getManufactoringProcess() == null || s.getManufactoringProcess().equalsIgnoreCase(dto.getManufactoringProcess())) &&
+                                            (dto.getBaseClock() == null || s.getBaseClock().equalsIgnoreCase(dto.getBaseClock())) &&
+                                            (dto.getMaxClock() == null || s.getMaxClock().equalsIgnoreCase(dto.getMaxClock())) &&
+                                            (dto.getL2Cache() == null || s.getL2Cache().equalsIgnoreCase(dto.getL2Cache())) &&
+                                            (dto.getL3Cache() == null || s.getL3Cache().equalsIgnoreCase(dto.getL3Cache())) &&
+                                            (dto.getOperateSystem() == null || s.getOperateSystem().equalsIgnoreCase(dto.getOperateSystem())) &&
+                                            (dto.getTdp() == null || s.getTdp().equalsIgnoreCase(dto.getTdp())) &&
+                                            (dto.getPpt() == null || s.getPpt().equalsIgnoreCase(dto.getPpt())) &&
+                                            (dto.getPcieVer() == null || s.getPcieVer().equalsIgnoreCase(dto.getPcieVer())) &&
+                                            (dto.getMaxPcie() == null || s.getMaxPcie().equalsIgnoreCase(dto.getMaxPcie())) &&
+                                            (dto.getMaxMemorySize() == null || s.getMaxMemorySize().equalsIgnoreCase(dto.getMaxMemorySize())) &&
+                                            (dto.getCpuMemoryClock() == null || s.getMemoryClock().equalsIgnoreCase(dto.getMemoryClock())) &&
+                                            (dto.getMemoryChannel() == null || s.getMemoryChannel().equals(dto.getMemoryChannel())) &&
+                                            (dto.getPakageType() == null || s.getPakageType().equalsIgnoreCase(dto.getPakageType())) &&
+                                            (dto.getCooler() == null || s.getCooler().equalsIgnoreCase(dto.getCooler())) &&
+                                            (dto.getCpuRegistYear() == null || s.getRegistYear().equals(dto.getCpuRegistYear())) &&
+                                            (dto.getCpuRegistMonth() == null || s.getRegistMonth().equals(dto.getCpuRegistMonth()))
+                            );
                         }
                         case "GPU" -> {
-                            if (product.getGpuSpec() == null) yield false;
-                            yield (dto.getGpuChip() == null || product.getGpuSpec().getGpuChip().equalsIgnoreCase(dto.getGpuChip())) &&
-                                    (dto.getGpuMemory() == null || product.getGpuSpec().getGpuMemory().equals(dto.getGpuMemory())) &&
-                                    (dto.getGpuLength() == null || product.getGpuSpec().getGpuLength().equals(dto.getGpuLength()));
+                            var s = product.getGpuSpec();
+                            if (s == null) yield false;
+                            yield (
+                                    (dto.getChipsetManufacturer() == null || s.getChipsetManufacturer().equalsIgnoreCase(dto.getChipsetManufacturer())) &&
+                                            (dto.getProductSeries() == null || s.getProductSeries().equalsIgnoreCase(dto.getProductSeries())) &&
+                                            (dto.getGpuManufacturingProcess() == null || s.getGpuManufacturingProcess().equalsIgnoreCase(dto.getGpuManufacturingProcess())) &&
+                                            (dto.getGpuInterfaceType() == null || s.getInterfaceType().equalsIgnoreCase(dto.getGpuInterfaceType())) &&
+                                            (dto.getRecommendedPowerCapacity() == null || s.getRecommendedPowerCapacity().equalsIgnoreCase(dto.getRecommendedPowerCapacity())) &&
+                                            (dto.getPowerPort() == null || s.getPowerPort().equalsIgnoreCase(dto.getPowerPort())) &&
+                                            (dto.getGpuLength() == null || s.getGpuLength().equals(dto.getGpuLength())) &&
+                                            (dto.getBoostClock() == null || s.getBoostClock().equalsIgnoreCase(dto.getBoostClock())) &&
+                                            (dto.getStreamProcessor() == null || s.getStreamProcessor().equalsIgnoreCase(dto.getStreamProcessor())) &&
+                                            (dto.getGpuMemoryType() == null || s.getMemoryType().equalsIgnoreCase(dto.getMemoryType())) &&
+                                            (dto.getMemoryClock() == null || s.getMemoryClock().equalsIgnoreCase(dto.getMemoryClock())) &&
+                                            (dto.getGpuMemory() == null || s.getGpuMemory().equals(dto.getGpuMemory())) &&
+                                            (dto.getMemoryBus() == null || s.getMemoryBus().equalsIgnoreCase(dto.getMemoryBus())) &&
+                                            (dto.getHdmi() == null || s.getHdmi().equalsIgnoreCase(dto.getHdmi())) &&
+                                            (dto.getDisplayPort() == null || s.getDisplayPort().equalsIgnoreCase(dto.getDisplayPort())) &&
+                                            (dto.getMonitorSupport() == null || s.getMonitorSupport().equalsIgnoreCase(dto.getMonitorSupport())) &&
+                                            (dto.getFanCount() == null || s.getFanCount().equals(dto.getFanCount())) &&
+                                            (dto.getGpuThickness() == null || s.getThickness().equalsIgnoreCase(dto.getGpuThickness())) &&
+                                            (dto.getGpuRegistYear() == null || s.getRegistYear().equals(dto.getGpuRegistYear())) &&
+                                            (dto.getGpuRegistMonth() == null || s.getRegistMonth().equals(dto.getGpuRegistMonth()))
+                            );
                         }
                         case "RAM" -> {
-                            if (product.getRamSpec() == null) yield false;
-                            yield (dto.getRamType() == null || product.getRamSpec().getRamType().equalsIgnoreCase(dto.getRamType())) &&
-                                    (dto.getRamSize() == null || product.getRamSpec().getRamSize().equals(dto.getRamSize())) &&
-                                    (dto.getRamNum() == null || product.getRamSpec().getRamNum().equals(dto.getRamNum())) &&
-                                    (dto.getRamUsage() == null || product.getRamSpec().getRamUsage().equalsIgnoreCase(dto.getRamUsage()));
+                            var s = product.getRamSpec();
+                            if (s == null) yield false;
+                            yield (
+                                    (dto.getUsageDevice() == null || s.getUsageDevice().equalsIgnoreCase(dto.getUsageDevice())) &&
+                                            (dto.getRamProductCategory() == null || s.getProductCategory().equalsIgnoreCase(dto.getRamProductCategory())) &&
+                                            (dto.getMemorySpec() == null || s.getMemorySpec().equalsIgnoreCase(dto.getMemorySpec())) &&
+                                            (dto.getRamSize() == null || s.getRamSize().equals(dto.getRamSize())) &&
+                                            (dto.getOperatingClock() == null || s.getOperatingClock().equalsIgnoreCase(dto.getOperatingClock())) &&
+                                            (dto.getRamTiming() == null || s.getRamTiming().equalsIgnoreCase(dto.getRamTiming())) &&
+                                            (dto.getOperatingVoltage() == null || s.getOperatingVoltage().equalsIgnoreCase(dto.getOperatingVoltage())) &&
+                                            (dto.getRamNum() == null || s.getRamNum().equals(dto.getRamNum())) &&
+                                            (dto.getHeatsink() == null || s.getHeatsink().equalsIgnoreCase(dto.getHeatsink())) &&
+                                            (dto.getRamHeight() == null || s.getHeight().equals(dto.getHeight())) &&
+                                            (dto.getRamRegistYear() == null || s.getRegistYear().equals(dto.getRamRegistYear())) &&
+                                            (dto.getRamRegistMonth() == null || s.getRegistMonth().equals(dto.getRamRegistMonth()))
+                            );
                         }
                         case "SSD" -> {
-                            if (product.getSsdSpec() == null) yield false;
-                            yield (dto.getSsdCapacity() == null || product.getSsdSpec().getSsdCapacity().equals(dto.getSsdCapacity())) &&
-                                    (dto.getSsdRead() == null || product.getSsdSpec().getSsdRead().equals(dto.getSsdRead())) &&
-                                    (dto.getSsdWrite() == null || product.getSsdSpec().getSsdWrite().equals(dto.getSsdWrite()));
+                            var s = product.getSsdSpec();
+                            if (s == null) yield false;
+                            yield (
+                                    (dto.getSsdProductCategory() == null || s.getProductCategory().equalsIgnoreCase(dto.getSsdProductCategory())) &&
+                                            (dto.getFormFactor() == null || s.getFormFactor().equalsIgnoreCase(dto.getFormFactor())) &&
+                                            (dto.getSsdInterfaceType() == null || s.getInterfaceType().equalsIgnoreCase(dto.getSsdInterfaceType())) &&
+                                            (dto.getProtocol() == null || s.getProtocol().equalsIgnoreCase(dto.getProtocol())) &&
+                                            (dto.getSsdCapacity() == null || s.getSsdCapacity().equals(dto.getSsdCapacity())) &&
+                                            (dto.getMemoryType() == null || s.getMemoryType().equalsIgnoreCase(dto.getMemoryType())) &&
+                                            (dto.getNandStructure() == null || s.getNandStructure().equalsIgnoreCase(dto.getNandStructure())) &&
+                                            (dto.getController() == null || s.getController().equalsIgnoreCase(dto.getController())) &&
+                                            (dto.getSsdRead() == null || s.getSsdRead().equals(dto.getSsdRead())) &&
+                                            (dto.getSsdWrite() == null || s.getSsdWrite().equals(dto.getSsdWrite())) &&
+                                            (dto.getMtbf() == null || s.getMtbf().equalsIgnoreCase(dto.getMtbf())) &&
+                                            (dto.getTbw() == null || s.getTbw().equalsIgnoreCase(dto.getTbw())) &&
+                                            (dto.getNvmeHeatsink() == null || s.getNvmeHeatsink().equalsIgnoreCase(dto.getNvmeHeatsink())) &&
+                                            (dto.getWidth() == null || s.getWidth().equals(dto.getWidth())) &&
+                                            (dto.getHeight() == null || s.getHeight().equals(dto.getHeight())) &&
+                                            (dto.getSsdThickness() == null || s.getThickness().equalsIgnoreCase(dto.getSsdThickness())) &&
+                                            (dto.getWeight() == null || s.getWeight().equals(dto.getWeight())) &&
+                                            (dto.getSsdRegistYear() == null || s.getRegistYear().equals(dto.getSsdRegistYear())) &&
+                                            (dto.getSsdRegistMonth() == null || s.getRegistMonth().equals(dto.getSsdRegistMonth()))
+                            );
                         }
                         case "HDD" -> {
-                            if (product.getHddSpec() == null) yield false;
-                            yield (dto.getHddCapacity() == null || product.getHddSpec().getHddCapacity().equals(dto.getHddCapacity())) &&
-                                    (dto.getHddRpm() == null || product.getHddSpec().getHddRpm().equals(dto.getHddRpm())) &&
-                                    (dto.getHddBuffer() == null || product.getHddSpec().getHddBuffer().equals(dto.getHddBuffer()));
+                            var s = product.getHddSpec();
+                            if (s == null) yield false;
+                            yield (
+                                    (dto.getHddProductCategory() == null || s.getProductCategory().equalsIgnoreCase(dto.getHddProductCategory())) &&
+                                            (dto.getDiskSize() == null || s.getDiskSize().equalsIgnoreCase(dto.getDiskSize())) &&
+                                            (dto.getHddCapacity() == null || s.getHddCapacity().equals(dto.getHddCapacity())) &&
+                                            (dto.getHddInterfaceType() == null || s.getInterfaceType().equalsIgnoreCase(dto.getHddInterfaceType())) &&
+                                            (dto.getHddRpm() == null || s.getHddRpm().equals(dto.getHddRpm())) &&
+                                            (dto.getHddBuffer() == null || s.getHddBuffer().equals(dto.getHddBuffer())) &&
+                                            (dto.getTransferSpeed() == null || s.getTransferSpeed().equalsIgnoreCase(dto.getTransferSpeed())) &&
+                                            (dto.getRecordingMethod() == null || s.getRecordingMethod().equalsIgnoreCase(dto.getRecordingMethod())) &&
+                                            (dto.getHddThickness() == null || s.getThickness().equalsIgnoreCase(dto.getHddThickness())) &&
+                                            (dto.getWorkload() == null || s.getWorkload().equalsIgnoreCase(dto.getWorkload())) &&
+                                            (dto.getNoise() == null || s.getNoise().equalsIgnoreCase(dto.getNoise())) &&
+                                            (dto.getHddRegistYear() == null || s.getRegistYear().equals(dto.getHddRegistYear())) &&
+                                            (dto.getHddRegistMonth() == null || s.getRegistMonth().equals(dto.getHddRegistMonth()))
+                            );
                         }
-                        default -> true; // 그 외 카테고리 처리
+                        default -> true;
                     };
                 })
                 .map(ProductResponseDto::from)
                 .collect(Collectors.toList());
     }
 
+
     @Transactional
     public ProductResponseDto registerProduct(ProductRequestDto requestDto) {
-        Product source = requestDto.toEntity();
-        Product savedProduct = productRepository.save(source);
-        if (requestDto.getCategory().equals("CPU")){
-            CpuSpec cpuSpec = CpuSpec.builder().cpuType(requestDto.getCpuSpec().getCpuType()).cpuCore(requestDto.getCpuSpec().getCpuCore()).cpuThreads(requestDto.getCpuSpec().getCpuThreads()).product(savedProduct).build();
-            cpuSpecRepository.save(cpuSpec);
-        } else if (requestDto.getCategory().equals("GPU")){
-            GpuSpec gpuSpec = GpuSpec.builder().gpuChip(requestDto.getGpuSpec().getGpuChip()).gpuMemory(requestDto.getGpuSpec().getGpuMemory()).gpuLength(requestDto.getGpuSpec().getGpuLength()).product(savedProduct).build();
-            gpuSpecRepository.save(gpuSpec);
-        } else if (requestDto.getCategory().equals("RAM")){
-            RamSpec ramSpec = RamSpec.builder().ramType(requestDto.getRamSpec().getRamType()).ramNum(requestDto.getRamSpec().getRamNum()).ramSize(requestDto.getRamSpec().getRamSize()).ramUsage(requestDto.getRamSpec().getRamUsage()).product(savedProduct).build();
-            ramSpecRepository.save(ramSpec);
-        } else if (requestDto.getCategory().equals("SSD")){
-            SsdSpec ssdSpec = SsdSpec.builder().ssdCapacity(requestDto.getSsdSpec().getSsdCapacity()).ssdRead(requestDto.getSsdSpec().getSsdRead()).ssdWrite(requestDto.getSsdSpec().getSsdWrite()).product(savedProduct).build();
-            ssdSpecRepository.save(ssdSpec);
-        } else if (requestDto.getCategory().equals("HDD")){
-            HddSpec hddSpec = HddSpec.builder().hddCapacity(requestDto.getHddSpec().getHddCapacity()).hddRpm(requestDto.getHddSpec().getHddRpm()).hddBuffer(requestDto.getHddSpec().getHddBuffer()).product(savedProduct).build();
-            hddSpecRepository.save(hddSpec);
+        Product saved = productRepository.save(requestDto.toEntity());
+
+        String cat = requestDto.getCategory();
+        switch(cat.toUpperCase()) {
+            case "CPU": {
+                var dto = requestDto.getCpuSpec();
+                CpuSpec spec = CpuSpec.builder()
+                        .amdCpuType(dto.getAmdCpuType())
+                        .socketType(dto.getSocketType())
+                        .coreCount(dto.getCoreCount())
+                        .threadCount(dto.getThreadCount())
+                        .memorySpec(dto.getMemorySpec())
+                        .builtInGraphic(dto.getBuiltInGraphic())
+                        .manufactoringProcess(dto.getManufactoringProcess())
+                        .baseClock(dto.getBaseClock())
+                        .maxClock(dto.getMaxClock())
+                        .l2Cache(dto.getL2Cache())
+                        .l3Cache(dto.getL3Cache())
+                        .operateSystem(dto.getOperateSystem())
+                        .tdp(dto.getTdp())
+                        .ppt(dto.getPpt())
+                        .pcieVer(dto.getPcieVer())
+                        .maxPcie(dto.getMaxPcie())
+                        .maxMemorySize(dto.getMaxMemorySize())
+                        .memoryClock(dto.getMemoryClock())
+                        .memoryChannel(dto.getMemoryChannel())
+                        .pakageType(dto.getPakageType())
+                        .cooler(dto.getCooler())
+                        .registYear(dto.getRegistYear())
+                        .registMonth(dto.getRegistMonth())
+                        .product(saved)
+                        .build();
+                cpuSpecRepository.save(spec);
+                break;
+            }
+            case "GPU": {
+                var dto = requestDto.getGpuSpec();
+                GpuSpec spec = GpuSpec.builder()
+                        .chipsetManufacturer(dto.getChipsetManufacturer())
+                        .productSeries(dto.getProductSeries())
+                        .gpuManufacturingProcess(dto.getGpuManufacturingProcess())
+                        .interfaceType(dto.getInterfaceType())
+                        .recommendedPowerCapacity(dto.getRecommendedPowerCapacity())
+                        .powerPort(dto.getPowerPort())
+                        .gpuLength(dto.getGpuLength())
+                        .boostClock(dto.getBoostClock())
+                        .streamProcessor(dto.getStreamProcessor())
+                        .memoryType(dto.getMemoryType())
+                        .memoryClock(dto.getMemoryClock())
+                        .gpuMemory(dto.getGpuMemory())
+                        .memoryBus(dto.getMemoryBus())
+                        .hdmi(dto.getHdmi())
+                        .displayPort(dto.getDisplayPort())
+                        .monitorSupport(dto.getMonitorSupport())
+                        .fanCount(dto.getFanCount())
+                        .thickness(dto.getThickness())
+                        .registYear(dto.getRegistYear())
+                        .registMonth(dto.getRegistMonth())
+                        .product(saved)
+                        .build();
+                gpuSpecRepository.save(spec);
+                break;
+            }
+            case "RAM": {
+                var dto = requestDto.getRamSpec();
+                RamSpec spec = RamSpec.builder()
+                        .usageDevice(dto.getUsageDevice())
+                        .productCategory(dto.getProductCategory())
+                        .memorySpec(dto.getMemorySpec())
+                        .ramSize(dto.getRamSize())
+                        .operatingClock(dto.getOperatingClock())
+                        .ramTiming(dto.getRamTiming())
+                        .operatingVoltage(dto.getOperatingVoltage())
+                        .ramNum(dto.getRamNum())
+                        .heatsink(dto.getHeatsink())
+                        .height(dto.getHeight())
+                        .registYear(dto.getRegistYear())
+                        .registMonth(dto.getRegistMonth())
+                        .product(saved)
+                        .build();
+                ramSpecRepository.save(spec);
+                break;
+            }
+            case "SSD": {
+                var dto = requestDto.getSsdSpec();
+                SsdSpec spec = SsdSpec.builder()
+                        .productCategory(dto.getProductCategory())
+                        .formFactor(dto.getFormFactor())
+                        .interfaceType(dto.getInterfaceType())
+                        .protocol(dto.getProtocol())
+                        .ssdCapacity(dto.getSsdCapacity())
+                        .memoryType(dto.getMemoryType())
+                        .nandStructure(dto.getNandStructure())
+                        .controller(dto.getController())
+                        .ssdRead(dto.getSsdRead())
+                        .ssdWrite(dto.getSsdWrite())
+                        .mtbf(dto.getMtbf())
+                        .tbw(dto.getTbw())
+                        .nvmeHeatsink(dto.getNvmeHeatsink())
+                        .width(dto.getWidth())
+                        .height(dto.getHeight())
+                        .thickness(dto.getThickness())
+                        .weight(dto.getWeight())
+                        .registYear(dto.getRegistYear())
+                        .registMonth(dto.getRegistMonth())
+                        .product(saved)
+                        .build();
+                ssdSpecRepository.save(spec);
+                break;
+            }
+            case "HDD": {
+                var dto = requestDto.getHddSpec();
+                HddSpec spec = HddSpec.builder()
+                        .productCategory(dto.getProductCategory())
+                        .diskSize(dto.getDiskSize())
+                        .hddCapacity(dto.getHddCapacity())
+                        .interfaceType(dto.getInterfaceType())
+                        .hddRpm(dto.getHddRpm())
+                        .hddBuffer(dto.getHddBuffer())
+                        .transferSpeed(dto.getTransferSpeed())
+                        .recordingMethod(dto.getRecordingMethod())
+                        .thickness(dto.getThickness())
+                        .workload(dto.getWorkload())
+                        .noise(dto.getNoise())
+                        .registYear(dto.getRegistYear())
+                        .registMonth(dto.getRegistMonth())
+                        .product(saved)
+                        .build();
+                hddSpecRepository.save(spec);
+                break;
+            }
+            default:
+                // 등록할 스펙 없음
         }
 
-        return ProductResponseDto.from(savedProduct);
+        return ProductResponseDto.from(saved);
     }
+
     @Transactional
     public ProductDeleteResponseDto deleteProduct(Long productId) {
         // Note: 쿠폰이 발급되었거나, 구매 기록이 있으면 삭제 불가!
@@ -255,7 +456,6 @@ public class ProductService {
             hddSpec.update(requestDto.getHddSpec());
             hddSpecRepository.save(hddSpec);
         }
-
 
 
         return ProductResponseDto.from(product);
