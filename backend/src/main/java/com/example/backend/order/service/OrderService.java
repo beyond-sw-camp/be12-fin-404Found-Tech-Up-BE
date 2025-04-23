@@ -204,7 +204,7 @@ public class OrderService {
         if (dto.getCouponIdx() != null) {
             userCouponRepository.findById(dto.getCouponIdx())
                     .ifPresent(userCoupon -> {
-                        userCoupon.setCouponUsed(true);
+                        userCoupon.setCouponUsed(false);
                         userCouponRepository.save(userCoupon);
                     });
         }
@@ -245,6 +245,10 @@ public class OrderService {
         }
 
         // 쿠폰을 사용했다면, 사용한 쿠폰 롤백
+        if(order.getCouponIdx() != null) {
+            userCouponRepository.findById(order.getCouponIdx())
+                    .ifPresent(userCoupon -> {userCoupon.setCouponUsed(false);});
+        }
 
         // 최종 상태 업데이트
         order.setOrderStatus("CANCELED");
