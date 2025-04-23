@@ -7,17 +7,33 @@ import lombok.Getter;
 @Getter
 @Builder
 public class RamSpecDto {
-    private String ramType;
-    private Integer ramNum;
-    private Integer ramSize;
-    private String ramUsage;
+    private String usageDevice;
+    private String productCategory;
+    private String memorySpec;
+    private String ramSize;
+    private String operatingClock;
+    private String ramTiming;
+    private String operatingVoltage;
+    private String ramNum;
+    private String heatsink;
+    private String height;
+    private String registYear;
+    private String registMonth;
 
     public static RamSpecDto from(RamSpec spec) {
         return RamSpecDto.builder()
-                .ramType(spec.getRamType())
-                .ramNum(spec.getRamNum())
+                .usageDevice(spec.getUsageDevice())
+                .productCategory(spec.getProductCategory())
+                .memorySpec(spec.getMemorySpec())
                 .ramSize(spec.getRamSize())
-                .ramUsage(spec.getRamUsage())
+                .operatingClock(spec.getOperatingClock())
+                .ramTiming(spec.getRamTiming())
+                .operatingVoltage(spec.getOperatingVoltage())
+                .ramNum(spec.getRamNum())
+                .heatsink(spec.getHeatsink())
+                .height(spec.getHeight())
+                .registYear(spec.getRegistYear())
+                .registMonth(spec.getRegistMonth())
                 .build();
     }
 }
