@@ -9,6 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> {
-    @Query("SELECT p.productIdx AS productIdx, p.name productName, sum(od.orderDetailQuantity) AS number FROM OrderDetail od RIGHT JOIN Product p ON od.product = p WHERE od.orders.orderDate >= :date GROUP BY p.productIdx ORDER BY number DESC")
+    @Query("SELECT p.productIdx productIdx, p.name productName, sum(od.orderDetailQuantity) AS number FROM OrderDetail od RIGHT JOIN Product p ON od.product = p WHERE od.orders.orderDate >= :date GROUP BY p.productIdx ORDER BY number DESC")
     List<TopSales> countTopSales(Date date);
 }

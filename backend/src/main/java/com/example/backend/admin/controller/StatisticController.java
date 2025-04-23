@@ -1,9 +1,8 @@
 package com.example.backend.admin.controller;
 
-import com.example.backend.admin.model.StatisticsResponseDto;
-import com.example.backend.admin.model.TopSales;
-import com.example.backend.admin.model.TopWishList;
-import com.example.backend.admin.model.ViewRequestDto;
+import com.example.backend.admin.model.dto.StatisticsResponseDto;
+import com.example.backend.admin.model.dto.TopSalesResponseDto;
+import com.example.backend.admin.model.dto.TopWishlistResponseDto;
 import com.example.backend.admin.service.StatisticsService;
 import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseServiceImpl;
@@ -33,8 +32,8 @@ public class StatisticController {
     // ---- 이 아래는 테스트용 api로 규칙을 따르지 않음----
 
     @GetMapping("/wishlist")
-    public ResponseEntity<List<TopWishList>> getTopWishList() {
-        return ResponseEntity.ok(statisticsService.getTopWishList());
+    public BaseResponse<List<TopWishlistResponseDto>> getTopWishList() {
+        return new BaseResponseServiceImpl().getSuccessResponse( statisticsService.getTopWishList(), CommonResponseStatus.SUCCESS);
     }
     /*
     @GetMapping("/refund")
@@ -48,12 +47,12 @@ public class StatisticController {
     }
 
     @GetMapping("/topsales")
-    public ResponseEntity<List<TopSales>> getTopSales() {
-        return ResponseEntity.ok(statisticsService.getTopSales());
+    public BaseResponse<List<TopSalesResponseDto>> getTopSales() {
+        return new BaseResponseServiceImpl().getSuccessResponse(statisticsService.getTopSales(), CommonResponseStatus.SUCCESS);
     }
 
     @GetMapping("/incomes")
-    public ResponseEntity<List<Integer>> getTopIncomes() {
-        return ResponseEntity.ok(statisticsService.getRecentEarningList());
+    public BaseResponse<List<Integer>> getTopIncomes() {
+        return new BaseResponseServiceImpl().getSuccessResponse(statisticsService.getRecentEarningList(), CommonResponseStatus.SUCCESS);
     }
 }

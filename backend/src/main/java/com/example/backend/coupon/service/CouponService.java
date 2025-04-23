@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +57,8 @@ public class CouponService {
     public CouponListResponseDto getEventList() {
         List<Coupon> coupons = couponRepository.findAllByCouponQuantityGreaterThanEqual(0);
         // 만료 기한 끝난 이벤트는 제거
-        List<CouponInfoDto> couponInfoList = coupons.stream().filter(value -> value.getCouponValidDate().toInstant().compareTo(ZonedDateTime.now().toInstant()) > 0 ).map(Coupon::toDto).toList();
+        List<CouponInfoDto> couponInfoList = new ArrayList<>(coupons.stream().filter(value -> value.getCouponValidDate().toInstant().compareTo(ZonedDateTime.now().toInstant()) > 0).map(Coupon::toDto).toList());
+        Collections.reverse(couponInfoList);
         return CouponListResponseDto.builder().offset(0).total(couponInfoList.size()).limit((long) couponInfoList.size()).couponList(couponInfoList).build();
     }
 

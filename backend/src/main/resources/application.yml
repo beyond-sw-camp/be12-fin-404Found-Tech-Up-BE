@@ -72,3 +72,15 @@ logging:
 
 kafka:
   enabled: false
+
+management:
+  endpoints:
+    web:
+    exposure:
+      include: 'health'
+endpoint:
+  health:
+    show-details: always
+health:
+  db:
+    enabled: true

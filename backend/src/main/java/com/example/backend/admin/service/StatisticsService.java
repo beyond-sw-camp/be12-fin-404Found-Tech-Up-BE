@@ -1,12 +1,19 @@
 package com.example.backend.admin.service;
 
-import com.example.backend.admin.model.StatisticsResponseDto;
+import com.example.backend.admin.model.dto.StatisticsResponseDto;
 import com.example.backend.admin.model.TopSales;
+import com.example.backend.admin.model.dto.TopSalesResponseDto;
 import com.example.backend.admin.model.TopWishList;
+import com.example.backend.admin.model.dto.TopWishlistResponseDto;
+import com.example.backend.global.exception.ProductException;
+import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.order.model.OrderDetail;
 import com.example.backend.order.model.Orders;
 import com.example.backend.order.repository.OrderDetailRepository;
 import com.example.backend.order.repository.OrderRepository;
+import com.example.backend.product.model.Product;
+import com.example.backend.product.repository.ProductRepository;
+import com.example.backend.review.model.Review;
 import com.example.backend.user.repository.UserRepository;
 import com.example.backend.wishlist.repository.WishlistRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +29,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class StatisticsService {
+    private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final UserRepository userRepository;
@@ -32,7 +40,6 @@ public class StatisticsService {
         int month = today.getMonthValue();
         int year = today.getYear();
         LocalDate startDate = LocalDate.of(year, month, 1);
-        Date criterionDate = new Date(startDate.toEpochDay());
         List<Orders> totalOrder = orderRepository.findAllByOrderDateAfter(new Date(startDate.toEpochDay()));
         double totalSales = 0.0;
         for (Orders order : totalOrder) {
@@ -51,6 +58,7 @@ public class StatisticsService {
                 .topSales(tops)
                 .topWishList(topw)
                 .newCustomers(newcomers)
+                .xAxisData(incomeXAxis)
                 .incomeData(incomeData).build();
     }
 
@@ -92,12 +100,20 @@ public class StatisticsService {
                 + orderRepository.findAllByOrderStatusAndOrderDateAfter("REFUND_REQUESTED", new Date(startDate.toEpochDay())).size();
     }
 
-    public List<TopSales> getTopSales() {
-        LocalDate today = LocalDate.now();
-        int month = today.getMonthValue();
-        int year = today.getYear();
+    public List<TopSalesResponseDto> getTopSales() {
+        LocalDate theDay = LocalDate.now().minusMonths(1);
+        int month = theDay.getMonthValue();
+        int year = theDay.getYear();
         LocalDate startDate = LocalDate.of(year, month, 1);
-        return orderDetailRepository.countTopSales(new Date(startDate.toEpochDay()));
+        List<TopSales> topSales = orderDetailRepository.countTopSales(new Date(startDate.toEpochDay()));
+        List<TopSalesResponseDto> result = new ArrayList<>();
+        for (TopSales item : topSales) {
+            Product product = productRepository.findById(item.getProductIdx()).orElseThrow(()-> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
+            String productImageUrl = product.getImages() != null ? product.getImages().get(0).getImageUrl(): "";
+            List<Integer> reviews = product.getReviews() != null ? product.getReviews().stream().map(Review::getReviewRating).toList() : null;
+            result.add(TopSalesResponseDto.builder().productIdx(item.getProductIdx()).productImageUrl(productImageUrl).productName(product.getName()).productPrice(product.getPrice()).productDiscount(product.getDiscount()).reviews(reviews).build());
+        }
+        return result;
     }
 
     // TODO: view 기록하는 기능 추가 후 구현
@@ -112,21 +128,21 @@ public class StatisticsService {
     }
 
     */
-    /*
-    public List<ProductResponseDto> getTopSales() {
+
+    public List<TopWishlistResponseDto> getTopWishList() {
         LocalDate today = LocalDate.now();
         int month = today.getMonthValue();
         int year = today.getYear();
         LocalDate startDate = LocalDate.of(year, month, 1);
-        //List<OrderDetail> orderDetails = orderDetailRepository.
-    }
-    */
-    public List<TopWishList> getTopWishList() {
-        LocalDate today = LocalDate.now();
-        int month = today.getMonthValue();
-        int year = today.getYear();
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        return wishlistRepository.countWishlistGroupByProduct();
+        List<TopWishList> wishLists = wishlistRepository.countWishlistGroupByProduct();
+        List<TopWishlistResponseDto> result = new ArrayList<>();
+        for (TopWishList item : wishLists) {
+            Product product = productRepository.findById(item.getProductIdx()).orElseThrow(()-> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
+            String productImageUrl = product.getImages() != null ? product.getImages().get(0).getImageUrl(): "";
+            List<Integer> reviews = product.getReviews() != null ? product.getReviews().stream().map(Review::getReviewRating).toList() : null;
+            result.add(TopWishlistResponseDto.builder().productIdx(product.getProductIdx()).productName(product.getName()).productDiscount(product.getDiscount()).price(product.getPrice()).brand(product.getBrand()).imageUrl(productImageUrl).reviews(reviews).cw(item.getCw()).build());
+        }
+        return result;
     }
 
     // 최근 3달의 월간 수입 가져오기
