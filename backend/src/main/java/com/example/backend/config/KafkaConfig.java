@@ -46,28 +46,28 @@ public class KafkaConfig {
         return new NewTopic("order-complete-notifications", 1, (short) 1);
     }
 
-    // 2. Producer 설정
+    // 2. Producer 설정 (RealTimeNotificationDto 전용)
     @Bean
-    public ProducerFactory<String, Object> producerFactory() {
+    public ProducerFactory<String, RealTimeNotificationDto> realTimeProducerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
-    @Bean
-    public KafkaTemplate<String, Object> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
+    @Bean(name = "realTimeKafkaTemplate")
+    public KafkaTemplate<String, RealTimeNotificationDto> realTimeKafkaTemplate() {
+        return new KafkaTemplate<>(realTimeProducerFactory());
     }
 
     // 3. Consumer 설정 - RealTimeNotificationDto 전용
     @Bean
     public ConsumerFactory<String, RealTimeNotificationDto> realTimeNotificationConsumerFactory() {
         JsonDeserializer<RealTimeNotificationDto> deserializer = new JsonDeserializer<>(RealTimeNotificationDto.class);
-        deserializer.setRemoveTypeHeaders(false);
+        deserializer.addTrustedPackages("*");
         deserializer.setUseTypeMapperForKey(true);
-        deserializer.addTrustedPackages("*"); // 또는 명시적으로 dto 패키지
 
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
@@ -78,7 +78,6 @@ public class KafkaConfig {
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
     }
 
-
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, RealTimeNotificationDto> realTimeKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, RealTimeNotificationDto> factory =
@@ -86,5 +85,6 @@ public class KafkaConfig {
         factory.setConsumerFactory(realTimeNotificationConsumerFactory());
         return factory;
     }
+
 
 }

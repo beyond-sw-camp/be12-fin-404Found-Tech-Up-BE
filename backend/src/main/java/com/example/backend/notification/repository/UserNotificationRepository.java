@@ -20,8 +20,9 @@ public interface UserNotificationRepository extends JpaRepository<UserNotificati
 
     // 안읽음 알림 목록 (최신순 정렬)
     Page<UserNotification> findByUserAndIsReadFalse(User user, Pageable pageable);
-    // 읽은 알림
-    List<UserNotification> findByUserAndIsReadTrueOrderByCreatedAtDesc(User user);
+
+    long countByUserAndIsReadFalse(User user);
+
 
     List<UserNotification> findByTemplate(Notification notification);
 }

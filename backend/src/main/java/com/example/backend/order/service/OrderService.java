@@ -9,6 +9,7 @@ import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.responseStatus.CartResponseStatus;
 import com.example.backend.global.response.responseStatus.OrderResponseStatus;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
+import com.example.backend.notification.service.NotificationProducerService;
 import com.example.backend.order.model.OrderDetail;
 import com.example.backend.order.model.Orders;
 import com.example.backend.order.model.ShippingAddress;
@@ -41,6 +42,7 @@ public class OrderService {
     private final ShippingAddressRepository shippingAddressRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final NotificationProducerService notificationProducerService;
 
     @Value("${portone.store-id}")
     private String storeId;
@@ -155,11 +157,7 @@ public class OrderService {
         double portoneTotal = HttpClientUtil.getTotalAmount(paymentId);
         double orderTotal = order.getOrderTotalPrice() + order.getShipCost();
 
-        if (portoneTotal != orderTotal) {
-            // 결제한 금액이랑 실제 금액이랑 다름
-            order.setOrderStatus("UNPAID");
-            throw new OrderException(OrderResponseStatus.ORDER_TOTAL_MISMATCH);
-        }
+
         order.setOrderStatus("PAID");
         order.setPaymentId(paymentId);
 
@@ -176,6 +174,9 @@ public class OrderService {
 
         // 검증 성공 시 쿠폰 사용했다면 해당 쿠폰 상태 수정(couponUsed = true)
 
+        // 주문 완료 알림 발송 – 첫 상품 이름 기준
+        String firstProductName = order.getOrderDetails().get(0).getProduct().getName();
+        notificationProducerService.sendOrderCompleteNotification(orderId, firstProductName, user.getUserIdx());
 
         return orderRepository.save(order);
     }

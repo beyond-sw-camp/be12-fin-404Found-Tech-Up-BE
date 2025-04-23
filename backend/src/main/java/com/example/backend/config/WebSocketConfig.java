@@ -1,29 +1,56 @@
 package com.example.backend.config;
 
+import com.example.backend.config.interceptor.JwtHandshakeInterceptor;
+import com.example.backend.global.auth.StompPrincipal;
+import com.example.backend.user.model.User;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    public static final String WS_USER_KEY = "user"; // 🔐 SessionAttributes 키 통일
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // 웹소켓 연결 엔드포인트 설정, SockJS 사용하여 WebSocket을 지원하지 않는 브라우저도 지원
         registry.addEndpoint("/ws-notification")
-                .setAllowedOriginPatterns("*")  // 실제 배포 시 보안을 위해 제한 필요
+                .setAllowedOriginPatterns("*")
+                .addInterceptors(new JwtHandshakeInterceptor()) // 🔹 쿠키 기반 사용자 정보 주입
                 .withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // 클라이언트로 메시지를 보낼 때 사용할 prefix 설정
-        registry.enableSimpleBroker("/topic", "/queue");
+        registry.enableSimpleBroker("/topic", "/queue"); // 🔔 클라이언트 구독용 prefix
+        registry.setApplicationDestinationPrefixes("/app"); // 📨 클라이언트 → 서버 메시지 prefix
+    }
 
-        // 클라이언트에서 서버로 메시지를 보낼 때 사용할 prefix 설정
-        registry.setApplicationDestinationPrefixes("/app");
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(new ChannelInterceptor() {
+            @Override
+            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+                StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+
+                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+                    Object userAttr = accessor.getSessionAttributes().get(WS_USER_KEY);
+                    if (userAttr instanceof User user) {
+                        accessor.setUser(new StompPrincipal(user.getUserIdx().toString())); // Principal 설정
+                    } else {
+                        accessor.setUser(null);
+                    }
+                }
+
+                return message;
+            }
+        });
     }
 }

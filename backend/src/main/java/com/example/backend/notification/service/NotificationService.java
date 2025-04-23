@@ -97,6 +97,13 @@ public class NotificationService {
 
     }
 
+    public long countUnreadNotifications(Long userIdx) {
+        User user = userRepository.findById(userIdx)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return userNotificationRepository.countByUserAndIsReadFalse(user);
+    }
+
+
     // ------------------------- 관리자 ---------------------------------
 
     // 전체 알림 이력 보기
