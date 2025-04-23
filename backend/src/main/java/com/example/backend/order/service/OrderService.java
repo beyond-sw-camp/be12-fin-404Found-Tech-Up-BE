@@ -22,6 +22,7 @@ import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.user.model.User;
 import com.example.backend.user.repository.UserRepository;
 import com.example.backend.util.HttpClientUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -144,6 +145,7 @@ public class OrderService {
      * @param orderId 주문 고유 ID
      * @return 결제 완료된 Orders 엔티티
      */
+    @Transactional
     public Orders verify(User user, Long orderId, String paymentId) {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
@@ -186,6 +188,7 @@ public class OrderService {
     }
 
     // 주문 취소
+    @Transactional
     public Orders cancelOrder(User user, Long orderId) {
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_NOT_FOUND));
@@ -252,7 +255,7 @@ public class OrderService {
 
         // 결제된 상태가 아니라면 환불 요청 받지 않음
         String status = order.getOrderStatus();
-        if ("PAID".equals(status)) {
+        if (!"PAID".equals(status)) {
             throw new OrderException(OrderResponseStatus.ORDER_CANCEL_FAIL);
         }
 
