@@ -19,18 +19,24 @@ public class ReducedUserInfoDto {
     private String userEmail;
     @Schema(description="사용자의 별명", example="yippie")
     private String userNickname;
-    @Schema(description="사용자 전화번호, null일 수 있음", example="010-1234-1234")
+    @Schema(description="사용자 포스팅 횟수, null일 수 있음", example="4")
     private Integer userPosts;
-    @Schema(description="사용자 주소, null일 수 있음", example="서울특별시 종로구 청와대로 1")
+    @Schema(description="사용자 리뷰 횟수, null일 수 있음", example="1")
     private Integer userReviews;
+    @Schema(description="사용자 전화번호, null일 수 있음", example="010-1234-1234")
+    private String userPhone;
+    @Schema(description="사용자 주소, null일 수 있음", example="서울특별시 종로구 청와대로 1")
+    private String userAddress;
 
     public static ReducedUserInfoDto from(User user) {
         return ReducedUserInfoDto.builder()
                 .userIdx(user.getUserIdx())
                 .userEmail(user.getUserEmail())
                 .userNickname(user.getUserNickname())
-                .userPosts(0) // TODO: user.getPosts() 가 생기면 size를 삽입
-                .userReviews(user.getReviews().size())
+                .userPosts(user.getPosts() != null ? user.getPosts().size() : 0)
+                .userReviews(user.getReviews() != null ?user.getReviews().size(): 0)
+                .userPhone(user.getUserPhone())
+                .userAddress(user.getUserAddress())
                 .build();
     }
 }
