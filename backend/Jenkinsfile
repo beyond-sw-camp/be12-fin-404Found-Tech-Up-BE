@@ -26,6 +26,9 @@ pipeline {
 //         PORTONE_STOREID    = credentials('PORTONE_STOREID')
 //         MAIL_ADDR          = credentials('MAIL_ADDR')
 //         MAIL_PASSWORD      = credentials('MAIL_PASSWORD')
+
+        // kubernetes 환경변수
+        KUBE_HOST = credentials('KUBE_HOST')
     }
 
     stages {
