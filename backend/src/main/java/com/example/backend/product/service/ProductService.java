@@ -69,6 +69,11 @@ public class ProductService {
     }
 
     public Page<ProductResponseDto> filterProduct(ProductFilterRequestDto dto, Pageable pageable) {
+        if (dto.getCategory() != null) {
+            return productRepository
+                    .findAllByCategoryIgnoreCase(dto.getCategory(), pageable)
+                    .map(ProductResponseDto::from);
+        }
         List<ProductResponseDto> all = productRepository.findAll().stream()
                 .filter(product -> {
                     String cat = product.getCategory() != null

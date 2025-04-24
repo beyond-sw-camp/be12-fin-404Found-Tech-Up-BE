@@ -207,8 +207,8 @@ public class OrderService {
                     });
         }
         // 주문 완료 알림 발송 – 첫 상품 이름 기준
-        String firstProductName = order.getOrderDetails().get(0).getProduct().getName();
-        notificationProducerService.sendOrderCompleteNotification(orderId, firstProductName, user.getUserIdx());
+//        String firstProductName = order.getOrderDetails().get(0).getProduct().getName();
+//        notificationProducerService.sendOrderCompleteNotification(orderId, firstProductName, user.getUserIdx());
 
         return orderRepository.save(order);
     }
