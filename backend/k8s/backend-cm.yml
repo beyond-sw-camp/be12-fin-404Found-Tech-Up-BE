@@ -6,6 +6,6 @@ data:
   AWS_REGION: 'ap-northeast-2'
   MASTER_DB_URL: 'jdbc:mariadb://mariadb:3306/techup'
   SLAVE_DB_URL: 'jdbc:mariadb://mariadb:3306/techup'
-  DB_USER: 'test'
+  DB_USERNAME: 'test'
   DB_PASSWORD: 'qwer1234'
   SECRET_KEY: 'abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789'
