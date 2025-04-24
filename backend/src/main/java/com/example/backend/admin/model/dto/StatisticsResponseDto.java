@@ -1,5 +1,7 @@
-package com.example.backend.admin.model;
+package com.example.backend.admin.model.dto;
 
+import com.example.backend.admin.model.TopSales;
+import com.example.backend.admin.model.TopWishList;
 import com.example.backend.product.model.dto.ProductResponseDto;
 import lombok.*;
 

@@ -17,10 +17,11 @@ public class OrderDetail {
     private Long orderDetailIdx;
     private int orderDetailQuantity;
     private int orderDetailPrice;
+    private int orderDetailDiscount;
 
     // 유저쿠폰과 1대1 맵핑
     @OneToOne
-    @JoinColumn(name = "user_coupon_id")
+    @JoinColumn(name = "user_coupon_idx")
     private UserCoupon userCoupon;
     // 주문과 다대일 맵핑
     @ManyToOne

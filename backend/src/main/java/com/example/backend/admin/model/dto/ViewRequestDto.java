@@ -1,4 +1,4 @@
-package com.example.backend.admin.model;
+package com.example.backend.admin.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 public class OrderDetailRequestDto {
     private Long productIdx;
     private Integer orderDetailQuantity;
-    private double orderDetailPrice;
+    private int orderDetailPrice;
+    private int orderDetailDiscount;
 }
