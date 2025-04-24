@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment-green
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      type: backend
+      deployment: green
+  strategy:
+    type: RollingUpdate
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        type: backend
+        deployment: green
+    spec:
+      containers:
+        - name: backend-green
+          image: mstar228/edulink-backend:latest
+          env:
+            - name: AWS_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-cm
+                  key: AWS_REGION
+            - name: MASTER_DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-cm
+                  key: MASTER_DB_URL
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-cm
+                  key: SLAVE_DB_URL
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-cm
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-cm
+                  key: DB_PASSWORD
+            - name: SECRET_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-cm
+                  key: SECRET_KEY
+          ports:
+            - containerPort: 8080
+      terminationGracePeriodSeconds: 0
