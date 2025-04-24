@@ -36,11 +36,11 @@ spec:
                 configMapKeyRef:
                   name: backend-cm
                   key: SLAVE_DB_URL
-            - name: DB_USER
+            - name: DB_USERNAME
               valueFrom:
                 configMapKeyRef:
                   name: backend-cm
-                  key: DB_USER
+                  key: DB_USERNAME
             - name: DB_PASSWORD
               valueFrom:
                 configMapKeyRef:
