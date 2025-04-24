@@ -20,6 +20,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,11 +38,15 @@ public class ProductController {
     private final ProductService productService;
     private final BaseResponseService baseResponseService;
 
-    @Operation(summary = "상품 리스트 조회", description = "전체 상품 리스트를 조회합니다.")
+    @Operation(summary = "상품 리스트 조회 (paged)", description = "페이지 단위로 상품 리스트를 조회합니다.")
     @GetMapping("/list")
-    public BaseResponse<List<ProductResponseDto>> getProductList() {
-        List<ProductResponseDto> list = productService.getProductList();
-        return baseResponseService.getSuccessResponse(list, ProductResponseStatus.SUCCESS);
+    public BaseResponse<Page<ProductResponseDto>> getProductList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductResponseDto> dtos = productService.getProductList(pageable);
+        return baseResponseService.getSuccessResponse(dtos, ProductResponseStatus.SUCCESS);
     }
 
     @Operation(summary = "상품 상세 조회", description = "상품 ID로 상세 정보를 조회합니다.")
@@ -61,14 +68,19 @@ public class ProductController {
             }
     )
     @GetMapping("/search")
-    public BaseResponse<List<ProductResponseDto>> searchProduct(@RequestParam String keyword) {
-        List<ProductResponseDto> list = productService.searchProduct(keyword);
-        return baseResponseService.getSuccessResponse(list, ProductResponseStatus.SUCCESS);
+    public BaseResponse<Page<ProductResponseDto>> searchProduct(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductResponseDto> results = productService.searchProduct(keyword, pageable);
+        return baseResponseService.getSuccessResponse(results, ProductResponseStatus.SUCCESS);
     }
 
     @Operation(summary = "상품 필터링", description = "카테고리, 이름 키워드, 가격 범위 등의 조건으로 상품을 필터링합니다.")
     @PostMapping("/filter")
-    public BaseResponse<List<ProductResponseDto>> filterProduct(
+    public BaseResponse<Page<ProductResponseDto>> filterProduct(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "필터링 조건을 담은 JSON 객체",
                     required = true,
@@ -100,11 +112,11 @@ public class ProductController {
                             }
                     )
             )
-            ProductFilterRequestDto filterDto
+            ProductFilterRequestDto filterDto,
+            Pageable pageable
     ) {
-
-        List<ProductResponseDto> list = productService.filterProduct(filterDto);
-        return baseResponseService.getSuccessResponse(list, ProductResponseStatus.SUCCESS);
+        Page<ProductResponseDto> page = productService.filterProduct(filterDto, pageable);
+        return baseResponseService.getSuccessResponse(page, ProductResponseStatus.SUCCESS);
     }
 
     //-----------------------관리자 전용 상품 기능----------------
