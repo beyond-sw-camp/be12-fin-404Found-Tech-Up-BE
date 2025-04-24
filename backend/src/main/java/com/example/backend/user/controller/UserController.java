@@ -172,6 +172,10 @@ public class UserController {
         return baseResponseService.getSuccessResponse(response, UserResponseStatus.SUCCESS);
     }
 
+    @Operation(summary="로그인 상태 확인", description = "현재 유저 확인")
+    @ApiResponse(responseCode="200", description="로그인 확인.", content= @Content(schema = @Schema(implementation = String.class)))
+    @ApiResponse(responseCode="400", description="실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
+    @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @GetMapping("/auth/me")
     public BaseResponse<Object> getCurrentUser(@AuthenticationPrincipal User user) {
         if (user == null) {
@@ -180,6 +184,10 @@ public class UserController {
         return baseResponseService.getSuccessResponse(user, UserResponseStatus.SUCCESS);
     }
 
+    @Operation(summary="알람 세팅 확인 ", description = "알람 세팅 ")
+    @ApiResponse(responseCode="200", description="조회 성공.", content= @Content(schema = @Schema(implementation = String.class)))
+    @ApiResponse(responseCode="400", description="실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
+    @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @GetMapping("/alarm")
     public BaseResponse<AlarmSettingResponseDto> getAlarmSetting(
             @AuthenticationPrincipal User user
@@ -191,6 +199,10 @@ public class UserController {
         return baseResponseService.getSuccessResponse(dto, UserResponseStatus.SUCCESS);
     }
 
+    @Operation(summary="알람 세팅 변경 ", description = "알람 세팅 변경")
+    @ApiResponse(responseCode="200", description="변경 성공.", content= @Content(schema = @Schema(implementation = String.class)))
+    @ApiResponse(responseCode="400", description="실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
+    @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @PatchMapping("/alarm")
     public BaseResponse<AlarmSettingResponseDto> updateAlarmSetting(
             @AuthenticationPrincipal User user,

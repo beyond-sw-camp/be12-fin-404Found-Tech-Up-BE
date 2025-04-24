@@ -44,7 +44,7 @@ spec:
             - name: JWT_SECRET
               valueFrom:
                 configMapKeyRef:
-                  name: backend-cm
+                  name: backend-secret
                   key: JWT_SECRET
             - name: KAKAO_CLIENT_ID
               valueFrom:
@@ -94,7 +94,7 @@ spec:
             - name: AWS_S3_BUCKET
               valueFrom:
                 configMapKeyRef:
-                  name: backend-secret
+                  name: backend-cm
                   key: AWS_S3_BUCKET
             - name: JWT_EXPIRATION
               valueFrom:
