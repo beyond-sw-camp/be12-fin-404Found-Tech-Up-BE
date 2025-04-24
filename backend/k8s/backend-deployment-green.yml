@@ -26,31 +26,26 @@ spec:
                 configMapKeyRef:
                   name: backend-cm
                   key: AWS_REGION
-            - name: MASTER_DB_URL
+            - name: DB_URL
               valueFrom:
                 configMapKeyRef:
                   name: backend-cm
-                  key: MASTER_DB_URL
-            - name: SPRING_DATASOURCE_URL
+                  key: DB_URL
+            - name: DB_USERNAME
               valueFrom:
                 configMapKeyRef:
                   name: backend-cm
-                  key: SLAVE_DB_URL
-            - name: DB_USER
-              valueFrom:
-                configMapKeyRef:
-                  name: backend-cm
-                  key: DB_USER
+                  key: DB_USERNAME
             - name: DB_PASSWORD
               valueFrom:
                 configMapKeyRef:
                   name: backend-cm
                   key: DB_PASSWORD
-            - name: SECRET_KEY
+            - name: JWT_SECRET
               valueFrom:
                 configMapKeyRef:
                   name: backend-cm
-                  key: SECRET_KEY
+                  key: JWT_SECRET
             - name: KAKAO_CLIENT_ID
               valueFrom:
                 configMapKeyRef:
@@ -86,6 +81,26 @@ spec:
                 configMapKeyRef:
                   name: backend-secret
                   key: MAIL_PASSWORD
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-secret
+                  key: AWS_SECRET_KEY
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-secret
+                  key: AWS_ACCESS_KEY
+            - name: AWS_S3_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-secret
+                  key: AWS_S3_BUCKET
+            - name: JWT_EXPIRATION
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-secret
+                  key: JWT_EXPIRATION
           ports:
             - containerPort: 8080
       terminationGracePeriodSeconds: 0
