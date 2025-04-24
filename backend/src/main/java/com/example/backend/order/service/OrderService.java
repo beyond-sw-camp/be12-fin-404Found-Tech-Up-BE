@@ -90,7 +90,7 @@ public class OrderService {
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new CartException(CartResponseStatus.CART_IS_EMPTY));
         List<CartItem> cartItems = cart.getCartItems();
-        if (cartItems == null || cartItems.isEmpty()) {
+        if (cartItems.isEmpty()) {
             throw new CartException(CartResponseStatus.CART_IS_EMPTY);
         }
 
@@ -100,41 +100,36 @@ public class OrderService {
         // 쿠폰을 사용하였을 경우
         UserCoupon userCoupon = null;
         if (dto.getCouponIdx() != null) {
-            Optional<UserCoupon> getCoupon = userCouponRepository.findById(dto.getCouponIdx());
-            if (getCoupon.isPresent()) {
-                userCoupon = getCoupon.get();
-            }
+            userCoupon = userCouponRepository.findById(dto.getCouponIdx()).orElse(null);
         }
 
         // 각 장바구니 항목을 OrderDetail로 변환
         for (CartItem cartItem : cartItems) {
             Product product = cartItem.getProduct();
-
             int quantity = cartItem.getCartItemQuantity();
-            int discount = 0;
-            if (cartItem.getProduct().getDiscount() != null) {
-                discount = cartItem.getProduct().getDiscount();
-            }
-            // 주문 상세 금액: 단가 * 수량 * 할인율
-            int price = product.getPrice().intValue();
-            double base = price * (1 - discount / 100.0);
+            int discount = product.getDiscount() != null ? product.getDiscount() : 0;
+            double unitPrice = product.getPrice();
+            double basePrice = unitPrice * (1 - discount / 100.0);
 
-            // 쿠폰 적용 금액
+            UserCoupon detailCoupon = null;
             if (userCoupon != null
                     && product.getProductIdx().equals(userCoupon.getCoupon().getProduct().getProductIdx())) {
-                double couponAmt = price
-                        * userCoupon.getCoupon().getCouponDiscountRate()
-                        / 100.0;
-                base -= couponAmt;
+                double couponAmt = unitPrice * userCoupon.getCoupon().getCouponDiscountRate() / 100.0;
+                basePrice -= couponAmt;
+                detailCoupon = userCoupon;
+                userCoupon = null;
             }
-            totalPrice += base * quantity;
+
+            totalPrice += (int)Math.round(basePrice * quantity);
 
             OrderDetail orderDetail = OrderDetail.builder()
                     .orderDetailQuantity(quantity)
-                    .orderDetailPrice(price)
+                    .orderDetailPrice((int)unitPrice)
                     .orderDetailDiscount(discount)
+                    .userCoupon(detailCoupon)
                     .product(product)
                     .build();
+
             orderDetails.add(orderDetail);
         }
 
@@ -153,9 +148,7 @@ public class OrderService {
                 .build();
 
         // 양방향 매핑을 위해 OrderDetail에도 Order를 세팅
-        for (OrderDetail detail : orderDetails) {
-            detail.setOrders(order);
-        }
+        orderDetails.forEach(d -> d.setOrders(order));
 
         // 주문 엔티티 저장
         return orderRepository.save(order);
@@ -209,7 +202,7 @@ public class OrderService {
         if (dto.getCouponIdx() != null) {
             userCouponRepository.findById(dto.getCouponIdx())
                     .ifPresent(userCoupon -> {
-                        userCoupon.setCouponUsed(false);
+                        userCoupon.setCouponUsed(true);
                         userCouponRepository.save(userCoupon);
                     });
         }
