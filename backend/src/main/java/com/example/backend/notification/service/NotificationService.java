@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -66,7 +67,7 @@ public class NotificationService {
     public NotificationPageResponse getAllNotifications(Long userIdx, int page, int size) {
         User user = userRepository.findById(userIdx)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        PageRequest pageable = PageRequest.of(page, size);
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<UserNotification> pageResult = userNotificationRepository.findByUser(user, pageable);
         return NotificationPageResponse.from(pageResult);
     }
@@ -74,7 +75,7 @@ public class NotificationService {
     public NotificationPageResponse getReadNotifications(Long userIdx, int page, int size) {
         User user = userRepository.findById(userIdx)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        PageRequest pageable = PageRequest.of(page, size);
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<UserNotification> pageResult = userNotificationRepository.findByUserAndIsReadTrue(user, pageable);
         return NotificationPageResponse.from(pageResult);
     }
@@ -82,10 +83,11 @@ public class NotificationService {
     public NotificationPageResponse getUnreadNotifications(Long userIdx, int page, int size) {
         User user = userRepository.findById(userIdx)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        PageRequest pageable = PageRequest.of(page, size);
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<UserNotification> pageResult = userNotificationRepository.findByUserAndIsReadFalse(user, pageable);
         return NotificationPageResponse.from(pageResult);
     }
+
 
 
     public void markAsRead(Long id) {
