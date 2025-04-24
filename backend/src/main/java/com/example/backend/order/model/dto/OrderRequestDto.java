@@ -18,6 +18,7 @@ public class OrderRequestDto {
     private String phone;
     private String email;
     private String memo;
+    private Long couponIdx;
     private double shipCost;
     private String paymentMethod;
     private String shippingMethod;

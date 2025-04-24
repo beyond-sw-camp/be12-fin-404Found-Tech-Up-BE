@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 public class OrderResponseDto {
     private Long orderIdx;
     private double orderTotalPrice;
+    private Long couponIdx;
     private double shipCost;
     private String paymentMethod;
     private String shippingMethod;
@@ -27,6 +28,7 @@ public class OrderResponseDto {
         return OrderResponseDto.builder()
                 .orderIdx(order.getOrderIdx())
                 .orderTotalPrice(order.getOrderTotalPrice())
+                .couponIdx(order.getCouponIdx())
                 .shipCost(order.getShipCost())
                 .paymentMethod(order.getPaymentMethod())
                 .shippingMethod(order.getShippingMethod())

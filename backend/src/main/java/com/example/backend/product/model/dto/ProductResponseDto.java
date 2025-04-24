@@ -2,6 +2,7 @@ package com.example.backend.product.model.dto;
 
 import com.example.backend.product.model.Product;
 import com.example.backend.product.model.ProductImage;
+import com.example.backend.review.model.Review;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +25,7 @@ public class ProductResponseDto {
     private Integer stock;
     private String description;
     private String category;
+    private Double rating;
 
     private CpuSpecDto cpuSpec;
     private GpuSpecDto gpuSpec;
@@ -32,6 +34,8 @@ public class ProductResponseDto {
     private RamSpecDto ramSpec;
 
     private List<String> images;
+
+    private List<Integer> reviews;
 
     public static ProductResponseDto from(Product product) {
         return ProductResponseDto.builder()
@@ -43,12 +47,14 @@ public class ProductResponseDto {
                 .stock(product.getStock())
                 .description(product.getDescription())
                 .category(product.getCategory())
+                .rating(product.getRating())
                 .cpuSpec(product.getCpuSpec() != null ? CpuSpecDto.from(product.getCpuSpec()) : null)
                 .gpuSpec(product.getGpuSpec() != null ? GpuSpecDto.from(product.getGpuSpec()) : null)
                 .hddSpec(product.getHddSpec() != null ? HddSpecDto.from(product.getHddSpec()) : null)
                 .ssdSpec(product.getSsdSpec() != null ? SsdSpecDto.from(product.getSsdSpec()) : null)
                 .ramSpec(product.getRamSpec() != null ? RamSpecDto.from(product.getRamSpec()) : null)
                 .images(product.getImages() != null ? product.getImages().stream().map(ProductImage::getImageUrl).collect(Collectors.toList()): new ArrayList<String>())
+                .reviews(product.getReviews() != null ? product.getReviews().stream().map(Review::getReviewRating).toList(): null)
                 .build();
     }
 }

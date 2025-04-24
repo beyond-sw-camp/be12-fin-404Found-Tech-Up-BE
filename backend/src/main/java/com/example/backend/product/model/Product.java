@@ -23,13 +23,20 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productIdx;
+    @Column(nullable = false, unique = true)
     private String name;
+    @Column(nullable = false)
     private Double price;
     private Integer discount;
+    @Column(nullable = false)
     private String brand;
+    @Column(nullable = false)
     private Integer stock;
+    @Column(nullable = false)
     private String description;
+    @Column(nullable = false)
     private String category;
+    private Double rating;
 
     @OneToMany(mappedBy = "product")
     private List<ProductImage> images;
@@ -76,6 +83,7 @@ public class Product {
     public void update(ProductRequestDto dto) {
         this.name = dto.getName();
         this.price = dto.getPrice();
+        this.discount = dto.getDiscount();
         this.brand = dto.getBrand();
         this.stock = dto.getStock();
         this.description = dto.getDescription();
