@@ -76,8 +76,8 @@ kafka:
 management:
   endpoints:
     web:
-    exposure:
-      include: 'health'
+      exposure:
+        include: 'health'
   endpoint:
     health:
       show-details: always
