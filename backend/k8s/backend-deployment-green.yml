@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: backend-green
-          image: mstar228/edulink-backend:latest
+          image: mstar228/techup-backend:latest
           env:
             - name: AWS_REGION
               valueFrom:
@@ -51,6 +51,41 @@ spec:
                 configMapKeyRef:
                   name: backend-cm
                   key: SECRET_KEY
+            - name: KAKAO_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-secret
+                  key: KAKAO_CLIENT_ID
+            - name: KAKAO_REDIRECT_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-secret
+                  key: KAKAO_REDIRECT_URI
+            - name: PORTONE_CHANNEL_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-secret
+                  key: PORTONE_CHANNEL_KEY
+            - name: PORTONE_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-secret
+                  key: PORTONE_SECRET
+            - name: PORTONE_STOREID
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-secret
+                  key: PORTONE_STOREID
+            - name: MAIL_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-secret
+                  key: MAIL_ADDR
+            - name: MAIL_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-secret
+                  key: MAIL_PASSWORD
           ports:
             - containerPort: 8080
       terminationGracePeriodSeconds: 0
