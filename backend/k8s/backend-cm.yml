@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-cm
+data:
+  AWS_REGION: 'ap-northeast-2'
+  MASTER_DB_URL: 'jdbc:mariadb://db-svc:3306/edulink'
+  SLAVE_DB_URL: 'jdbc:mariadb://db-svc:3306/edulink'
+  DB_USER: 'root'
+  DB_PASSWORD: 'qwer1234'
+  SECRET_KEY: 'abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789'
