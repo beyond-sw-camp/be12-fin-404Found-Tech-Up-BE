@@ -78,9 +78,9 @@ management:
     web:
     exposure:
       include: 'health'
-endpoint:
+  endpoint:
+    health:
+      show-details: always
   health:
-    show-details: always
-health:
-  db:
-    enabled: true
+    db:
+      enabled: true
