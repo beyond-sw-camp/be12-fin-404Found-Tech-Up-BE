@@ -1,5 +1,6 @@
 package com.example.backend.user.model;
 
+import com.example.backend.board.model.Board;
 import com.example.backend.cart.model.Cart;
 import com.example.backend.coupon.model.UserCoupon;
 import com.example.backend.order.model.Orders;
@@ -71,6 +72,9 @@ public class User implements UserDetails {
     // Order와 일대다 맵핑
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Orders> orders;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Board> posts;
 
     // Order와 일대다 맵핑
     @OneToMany(mappedBy = "user")
