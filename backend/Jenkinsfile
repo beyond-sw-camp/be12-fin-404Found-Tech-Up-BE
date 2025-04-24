@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'back-agent'
+        label 'master'
     }
 
     options {
