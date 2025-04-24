@@ -99,11 +99,13 @@ public class NotificationConsumerService {
     }
 
     private void sendWebSocketNotification(RealTimeNotificationDto notification) {
-        String userDestination = WS_ENDPOINT_USER_NOTIFICATION + "." + notification.getUserIdx();
         messagingTemplate.convertAndSendToUser(
                 notification.getUserIdx().toString(),
-                userDestination,
+                "/queue/notification",
                 notification
         );
+
+        log.info("[✅ WS 전송 완료] userIdx={}, title={}", notification.getUserIdx(), notification.getTitle());
     }
+
 }

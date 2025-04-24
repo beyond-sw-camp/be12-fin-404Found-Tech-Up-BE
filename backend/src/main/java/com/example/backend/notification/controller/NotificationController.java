@@ -3,10 +3,16 @@ package com.example.backend.notification.controller;
 import com.example.backend.global.response.BaseResponse;
 import com.example.backend.global.response.BaseResponseServiceImpl;
 import com.example.backend.global.response.responseStatus.CommonResponseStatus;
+import com.example.backend.global.response.BaseResponse;
+import com.example.backend.global.response.BaseResponseService;
+import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.notification.model.Notification;
+import com.example.backend.notification.model.NotificationType;
 import com.example.backend.notification.model.UserNotification;
 import com.example.backend.notification.model.dto.NotiRequestDto;
 import com.example.backend.notification.model.dto.NotiResponseDto;
+import com.example.backend.notification.model.dto.NotificationPageResponse;
+import com.example.backend.notification.model.dto.RealTimeNotificationDto;
 import com.example.backend.notification.repository.NotificationRepository;
 import com.example.backend.notification.service.NotificationService;
 import com.example.backend.user.model.User;
@@ -14,10 +20,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -29,6 +40,53 @@ public class NotificationController {
 
     private final NotificationRepository notificationRepo;
 
+    private final BaseResponseService baseResponseService;
+
+    private final SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private SimpUserRegistry simpUserRegistry;
+
+    @GetMapping("/sessions")
+    public void printSessions() {
+        System.out.println("🔍 현재 연결된 사용자 수: " + simpUserRegistry.getUserCount());
+
+        simpUserRegistry.getUsers().forEach(user -> {
+            System.out.println("🧩 유저: " + user.getName());
+            user.getSessions().forEach(session -> {
+                System.out.println("  ↪ 세션 ID: " + session.getId());
+                session.getSubscriptions().forEach(sub -> {
+                    System.out.println("    🔔 구독 경로: " + sub.getDestination());
+                });
+            });
+        });
+    }
+
+    @PostMapping("/test-ws")
+    public void testWs(Principal principal) {
+        String userId = principal.getName(); // 👉 userIdx가 문자열로 설정되어 있음
+
+        System.out.println("[✅ WS 테스트] 메시지 전송 시도: userIdx = " + userId);
+
+        RealTimeNotificationDto test = RealTimeNotificationDto.builder()
+                .notificationType(NotificationType.ORDER_COMPLETE)
+                .title("테스트 알림")
+                .content("이건 테스트 메시지입니다.")
+                .timestamp(LocalDateTime.now())
+                .userIdx(Long.valueOf(userId)) // 🟡 로그와 정합성 맞추려면 넣는 게 좋음
+                .build();
+
+        messagingTemplate.convertAndSendToUser(
+                userId,
+                "/queue/notification",
+                test
+        );
+
+        System.out.println("[✅ WS 테스트] 메시지 전송 완료 userIdx = " + userId);
+    }
+
+
+
     @PostMapping("/test-noti/{id}")
     public void testTemplateSend(@PathVariable Long id) {
         Notification tpl = notificationRepo.findById(id)
@@ -36,30 +94,51 @@ public class NotificationController {
         notificationService.generateFromNotification(tpl);
     }
 
+    @GetMapping("/broadcast")
+    public void broadcastTestMessage() {
+        RealTimeNotificationDto test = RealTimeNotificationDto.builder()
+                .notificationType(NotificationType.ORDER_COMPLETE)
+                .title("브로드캐스트 테스트")
+                .content("모든 유저에게 알림을 보냅니다")
+                .userIdx(0L)
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        messagingTemplate.convertAndSend("/topic/test-broadcast", test);
+        System.out.println("[✅ 브로드캐스트] /topic/test-broadcast 메시지 전송 완료");
+    }
+
 
     @GetMapping
-    public List<UserNotification> getAll(@AuthenticationPrincipal User loginUser) {
-        if (loginUser == null) {
-            return List.of();
-        }
-        return notificationService.getAllNotifications(loginUser.getUserIdx());
+    public BaseResponse<?> getAll(@AuthenticationPrincipal User loginUser,
+                                  @RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "10") int size) {
+        NotificationPageResponse response = notificationService.getAllNotifications(loginUser.getUserIdx(), page, size);
+        return baseResponseService.getSuccessResponse(response, CommonResponseStatus.SUCCESS);
     }
 
     @GetMapping("/read")
-    public List<UserNotification> getRead(@AuthenticationPrincipal User loginUser) {
-        if (loginUser == null) {
-            return List.of();
-        }
-        return notificationService.getReadNotifications(loginUser.getUserIdx());
+    public BaseResponse<?> getRead(@AuthenticationPrincipal User loginUser,
+                                   @RequestParam(defaultValue = "0") int page,
+                                   @RequestParam(defaultValue = "10") int size) {
+        NotificationPageResponse response = notificationService.getReadNotifications(loginUser.getUserIdx(), page, size);
+        return baseResponseService.getSuccessResponse(response, CommonResponseStatus.SUCCESS);
     }
 
     @GetMapping("/unread")
-    public List<UserNotification> getUnread(@AuthenticationPrincipal User loginUser) {
-        if (loginUser == null) {
-            return List.of();
-        }
-        return notificationService.getUnreadNotifications(loginUser.getUserIdx());
+    public BaseResponse<?> getUnread(@AuthenticationPrincipal User loginUser,
+                                     @RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "10") int size) {
+        NotificationPageResponse response = notificationService.getUnreadNotifications(loginUser.getUserIdx(), page, size);
+        return baseResponseService.getSuccessResponse(response, CommonResponseStatus.SUCCESS);
     }
+
+    @GetMapping("/unread/count")
+    public BaseResponse<?> getUnreadCount(@AuthenticationPrincipal User loginUser) {
+        long count = notificationService.countUnreadNotifications(loginUser.getUserIdx());
+        return baseResponseService.getSuccessResponse(count, CommonResponseStatus.SUCCESS);
+    }
+
 
 
     @Operation(
@@ -67,8 +146,19 @@ public class NotificationController {
             description = "알림 ID를 기반으로 해당 알림을 읽음 처리합니다. 읽은 시간도 함께 기록됩니다."
     )
     @PatchMapping("/{id}/read")
-    public void markRead(@PathVariable Long id) {
+    public BaseResponse<Object> markRead(@PathVariable Long id) {
         notificationService.markAsRead(id);
+        return baseResponseService.getSuccessResponse(CommonResponseStatus.SUCCESS);
+    }
+
+    @Operation(
+            summary = "알림 삭제",
+            description = "알림 ID를 기반으로 해당 알림을 삭제합니다."
+    )
+    @DeleteMapping("/{id}")
+    public BaseResponse<Object> deleteNotification(@PathVariable Long id, @AuthenticationPrincipal User loginUser) {
+        notificationService.deleteById(id, loginUser.getUserIdx());
+        return baseResponseService.getSuccessResponse(CommonResponseStatus.DELETED);
     }
 
 

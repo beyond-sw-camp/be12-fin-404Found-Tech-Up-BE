@@ -1,6 +1,7 @@
 package com.example.backend.board.repository;
 
 import com.example.backend.board.model.Board;
+import com.example.backend.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,5 +24,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             @Param("type")     String type,
             Pageable pageable
     );
+
+    Page<Board> findAllByUser(User user, Pageable pageable);
 
 }

@@ -11,6 +11,7 @@ import com.example.backend.global.exception.UserException;
 import com.example.backend.global.response.responseStatus.CartResponseStatus;
 import com.example.backend.global.response.responseStatus.OrderResponseStatus;
 import com.example.backend.global.response.responseStatus.UserResponseStatus;
+import com.example.backend.notification.service.NotificationProducerService;
 import com.example.backend.order.model.OrderDetail;
 import com.example.backend.order.model.Orders;
 import com.example.backend.order.model.ShippingAddress;
@@ -43,6 +44,7 @@ public class OrderService {
     private final ShippingAddressRepository shippingAddressRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final NotificationProducerService notificationProducerService;
 
     @Value("${portone.store-id}")
     private String storeId;
@@ -176,7 +178,7 @@ public class OrderService {
         // PortOne API를 통해 실제 결제한 금액 조회
         double portoneTotal = HttpClientUtil.getTotalAmount(dto.getPaymentId());
         double orderTotal = order.getOrderTotalPrice() + order.getShipCost();
-
+      
         //50000원 이하인데 배송비가 무료면 해킹임
         if (order.getOrderTotalPrice() < 50000 && order.getShipCost() == 0) {
             throw new OrderException(OrderResponseStatus.ORDER_TOTAL_MISMATCH);
@@ -202,6 +204,8 @@ public class OrderService {
         }
 
         // 검증 성공 시 쿠폰 사용했다면 해당 쿠폰 상태 수정(couponUsed = true)
+
+
         if (dto.getCouponIdx() != null) {
             userCouponRepository.findById(dto.getCouponIdx())
                     .ifPresent(userCoupon -> {
@@ -209,6 +213,9 @@ public class OrderService {
                         userCouponRepository.save(userCoupon);
                     });
         }
+        // 주문 완료 알림 발송 – 첫 상품 이름 기준
+        String firstProductName = order.getOrderDetails().get(0).getProduct().getName();
+        notificationProducerService.sendOrderCompleteNotification(orderId, firstProductName, user.getUserIdx());
 
         return orderRepository.save(order);
     }

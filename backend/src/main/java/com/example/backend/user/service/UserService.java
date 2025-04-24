@@ -14,10 +14,7 @@ import com.example.backend.user.model.dto.request.EditPwdRequestDto;
 import com.example.backend.user.model.dto.request.SignupRequestDto;
 import com.example.backend.user.model.dto.request.ValidateEmailRequestDto;
 import com.example.backend.user.model.dto.request.VerifyNickNameRequestDto;
-import com.example.backend.user.model.dto.response.ReducedUserInfoDto;
-import com.example.backend.user.model.dto.response.SignupResponseDto;
-import com.example.backend.user.model.dto.response.UserInfoResponseDto;
-import com.example.backend.user.model.dto.response.VerifyNickNameResponseDto;
+import com.example.backend.user.model.dto.response.*;
 import com.example.backend.user.repository.UserRepository;
 import com.example.backend.wishlist.repository.WishlistRepository;
 import jakarta.validation.Valid;
@@ -186,4 +183,24 @@ public class UserService implements UserDetailsService {
         List<User> target = userRepository.findAllByUserNicknameContaining(keyword);
         return target.stream().map(ReducedUserInfoDto::from).toList();
     }
+
+    @Transactional(readOnly = true)
+    public AlarmSettingResponseDto getAlarmSetting(Long userIdx) {
+        User user = userRepository.findById(userIdx)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return new AlarmSettingResponseDto(user.getAlarmEnabled());
+    }
+
+    /**
+     * 현재 로그인한 사용자의 알림 설정 변경
+     */
+    @Transactional
+    public AlarmSettingResponseDto updateAlarmSetting(Long userIdx, AlarmSettingRequestDto request) {
+        User user = userRepository.findById(userIdx)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        user.setAlarmEnabled(request.getAlarmEnabled());
+        userRepository.save(user);
+        return new AlarmSettingResponseDto(user.getAlarmEnabled());
+    }
+
 }

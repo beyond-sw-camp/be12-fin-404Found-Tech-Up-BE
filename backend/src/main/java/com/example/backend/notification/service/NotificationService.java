@@ -5,12 +5,15 @@ import com.example.backend.notification.model.NotificationType;
 import com.example.backend.notification.model.UserNotification;
 import com.example.backend.notification.model.dto.NotiRequestDto;
 import com.example.backend.notification.model.dto.NotiResponseDto;
+import com.example.backend.notification.model.dto.NotificationPageResponse;
 import com.example.backend.notification.repository.NotificationRepository;
 import com.example.backend.notification.repository.UserNotificationRepository;
 import com.example.backend.user.model.User;
 import com.example.backend.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -60,23 +63,28 @@ public class NotificationService {
         // 4) 저장
         userNotificationRepository.saveAll(batch);
     }
-
-    public List<UserNotification> getAllNotifications(Long userIdx) {
+    public NotificationPageResponse getAllNotifications(Long userIdx, int page, int size) {
         User user = userRepository.findById(userIdx)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        return userNotificationRepository.findByUserOrderByCreatedAtDesc(user);
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<UserNotification> pageResult = userNotificationRepository.findByUser(user, pageable);
+        return NotificationPageResponse.from(pageResult);
     }
 
-    public List<UserNotification> getUnreadNotifications(Long userIdx) {
+    public NotificationPageResponse getReadNotifications(Long userIdx, int page, int size) {
         User user = userRepository.findById(userIdx)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        return userNotificationRepository.findByUserAndIsReadFalseOrderByCreatedAtDesc(user);
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<UserNotification> pageResult = userNotificationRepository.findByUserAndIsReadTrue(user, pageable);
+        return NotificationPageResponse.from(pageResult);
     }
 
-    public List<UserNotification> getReadNotifications(Long userIdx) {
+    public NotificationPageResponse getUnreadNotifications(Long userIdx, int page, int size) {
         User user = userRepository.findById(userIdx)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        return userNotificationRepository.findByUserAndIsReadTrueOrderByCreatedAtDesc(user);
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<UserNotification> pageResult = userNotificationRepository.findByUserAndIsReadFalse(user, pageable);
+        return NotificationPageResponse.from(pageResult);
     }
 
 
@@ -88,6 +96,13 @@ public class NotificationService {
         });
 
     }
+
+    public long countUnreadNotifications(Long userIdx) {
+        User user = userRepository.findById(userIdx)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return userNotificationRepository.countByUserAndIsReadFalse(user);
+    }
+
 
     // ------------------------- 관리자 ---------------------------------
 
@@ -114,4 +129,16 @@ public class NotificationService {
         }
         notificationRepository.delete(notification);
     }
+
+    public void deleteById(Long id, Long userIdx) {
+        UserNotification notification = userNotificationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("알림이 존재하지 않습니다."));
+
+        if (!notification.getUser().getUserIdx().equals(userIdx)) {
+            throw new SecurityException("해당 알림에 대한 권한이 없습니다.");
+        }
+
+        userNotificationRepository.delete(notification);
+    }
+
 }
