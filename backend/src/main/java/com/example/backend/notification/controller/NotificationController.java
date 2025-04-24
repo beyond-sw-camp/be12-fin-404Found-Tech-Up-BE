@@ -63,27 +63,26 @@ public class NotificationController {
     }
 
     @PostMapping("/test-ws")
-    public void testWs(Principal principal) {
-        String userId = principal.getName(); // 👉 userIdx가 문자열로 설정되어 있음
-
-        System.out.println("[✅ WS 테스트] 메시지 전송 시도: userIdx = " + userId);
+    public void testWs(@AuthenticationPrincipal(expression = "userIdx") Long userIdx) {
+        System.out.println("[✅ WS 테스트] 메시지 전송 시도: userIdx = " + userIdx);
 
         RealTimeNotificationDto test = RealTimeNotificationDto.builder()
                 .notificationType(NotificationType.ORDER_COMPLETE)
                 .title("테스트 알림")
                 .content("이건 테스트 메시지입니다.")
                 .timestamp(LocalDateTime.now())
-                .userIdx(Long.valueOf(userId)) // 🟡 로그와 정합성 맞추려면 넣는 게 좋음
+                .userIdx(userIdx)
                 .build();
 
         messagingTemplate.convertAndSendToUser(
-                userId,
+                userIdx.toString(),
                 "/queue/notification",
                 test
         );
 
-        System.out.println("[✅ WS 테스트] 메시지 전송 완료 userIdx = " + userId);
+        System.out.println("[✅ WS 테스트] 메시지 전송 완료 userIdx=" + userIdx);
     }
+
 
 
 

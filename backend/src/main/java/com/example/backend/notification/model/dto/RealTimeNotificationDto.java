@@ -1,10 +1,7 @@
 package com.example.backend.notification.model.dto;
 
 import com.example.backend.notification.model.NotificationType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class RealTimeNotificationDto {
     private NotificationType notificationType;
     private String title;
