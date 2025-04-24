@@ -99,4 +99,18 @@ public class BoardController {
         BoardResponseDto response = boardService.read(boardIdx);
         return baseResponseService.getSuccessResponse(response, CommonResponseStatus.SUCCESS);
     }
+
+    @Operation(
+            summary = "내가 쓴 게시글 목록",
+            description = "로그인한 사용자가 작성한 게시글을 페이징 조회합니다."
+    )
+    @GetMapping("/my-list")
+    public BaseResponse<Object> myList(
+            @AuthenticationPrincipal User loginUser,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        BoardPageResponse response = boardService.getMyBoardList(loginUser, page, size);
+        return baseResponseService.getSuccessResponse(response, CommonResponseStatus.SUCCESS);
+    }
 }

@@ -3,6 +3,7 @@ package com.example.backend.notification.service;
 import com.example.backend.notification.model.NotificationType;
 import com.example.backend.notification.model.dto.RealTimeNotificationDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class NotificationProducerService {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    @Qualifier("realTimeKafkaTemplate")  // 명시적으로 Bean 지정
+    private final KafkaTemplate<String, RealTimeNotificationDto> kafkaTemplate;
 
     private static final String TOPIC_LOW_STOCK_NOTIFICATION = "low-stock-notifications";
     private static final String TOPIC_RESTOCK_NOTIFICATION = "restock-notifications";
