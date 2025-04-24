@@ -17,9 +17,13 @@ import com.example.backend.wishlist.repository.WishlistRepository;
 import com.example.backend.review.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,11 +52,9 @@ public class ProductService {
     private final S3Service s3Service;
     private final ProductImageService productImageService;
 
-    public List<ProductResponseDto> getProductList() {
-        return productRepository.findAll()
-                .stream()
-                .map(ProductResponseDto::from)
-                .collect(Collectors.toList());
+    public Page<ProductResponseDto> getProductList(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(ProductResponseDto::from);
     }
 
     public ProductResponseDto getProductDetail(Long productId) {
@@ -61,16 +63,13 @@ public class ProductService {
         return ProductResponseDto.from(product);
     }
 
-    public List<ProductResponseDto> searchProduct(String keyword) {
-        return productRepository.findByNameContaining(keyword)
-                .stream()
-                .map(ProductResponseDto::from)
-                .collect(Collectors.toList());
+    public Page<ProductResponseDto> searchProduct(String keyword, Pageable pageable) {
+        return productRepository.findByNameContaining(keyword, pageable)
+                .map(ProductResponseDto::from);
     }
 
-    public List<ProductResponseDto> filterProduct(ProductFilterRequestDto dto) {
-        return productRepository.findAll().stream()
-                // your other simple filters here…
+    public Page<ProductResponseDto> filterProduct(ProductFilterRequestDto dto, Pageable pageable) {
+        List<ProductResponseDto> all = productRepository.findAll().stream()
                 .filter(product -> {
                     String cat = product.getCategory() != null
                             ? product.getCategory().toUpperCase()
@@ -199,6 +198,16 @@ public class ProductService {
                 })
                 .map(ProductResponseDto::from)
                 .collect(Collectors.toList());
+
+        int total = all.size();
+        int start = Math.toIntExact(pageable.getOffset());
+        int end   = Math.min(start + pageable.getPageSize(), total);
+
+        List<ProductResponseDto> pageContent = start > total
+                ? Collections.emptyList()
+                : all.subList(start, end);
+
+        return new PageImpl<>(pageContent, pageable, total);
     }
 
 

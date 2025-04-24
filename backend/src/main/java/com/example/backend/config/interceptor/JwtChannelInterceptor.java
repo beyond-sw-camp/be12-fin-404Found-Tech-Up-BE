@@ -36,8 +36,9 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
                     String token = cookie.getValue();
                     User user = JwtUtility.buildUserDataFromToken(token); // ← 기존 JwtFilter에서 하던 작업
                     if (user != null) {
-                        accessor.setUser(new StompPrincipal(user.getUserIdx().toString())); // WebSocket용 Principal 설정
-                    }
+                        String userIdx = user.getUserIdx().toString();
+                        System.out.println("[🧩 WebSocket CONNECT] Principal 설정됨 → userIdx: " + userIdx);
+                        accessor.setUser(new StompPrincipal(userIdx));}
                 }
             }
         }
