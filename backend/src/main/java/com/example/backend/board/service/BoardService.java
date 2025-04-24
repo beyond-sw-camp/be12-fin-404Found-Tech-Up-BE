@@ -11,6 +11,7 @@ import com.example.backend.board.repository.BoardRepository;
 import com.example.backend.common.s3.PreSignedUrlService;
 import com.example.backend.common.s3.S3Service;
 import com.example.backend.user.model.User;
+import com.example.backend.util.HtmlSanitizer;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +52,8 @@ public class BoardService {
         if (boardRequestDto == null) {
             throw new IllegalArgumentException("BoardRegisterRequestDto is null");
         }
-
+        System.out.println("정제 전 : " + boardRequestDto.getBoardContent());
+        System.out.println("정제 후 : " + HtmlSanitizer.sanitize(boardRequestDto.getBoardContent()));
         // 게시글 엔티티 생성 및 저장
         Board board = boardRepository.save(boardRequestDto.toEntity(loginUser));
 
@@ -120,13 +122,16 @@ public class BoardService {
         Board board = boardRepository.findById(boardIdx)
                 .orElseThrow(() -> new EntityNotFoundException("게시글 없음"));
 
-//        if (!board.getUser().equals(loginUser)) {
-//            throw new IllegalArgumentException("수정 권한 없음");
-//        }
+        if (!board.getUser().getUserIdx().equals(loginUser.getUserIdx())) {
+            throw new IllegalArgumentException("수정 권한 없음");
+        }
+
+        // 🔐 수정 시에도 XSS 방지 필터링
+        String sanitizedContent = HtmlSanitizer.sanitize(dto.getBoardContent());
 
         // 🔄 기존 내용 갱신
         board.setBoardTitle(dto.getBoardTitle());
-        board.setBoardContent(dto.getBoardContent());
+        board.setBoardContent(sanitizedContent);
         board.setBoardCategory(dto.getBoardCategory());
 
         // ✅ 1) 첨부파일 갱신
