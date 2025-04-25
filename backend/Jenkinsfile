@@ -159,10 +159,10 @@ pipeline {
                             echo "Blue ready replicas: ${blueReady}"
                             echo "Green ready replicas: ${greenReady}"
 
-                            if (blueReady == '0' && greenReady != '0') {
+                            if (greenReady != '0') {
                                 env.DEPLOY_COLOR = 'blue'
                                 env.OTHER_COLOR = 'green'
-                            } else if (blueReady != '0' && greenReady == '0') {
+                            } else if (blueReady != '0') {
                                 env.DEPLOY_COLOR = 'green'
                                 env.OTHER_COLOR = 'blue'
                             } else {
