@@ -131,60 +131,27 @@ pipeline {
         stage('Determine Deploy Color') {
             steps {
                 script {
-                    try {
-                        def svcSelector = sh(
-                            script: "ssh ${KUBE_HOST} 'kubectl get svc backend-svc -o jsonpath=\"{.spec.selector.app}\"'",
-                            returnStdout: true
-                        ).trim()
-                        echo "Current svc selector: ${svcSelector}"
+                    def svcColor = sh(
+                        script: "ssh ${KUBE_HOST} \"kubectl get svc backend-svc -o jsonpath='{.spec.selector.app}'\"",
+                        returnStdout: true
+                    ).trim()
+                    echo "Service currently routing to: ${svcColor}"
 
-                        if (svcSelector.contains("green")) {
-                            // Service is pointing to green; new deployment should be blue.
-                            env.DEPLOY_COLOR = 'blue'
-                            env.OTHER_COLOR = 'green'
-                        } else if (svcSelector.contains("blue")) {
-                            // Service is pointing to blue; new deployment should be green.
-                            env.DEPLOY_COLOR = 'green'
-                            env.OTHER_COLOR = 'blue'
-                        } else {
-                            // Fallback: Check ready replicas if the svc selector is not as expected.
-                            def blueReady = sh(
-                                script: "ssh ${KUBE_HOST} 'kubectl get deployment backend-deployment-blue -o jsonpath=\"{.status.readyReplicas}\"' || echo '0'",
-                                returnStdout: true
-                            ).trim()
-                            def greenReady = sh(
-                                script: "ssh ${KUBE_HOST} 'kubectl get deployment backend-deployment-green -o jsonpath=\"{.status.readyReplicas}\"' || echo '0'",
-                                returnStdout: true
-                            ).trim()
-                            echo "Blue ready replicas: ${blueReady}"
-                            echo "Green ready replicas: ${greenReady}"
-
-                            if (blueReady == '0' && greenReady != '0') {
-                                env.DEPLOY_COLOR = 'blue'
-                                env.OTHER_COLOR = 'green'
-                            } else if (blueReady != '0' && greenReady == '0') {
-                                env.DEPLOY_COLOR = 'green'
-                                env.OTHER_COLOR = 'blue'
-                            } else {
-                                // If ambiguous, default to deploying blue.
-                                env.DEPLOY_COLOR = 'blue'
-                                env.OTHER_COLOR = 'green'
-                            }
-                        }
-                        echo "Deploying ${env.DEPLOY_COLOR} version (scaling down ${env.OTHER_COLOR} later)"
-                    } catch (Exception e) {
-                        echo "Error determining deploy color: ${e.getMessage()}"
-                        // On error, default to blue deployment.
+                    if (svcColor == 'backend-blue') {
+                        env.DEPLOY_COLOR = 'green'
+                        env.OTHER_COLOR  = 'blue'
+                    } else {
                         env.DEPLOY_COLOR = 'blue'
-                        env.OTHER_COLOR = 'green'
+                        env.OTHER_COLOR  = 'green'
                     }
+                    echo "→ Will deploy: ${env.DEPLOY_COLOR} (and scale down ${env.OTHER_COLOR})"
                 }
             }
         }
 
         stage('Deploy Blue-Green') {
             when {
-                expression { env.GIT_BRANCH == 'origin/dev' }
+                branch 'dev'
             }
             steps {
                 script {
