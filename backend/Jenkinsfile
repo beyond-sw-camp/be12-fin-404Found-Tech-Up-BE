@@ -241,6 +241,42 @@ pipeline {
             }
         }
 
+        stage('Update Backend Service Selector') {
+          steps {
+            script {
+              echo "Updating backend-svc selector to: ${env.DEPLOY_COLOR}"
+              // build a small JSON patch, copy it up, then kubectl patch
+              sh """
+                cat <<EOF > /tmp/patch-backend.json
+                {
+                  "spec": {
+                    "selector": {
+                      "app": "backend-${env.DEPLOY_COLOR}"
+                    }
+                  }
+                }
+                EOF
+              """
+              // push and apply
+              sh """
+                scp -o StrictHostKeyChecking=no /tmp/patch-backend.json ${KUBE_HOST}:/tmp/patch-backend.json
+                ssh -o StrictHostKeyChecking=no ${KUBE_HOST} \\
+                  "kubectl patch svc backend-svc -p \$(cat /tmp/patch-backend.json) && rm /tmp/patch-backend.json"
+              """
+              // clean up locally
+              sh 'rm /tmp/patch-backend.json'
+            }
+          }
+          post {
+            success {
+              echo "✅ backend-svc selector updated to backend-${env.DEPLOY_COLOR}"
+            }
+            failure {
+              echo "❌ Failed to update backend-svc selector"
+            }
+          }
+        }
+
         stage('End Timer') {
             steps {
                 script {
