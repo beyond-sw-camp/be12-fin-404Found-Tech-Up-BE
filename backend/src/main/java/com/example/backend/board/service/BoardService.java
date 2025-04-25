@@ -127,11 +127,11 @@ public class BoardService {
         }
 
         // 🔐 수정 시에도 XSS 방지 필터링
-        //String sanitizedContent = HtmlSanitizer.sanitize(dto.getBoardContent());
+        String sanitizedContent = HtmlSanitizer.sanitize(dto.getBoardContent());
 
         // 🔄 기존 내용 갱신
         board.setBoardTitle(dto.getBoardTitle());
-        board.setBoardContent(dto.getBoardContent());
+        board.setBoardContent(sanitizedContent);
         board.setBoardCategory(dto.getBoardCategory());
 
         // ✅ 1) 첨부파일 갱신
