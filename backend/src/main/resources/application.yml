@@ -75,13 +75,22 @@ management:
   endpoints:
     web:
       exposure:
-        include: 'health'
+        include: health
   endpoint:
     health:
       show-details: always
+      show-components: always
   health:
     db:
       enabled: true
+    mail:
+      enabled: false
+    diskspace:
+      enabled: false
+    ping:
+      enabled: false
+    ssl:
+      enabled: false
 
 server:
   port: 8443
