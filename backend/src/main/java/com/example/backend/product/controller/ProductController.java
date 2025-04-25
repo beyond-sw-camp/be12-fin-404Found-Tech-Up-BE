@@ -112,10 +112,13 @@ public class ProductController {
                             }
                     )
             )
-            ProductFilterRequestDto filterDto,
-            Pageable pageable
+            @RequestBody ProductFilterRequestDto filterDto,
+            @RequestParam Integer offset,
+            @RequestParam Integer limit
     ) {
-        Page<ProductResponseDto> page = productService.filterProduct(filterDto, pageable);
+        if (offset == null) offset = 0;
+        if (limit == null) limit = 10;
+        Page<ProductResponseDto> page = productService.filterProduct(filterDto, PageRequest.of(offset, limit));
         return baseResponseService.getSuccessResponse(page, ProductResponseStatus.SUCCESS);
     }
 
