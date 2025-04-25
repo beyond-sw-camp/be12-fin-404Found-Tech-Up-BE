@@ -137,7 +137,7 @@ pipeline {
                     ).trim()
                     echo "Service currently routing to: ${svcColor}"
 
-                    if (svcColor == 'backend-blue') {
+                    if (svcColor.contains('blue')) {
                         env.DEPLOY_COLOR = 'green'
                         env.OTHER_COLOR  = 'blue'
                     } else {
