@@ -31,7 +31,7 @@ public class BoardRegisterRequestDto {
     public Board toEntity(User loginUser) {
         return Board.builder()
                 .boardTitle(boardTitle)
-                .boardContent(HtmlSanitizer.sanitize(boardContent))  // 🔐 여기서 정제
+                .boardContent(boardContent)  // 🔐 여기서 정제
                 .boardCategory(boardCategory)
                 .boardCreated(LocalDateTime.now())
                 .user(loginUser)
