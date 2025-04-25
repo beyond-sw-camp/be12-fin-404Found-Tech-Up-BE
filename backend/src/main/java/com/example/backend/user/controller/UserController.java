@@ -30,6 +30,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -218,16 +219,17 @@ public class UserController {
     // --------------------- 여기서부터 관리자 전용 ----------------------------
 
     @Operation(summary="전체 회원 정보 반환", description = "회원 정보를 30개 단위로 반환합니다")
-    @ApiResponse(responseCode="200", description="정상 정보 반환", content= @Content(schema = @Schema(implementation = List.class)))
+    @ApiResponse(responseCode="200", description="정상 정보 반환", content= @Content(schema = @Schema(implementation = Page.class)))
     @ApiResponse(responseCode="400", description="요청이 이상하여 실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @ApiResponse(responseCode="500", description="서버 내 오류", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
     @GetMapping("/alluser")
-    private BaseResponse<List<ReducedUserInfoDto>> getAllUser(@AuthenticationPrincipal User user) {
+    private BaseResponse<Page<ReducedUserInfoDto>> getAllUser(@AuthenticationPrincipal User user,
+                                                              @RequestParam Integer offset,
+                                                              @RequestParam Integer limit) {
         if (user == null || !user.getIsAdmin()) {
             return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
         }
-        List<ReducedUserInfoDto> userInfoList = userService.getAllUsersForAdmin();
-        // TODO: 서비스에서 페이징된 정보 가져오기
+        Page<ReducedUserInfoDto> userInfoList = userService.getAllUsersForAdmin(offset, limit);
         return new BaseResponseServiceImpl().getSuccessResponse(userInfoList, UserResponseStatus.SUCCESS);
     }
 
