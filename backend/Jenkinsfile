@@ -245,15 +245,11 @@ pipeline {
           steps {
             script {
               echo "Updating backend-svc selector to deployment: ${env.DEPLOY_COLOR}"
-
-              // build the JSON patch in-Groovy so we get exactly one line of valid JSON
-              def patch = """{"spec":{"selector":{"deployment":"${env.DEPLOY_COLOR}"}}}"""
-
-              // apply it over SSH in one shot (no intermediate file needed)
-              sh '''
-                ssh -o StrictHostKeyChecking=no $KUBE_HOST \
-                  kubectl patch svc backend-svc -p '${patch}'
-              '''
+              sh """
+                ssh -o StrictHostKeyChecking=no ${KUBE_HOST} \\
+                  kubectl patch svc backend-svc --type=merge \\
+                    -p '{\"spec\":{\"selector\":{\"type\":\"backend\",\"deployment\":\"${env.DEPLOY_COLOR}\"}}}'
+              """
             }
           }
           post {
@@ -265,6 +261,7 @@ pipeline {
             }
           }
         }
+
 
         stage('End Timer') {
             steps {
