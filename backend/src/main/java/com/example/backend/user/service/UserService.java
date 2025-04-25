@@ -20,6 +20,8 @@ import com.example.backend.wishlist.repository.WishlistRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -172,10 +174,8 @@ public class UserService implements UserDetailsService {
         }
     }
     
-    public List<ReducedUserInfoDto> getAllUsersForAdmin() {
-        // TODO: Paging을 백엔드에서 처리할 것인가?
-        List<User> users = userRepository.findAll();
-        return users.stream().map(ReducedUserInfoDto::from).toList();
+    public Page<ReducedUserInfoDto> getAllUsersForAdmin(Integer offset, Integer limit) {
+        return userRepository.findAll(PageRequest.of(offset, limit)).map(ReducedUserInfoDto::from);
     }
 
     public List<ReducedUserInfoDto> searchUsers(String keyword) {
