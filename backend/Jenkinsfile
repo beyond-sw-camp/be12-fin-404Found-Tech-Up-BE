@@ -159,16 +159,17 @@ pipeline {
                             echo "Blue ready replicas: ${blueReady}"
                             echo "Green ready replicas: ${greenReady}"
 
-                            if (greenReady != '0') {
-                                env.DEPLOY_COLOR = 'blue'
-                                env.OTHER_COLOR = 'green'
-                            } else if (blueReady != '0') {
+                            if (blueReady != '0') {
                                 env.DEPLOY_COLOR = 'green'
-                                env.OTHER_COLOR = 'blue'
-                            } else {
-                                // If ambiguous, default to deploying blue.
+                                env.OTHER_COLOR  = 'blue'
+                            }
+                            else if (greenReady != '0') {
                                 env.DEPLOY_COLOR = 'blue'
-                                env.OTHER_COLOR = 'green'
+                                env.OTHER_COLOR  = 'green'
+                            }
+                            else {
+                                env.DEPLOY_COLOR = 'blue'
+                                env.OTHER_COLOR  = 'green'
                             }
                         }
                         echo "Deploying ${env.DEPLOY_COLOR} version (scaling down ${env.OTHER_COLOR} later)"
