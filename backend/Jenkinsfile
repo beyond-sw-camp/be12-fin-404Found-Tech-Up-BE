@@ -245,7 +245,11 @@ pipeline {
           steps {
             script {
               echo "Updating backend-svc selector to deployment: ${env.DEPLOY_COLOR}"
-              sh "ssh -o StrictHostKeyChecking=no ${KUBE_HOST} kubectl patch svc backend-svc --type=merge -p '{\"spec\":{\"selector\":{\"type\":\"backend\",\"deployment\":\"${env.DEPLOY_COLOR}\"}}}'"
+              sh """
+                ssh -o StrictHostKeyChecking=no ${KUBE_HOST} << 'EOF'
+        kubectl patch svc backend-svc --type=merge -p '{"spec":{"selector":{"type":"backend","deployment":"${env.DEPLOY_COLOR}"}}}'
+        EOF
+              """
             }
           }
           post {
@@ -257,7 +261,6 @@ pipeline {
             }
           }
         }
-
 
         stage('End Timer') {
             steps {
