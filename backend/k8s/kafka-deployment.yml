@@ -1,51 +1,33 @@
 ---
-# kafka-0 deployment
-apiVersion: apps/v1
-kind: Deployment
+# kafka-headless service
+apiVersion: v1
+kind: Service
 metadata:
-  name: kafka-0
+  name: kafka-headless
 spec:
-  replicas: 1
+  clusterIP: None
   selector:
-    matchLabels:
-      app: kafka-0
-  template:
-    metadata:
-      labels:
-        app: kafka-0
-    spec:
-      containers:
-        - name: kafka
-          image: confluentinc/cp-kafka:7.3.0
-          ports:
-            - containerPort: 9092
-          env:
-            - name: KAFKA_BROKER_ID
-              value: "0"
-            - name: KAFKA_ZOOKEEPER_CONNECT
-              value: "zookeeper-svc:2181"
-            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
-              value: "PLAINTEXT:PLAINTEXT"
-            - name: KAFKA_ADVERTISED_LISTENERS
-              value: "PLAINTEXT://kafka-0.kafka-svc.default.svc.cluster.local:9092"
-            - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
-              value: "2"
+    app: kafka
+  ports:
+    - port: 9092
+      name: kafka
 
 ---
-# kafka-1 deployment
+# kafka statefulset
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: kafka-1
+  name: kafka
 spec:
-  replicas: 1
+  serviceName: kafka-headless
+  replicas: 2
   selector:
     matchLabels:
-      app: kafka-1
+      app: kafka
   template:
     metadata:
       labels:
-        app: kafka-1
+        app: kafka
     spec:
       containers:
         - name: kafka
@@ -53,13 +35,19 @@ spec:
           ports:
             - containerPort: 9092
           env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             - name: KAFKA_BROKER_ID
-              value: "1"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             - name: KAFKA_ZOOKEEPER_CONNECT
               value: "zookeeper-svc:2181"
             - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
               value: "PLAINTEXT:PLAINTEXT"
             - name: KAFKA_ADVERTISED_LISTENERS
-              value: "PLAINTEXT://kafka-1.kafka-svc.default.svc.cluster.local:9092"
+              value: "PLAINTEXT://$(POD_NAME).kafka-headless.default.svc.cluster.local:9092"
             - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
               value: "2"
