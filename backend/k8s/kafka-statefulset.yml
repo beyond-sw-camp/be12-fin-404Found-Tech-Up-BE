@@ -1,0 +1,63 @@
+---
+# kafka-headless service
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-headless
+spec:
+  clusterIP: None
+  selector:
+    app: kafka
+  ports:
+    - port: 9092
+      name: kafka
+
+---
+# kafka statefulset
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+spec:
+  serviceName: kafka-headless
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      hostname: kafka
+      subdomain: kafka-headless
+      containers:
+        - name: kafka
+          image: confluentinc/cp-kafka:7.3.0
+          ports:
+            - containerPort: 9092
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: KAFKA_BROKER_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['statefulset.kubernetes.io/pod-name']
+            - name: KAFKA_BROKER_ID_COMMAND
+              value: "/bin/sh -c 'echo ${POD_NAME##*-}'"
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: "zookeeper-svc:2181"
+            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+              value: "PLAINTEXT:PLAINTEXT"
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: "PLAINTEXT://$(POD_NAME).kafka-headless.default.svc.cluster.local:9092"
+            - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+              value: "2"
+          command:
+            - sh
+            - -c
+            - |
+              export KAFKA_BROKER_ID=$(echo ${POD_NAME##*-})
+              exec /etc/confluent/docker/run

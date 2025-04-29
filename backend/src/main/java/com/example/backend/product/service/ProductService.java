@@ -429,8 +429,7 @@ public class ProductService {
 
         if (requestDto.getGpuSpec() != null) {
             GpuSpec gpuSpec = product.getGpuSpec();
-            if (gpuSpec != null) {
-                gpuSpecRepository.delete(gpuSpec);
+            if (gpuSpec == null) {
                 gpuSpec = new GpuSpec();
                 gpuSpec.setProduct(product);
             }
@@ -440,8 +439,7 @@ public class ProductService {
 
         if (requestDto.getRamSpec() != null) {
             RamSpec ramSpec = product.getRamSpec();
-            if (ramSpec != null) {
-                ramSpecRepository.delete(ramSpec);
+            if (ramSpec == null) {
                 ramSpec = new RamSpec();
                 ramSpec.setProduct(product);
             }
@@ -451,8 +449,7 @@ public class ProductService {
 
         if (requestDto.getSsdSpec() != null) {
             SsdSpec ssdSpec = product.getSsdSpec();
-            if (ssdSpec != null) {
-                ssdSpecRepository.delete(ssdSpec);
+            if (ssdSpec == null) {
                 ssdSpec = new SsdSpec();
                 ssdSpec.setProduct(product);
             }
@@ -462,8 +459,7 @@ public class ProductService {
 
         if (requestDto.getHddSpec() != null) {
             HddSpec hddSpec = product.getHddSpec();
-            if (hddSpec != null) {
-                hddSpecRepository.delete(hddSpec);
+            if (hddSpec == null) {
                 hddSpec = new HddSpec();
                 hddSpec.setProduct(product);
             }

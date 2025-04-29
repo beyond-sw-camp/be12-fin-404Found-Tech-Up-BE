@@ -101,6 +101,18 @@ pipeline {
             }
         }
 
+        stage('Deploy Kafka to K8s') {
+            steps {
+                script {
+                    echo "Deploying Kafka (StatefulSet) to Kubernetes"
+                    sh """
+                        scp ${WORKSPACE}/backend/k8s/kafka-statefulset.yml ${KUBE_HOST}:/home/test/backend/k8s/
+                        ssh ${KUBE_HOST} 'kubectl apply -f /home/test/backend/k8s/kafka-statefulset.yml'
+                    """
+                }
+            }
+        }
+
         stage('Deploy to EC2') {
             when {
                 expression { env.GIT_BRANCH == 'origin/main' }
@@ -221,6 +233,7 @@ pipeline {
                     int greenCount = 0
                     try { blueCount = blueReplicas.toInteger() } catch (Exception e) {}
                     try { greenCount = greenReplicas.toInteger() } catch (Exception e) {}
+
 
                     if (blueCount > 0 && greenCount == 0) {
                         deployColor = "green"
@@ -367,6 +380,27 @@ pipeline {
                 }
             }
         }
+
+        stage('Update Backend Service Selector') {
+          steps {
+            script {
+              echo "Updating backend-svc selector to deployment: ${env.DEPLOY_COLOR}"
+              sh """
+                ssh -o StrictHostKeyChecking=no ${KUBE_HOST} << 'EOCMD'
+        cat > /home/test/patch-backend-selector.json << 'EOF'
+        {"spec":{"selector":{"type":"backend","deployment":"${env.DEPLOY_COLOR}"}}}
+        EOF
+        kubectl patch svc backend-svc --type=merge --patch-file /home/test/patch-backend-selector.json
+        EOCMD
+              """
+            }
+          }
+          post {
+            success { echo "✅ backend-svc selector updated" }
+            failure { echo "❌ Failed to update backend-svc selector" }
+          }
+        }
+
 
         stage('End Timer') {
             steps {
