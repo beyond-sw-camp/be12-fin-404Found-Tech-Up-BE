@@ -24,27 +24,29 @@ import java.util.Map;
 public class KafkaConfig {
 
 //    private static final String BOOTSTRAP_SERVERS = "localhost:9092";
-    private static final String BOOTSTRAP_SERVERS = "kafka-svc:9092";
+    private static final String BOOTSTRAP_SERVERS =
+            "kafka-0.kafka-headless.default.svc.cluster.local:9092,kafka-1.kafka-headless.default.svc.cluster.local:9092";
+
 
     // 1. Topic 생성
     @Bean
     public NewTopic restockNotificationTopic() {
-        return new NewTopic("restock-notifications", 1, (short) 1);
+        return new NewTopic("restock-notifications", 1, (short) 2);
     }
 
     @Bean
     public NewTopic lowStockNotificationTopic() {
-        return new NewTopic("low-stock-notifications", 1, (short) 1);
+        return new NewTopic("low-stock-notifications", 1, (short) 2);
     }
 
     @Bean
     public NewTopic discountNotificationTopic() {
-        return new NewTopic("discount-notifications", 1, (short) 1);
+        return new NewTopic("discount-notifications", 1, (short) 2);
     }
 
     @Bean
     public NewTopic orderCompleteNotificationTopic() {
-        return new NewTopic("order-complete-notifications", 1, (short) 1);
+        return new NewTopic("order-complete-notifications", 1, (short) 2);
     }
 
     // 2. Producer 설정 (RealTimeNotificationDto 전용)
