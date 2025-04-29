@@ -1,0 +1,65 @@
+---
+# kafka-0 deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-0
+  template:
+    metadata:
+      labels:
+        app: kafka-0
+    spec:
+      containers:
+        - name: kafka
+          image: confluentinc/cp-kafka:7.3.0
+          ports:
+            - containerPort: 9092
+          env:
+            - name: KAFKA_BROKER_ID
+              value: "0"
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: "zookeeper-svc:2181"
+            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+              value: "PLAINTEXT:PLAINTEXT"
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: "PLAINTEXT://kafka-0.kafka-svc.default.svc.cluster.local:9092"
+            - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+              value: "2"
+
+---
+# kafka-1 deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-1
+  template:
+    metadata:
+      labels:
+        app: kafka-1
+    spec:
+      containers:
+        - name: kafka
+          image: confluentinc/cp-kafka:7.3.0
+          ports:
+            - containerPort: 9092
+          env:
+            - name: KAFKA_BROKER_ID
+              value: "1"
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: "zookeeper-svc:2181"
+            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+              value: "PLAINTEXT:PLAINTEXT"
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: "PLAINTEXT://kafka-1.kafka-svc.default.svc.cluster.local:9092"
+            - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+              value: "2"

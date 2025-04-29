@@ -81,6 +81,18 @@ pipeline {
             }
         }
 
+        stage('Deploy Kafka to K8s') {
+            steps {
+                script {
+                    echo "Deploying Kafka to Kubernetes"
+                    sh """
+                        scp ${WORKSPACE}/backend/k8s/kafka-deployment.yml ${KUBE_HOST}:/home/test/backend/k8s/
+                        ssh ${KUBE_HOST} 'kubectl apply -f /home/test/backend/k8s/kafka-deployment.yml'
+                    """
+                }
+            }
+        }
+
         stage('Deploy to EC2') {
             when {
                 expression { env.GIT_BRANCH == 'origin/main' }
