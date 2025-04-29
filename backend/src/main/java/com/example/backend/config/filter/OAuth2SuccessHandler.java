@@ -58,10 +58,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // 원래 페이지 리다이렉트
         String state = request.getParameter("state");
         String redirectUrl = "https://techup-inner.p-e.kr";
+//        String redirectUrl = "http://localhost:3000";
         if (state != null && !state.isEmpty()) {
             try {
                 String decodedUrl = URLDecoder.decode(state, "UTF-8");
                 if (decodedUrl.startsWith("https://techup-inner.p-e.kr")) {
+//                if (decodedUrl.startsWith("http://localhost:3000")) {
                     redirectUrl = decodedUrl;
                     log.info("Redirecting to original URL: {}", redirectUrl);
                 } else {
