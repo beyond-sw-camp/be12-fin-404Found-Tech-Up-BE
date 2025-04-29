@@ -24,7 +24,7 @@ import java.util.Map;
 public class KafkaConfig {
 
 //    private static final String BOOTSTRAP_SERVERS = "localhost:9092";
-    private static final String BOOTSTRAP_SERVERS = "kafka-0.kafka-svc.default.svc.cluster.local:9092";
+    private static final String BOOTSTRAP_SERVERS = "kafka-svc:9092";
 
     // 1. Topic 생성
     @Bean
