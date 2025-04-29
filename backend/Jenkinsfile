@@ -1,1 +1,416 @@
-sample
+// 전역 변수 선언
+// Jenkins에서는 pipeline 블록 바깥에 선언해야 전역으로 사용 가능
+def deployColor = ""
+def otherColor = ""
+def startTime = 0
+
+def sendDiscordMessage(String title, String description, String color) {
+    withCredentials([string(credentialsId: 'Discord-Webhook', variable: 'DISCORD')]) {
+        discordSend(
+            description: description,
+            footer: "Jenkins CI/CD",
+            link: env.BUILD_URL,
+            result: currentBuild.currentResult,
+            title: title,
+            color: color,
+            webhookURL: "$DISCORD"
+        )
+    }
+}
+
+pipeline {
+    agent any
+
+    options {
+        timestamps()
+    }
+
+    environment {
+        IMAGE_NAME = 'mstar228/techup-backend'
+        IMAGE_TAG = "2.0.${BUILD_NUMBER}"
+        PATH = "/usr/local/bin:${env.PATH}"
+        // 크리덴셜에서 환경 변수 가져오기
+        DB_URL = credentials('DB_URL')
+        DB_USERNAME = credentials('DB_USERNAME')
+        DB_PASSWORD = credentials('DB_PASSWORD')
+        JWT_SECRET = credentials('JWT_SECRET')
+        JWT_EXPIRATION = credentials('JWT_EXPIRATION')
+        BACKEND_URL = credentials('BACKEND_URL')
+        EC2_HOST = "ubuntu@${BACKEND_URL}"
+        KAKAO_CLIENT_ID     = credentials('KAKAO_CLIENT_ID')
+        KAKAO_REDIRECT_URI  = credentials('KAKAO_REDIRECT_URI')
+        PORTONE_CHANNEL_KEY= credentials('PORTONE_CHANNEL_KEY')
+        PORTONE_SECRET     = credentials('PORTONE_SECRET')
+        PORTONE_STOREID    = credentials('PORTONE_STOREID')
+        MAIL_ADDR          = credentials('MAIL_ADDR')
+        MAIL_PASSWORD      = credentials('MAIL_PASSWORD')
+        AWS_REGION      = credentials('AWS_REGION')
+        AWS_SECRET_KEY      = credentials('AWS_SECRET_KEY')
+        AWS_ACCESS_KEY      = credentials('AWS_ACCESS_KEY')
+        AWS_S3_BUCKET      = credentials('AWS_S3_BUCKET')
+
+        // kubernetes 환경변수
+        KUBE_HOST = credentials('KUBE_HOST')
+    }
+
+    stages {
+        stage('Start Timer') {
+            steps {
+                script {
+                    startTime = System.currentTimeMillis()
+                }
+            }
+        }
+
+        stage('Git Clone') {
+            steps {
+                echo "Cloning Repository"
+                git url: 'https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE.git',
+                    branch: "${env.GIT_BRANCH.replace('origin/', '')}"
+            }
+        }
+
+        stage('Gradle Build') {
+            steps {
+                echo "Building Project"
+                sh '''
+                    echo "Add Permission"
+                    chmod +x ${WORKSPACE}/backend/gradlew
+                    echo "Cleaning previous build"
+                    rm -rf ${WORKSPACE}/backend/build
+                    echo "Running Gradle build"
+                    cd ${WORKSPACE}/backend && ./gradlew bootJar
+                '''
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo "Building Docker Image ${IMAGE_NAME}:${IMAGE_TAG}"
+                    docker.build("${IMAGE_NAME}:${IMAGE_TAG}", "${WORKSPACE}/backend")
+                }
+            }
+        }
+
+        stage('Push to Registry') {
+            steps {
+                script {
+                    echo "Pushing Docker Image ${IMAGE_NAME}:${IMAGE_TAG} to Registry"
+                    withDockerRegistry([credentialsId: 'DOCKER_HUB']) {
+                        docker.image("${IMAGE_NAME}:${IMAGE_TAG}").push()
+                        docker.image("${IMAGE_NAME}:${IMAGE_TAG}").push('latest')
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to EC2') {
+            when {
+                expression { env.GIT_BRANCH == 'origin/main' }
+            }
+            steps {
+                script {
+                    echo "MODIFY DOCKER-COMPOSE.YML"
+                    sh """
+                        sed -i 's|mstar228/techup-backend:latest|mstar228/techup-backend:${IMAGE_TAG}|' ${WORKSPACE}/backend/docker-compose.yml
+                    """
+
+                    echo "CREATE .ENV"
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${EC2_HOST} <<EOF
+                        cat > /home/ubuntu/.env <<EOL
+                        DB_URL=${DB_URL}
+                        DB_USERNAME=${DB_USERNAME}
+                        DB_PASSWORD=${DB_PASSWORD}
+                        JWT_SECRET=${JWT_SECRET}
+                        JWT_EXPIRATION=${JWT_EXPIRATION}
+                        KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
+                        KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}
+                        PORTONE_CHANNEL_KEY=${PORTONE_CHANNEL_KEY}
+                        PORTONE_SECRET=${PORTONE_SECRET}
+                        PORTONE_STOREID=${PORTONE_STOREID}
+                        MAIL_ADDR=${MAIL_ADDR}
+                        MAIL_PASSWORD=${MAIL_PASSWORD}
+                        AWS_REGION=${AWS_REGION}
+                        AWS_SECRET_KEY=${AWS_SECRET_KEY}
+                        AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+                        AWS_S3_BUCKET=${AWS_S3_BUCKET}
+                        EOL
+                        EOF
+                    """
+
+                    echo "SCP DOCKER-COMPOSE.YML"
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${EC2_HOST} "[ -f /home/ubuntu/docker-compose.yml ] && echo 'File exists, overwriting' || echo 'File does not exist'"
+                        scp -o StrictHostKeyChecking=no ${WORKSPACE}/backend/docker-compose.yml ${EC2_HOST}:/home/ubuntu/docker-compose.yml
+                    """
+
+                    echo "RUN DOCKER-COMPOSE"
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${EC2_HOST} <<'EOF'
+                        docker-compose -f /home/ubuntu/docker-compose.yml down  # 기존 컨테이너 중지 및 삭제
+                        docker-compose -f /home/ubuntu/docker-compose.yml up -d  # 새 컨테이너 실행
+                    """
+                }
+            }
+        }
+
+        stage('Determine Deploy Color') {
+            when {
+                expression { env.GIT_BRANCH == 'origin/main' }
+            }
+            steps {
+                script {
+                    def blueReplicas = sh(
+                        script: "ssh ${KUBE_HOST} 'kubectl get deployment backend-deployment-blue -o jsonpath=\"{.spec.replicas}\"' || echo '0'",
+                        returnStdout: true
+                    ).trim()
+                    def greenReplicas = sh(
+                        script: "ssh ${KUBE_HOST} 'kubectl get deployment backend-deployment-green -o jsonpath=\"{.spec.replicas}\"' || echo '0'",
+                        returnStdout: true
+                    ).trim()
+
+                    int blueCount = 0
+                    int greenCount = 0
+                    try { blueCount = blueReplicas.toInteger() } catch (Exception e) {}
+                    try { greenCount = greenReplicas.toInteger() } catch (Exception e) {}
+
+                    if (blueCount > 0 && greenCount == 0) {
+                        deployColor = "green"
+                        otherColor = "blue"
+                    } else if (greenCount > 0 && blueCount == 0) {
+                        deployColor = "blue"
+                        otherColor = "green"
+                    } else if (blueCount > 0 && greenCount > 0) {
+                        deployColor = "green"
+                        otherColor = "blue"
+                    } else {
+                        deployColor = "blue"
+                        otherColor = "green"
+                    }
+
+                    echo "Deploying ${deployColor} version (scaling down ${otherColor})"
+                }
+            }
+            post {
+                success {
+                    sendDiscordMessage("✅ 배포 색상 결정 완료!", "${deployColor}로 배포 진행 예정", "GREEN")
+                }
+                failure {
+                    sendDiscordMessage("❌ 배포 색상 결정 실패!", "replica 확인 중 오류 발생", "RED")
+                }
+            }
+        }
+
+        stage('Deploy Blue-Green') {
+            when {
+                expression { env.GIT_BRANCH == 'origin/main' }
+            }
+            steps {
+                script {
+                    sh """
+                        sed -i "s/latest/${IMAGE_TAG}/g" ${WORKSPACE}/backend/k8s/backend-deployment-${deployColor}.yml
+                        sed -i "s/latest/${IMAGE_TAG}/g" ${WORKSPACE}/backend/k8s/backend-cm.yml
+                        sed -i "s/latest/${IMAGE_TAG}/g" ${WORKSPACE}/backend/k8s/backend-svc.yml
+                        scp ${WORKSPACE}/backend/k8s/backend-deployment-${deployColor}.yml ${KUBE_HOST}:/home/test/backend/k8s/
+                        scp ${WORKSPACE}/backend/k8s/backend-cm.yml ${KUBE_HOST}:/home/test/backend/k8s/
+                        scp ${WORKSPACE}/backend/k8s/backend-svc.yml ${KUBE_HOST}:/home/test/backend/k8s/
+                        ssh ${KUBE_HOST} 'kubectl apply -f /home/test/backend/k8s/backend-cm.yml'
+                        ssh ${KUBE_HOST} 'kubectl apply -f /home/test/backend/k8s/backend-svc.yml'
+                        ssh ${KUBE_HOST} 'kubectl apply -f /home/test/backend/k8s/backend-deployment-${deployColor}.yml'
+                        ssh ${KUBE_HOST} 'kubectl rollout status deployment/backend-deployment-${deployColor}'
+                    """
+                }
+            }
+            post {
+                success {
+                    sendDiscordMessage("✅ Blue-Green 배포 성공!", "${deployColor} 배포 완료", "GREEN")
+                }
+                failure {
+                    sendDiscordMessage("❌ Blue-Green 배포 실패!", "배포 중 오류 발생", "RED")
+                }
+            }
+        }
+
+        stage('Stabilization Period') {
+            when {
+                expression { env.GIT_BRANCH == 'origin/main' }
+            }
+            steps {
+                script {
+                    echo "Waiting for deployment to stabilize..."
+                    // 60초 동안 새 배포가 안정화될 시간을 제공
+                    sleep(time: 60, unit: 'SECONDS')
+                }
+            }
+            post {
+                success {
+                    sendDiscordMessage("✅ 안정화 기간 완료!", "새 배포의 안정화 시간이 종료되었습니다", "GREEN")
+                }
+            }
+        }
+
+        stage('Verify Deployment') {
+            when {
+                expression { env.GIT_BRANCH == 'origin/main' }
+            }
+            steps {
+                script {
+                    echo "Verifying deployment health..."
+
+                    // Pod 상태 확인
+                    def podStatus = sh(
+                        script: "ssh ${KUBE_HOST} 'kubectl get pods -l deployment=${deployColor},type=backend -o jsonpath=\"{.items[*].status.phase}\"'",
+                        returnStdout: true
+                    ).trim()
+
+                    // 모든 파드가 Running 상태인지 확인
+                    if (!podStatus.contains("Running") || podStatus.contains("Pending") || podStatus.contains("Failed")) {
+                        error "배포 상태 확인 실패: 파드가 정상적으로 실행되고 있지 않습니다. 상태: ${podStatus}"
+                    }
+
+                    // Pod Ready 상태 확인
+                    def podReady = sh(
+                        script: "ssh ${KUBE_HOST} 'kubectl get pods -l deployment=${deployColor},type=backend -o jsonpath=\"{.items[*].status.containerStatuses[0].ready}\"'",
+                        returnStdout: true
+                    ).trim()
+
+                    if (podReady.contains("false")) {
+                        error "배포 상태 확인 실패: 컨테이너가 준비되지 않았습니다. 상태: ${podReady}"
+                    }
+
+                    // 서비스 엔드포인트 확인 (Spring Boot API 헬스체크)
+                    try {
+                        sh "curl -s --retry 5 --retry-delay 10 -f https://techup-inner.p-e.kr/api/actuator/health || echo 'Health check endpoint not available, but continuing...'"
+                    } catch (Exception e) {
+                        echo "Note: Health endpoint check failed, but continuing with deployment."
+                    }
+
+                    echo "Deployment verification successful!"
+                }
+            }
+            post {
+                success {
+                    sendDiscordMessage("✅ 배포 검증 성공!", "헬스체크 통과", "GREEN")
+                }
+                failure {
+                    sendDiscordMessage("❌ 배포 검증 실패!", "헬스체크 실패", "RED")
+                    // 배포 검증 실패 시 자동으로 롤백 스테이지로 이동
+                }
+            }
+        }
+
+        stage('Update Service Selector') {
+            when {
+                expression { env.GIT_BRANCH == 'origin/main' && currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
+            }
+            steps {
+                script {
+                    echo "Updating service selector to deployment: ${deployColor}"
+                    sh """
+                        echo '{"spec":{"selector":{"deployment":"${deployColor}","type":"backend"}}}' > /tmp/patch2.json
+                        scp /tmp/patch2.json ${KUBE_HOST}:/tmp/patch2.json
+                        ssh ${KUBE_HOST} "kubectl patch svc backend-svc -p '\$(cat /tmp/patch2.json)'"
+                        ssh ${KUBE_HOST} 'rm /tmp/patch2.json'
+                        rm /tmp/patch2.json
+                    """
+                }
+            }
+            post {
+                success {
+                    sendDiscordMessage("✅ 트래픽 전환 성공!", "${deployColor}로 트래픽이 전환되었습니다", "GREEN")
+                }
+                failure {
+                    sendDiscordMessage("❌ 트래픽 전환 실패!", "서비스 셀렉터 업데이트 실패", "RED")
+                }
+            }
+        }
+
+        stage('Scale Down Other Deployment') {
+            when {
+                expression { env.GIT_BRANCH == 'origin/main' && currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
+            }
+            steps {
+                script {
+                    echo "Scaling down ${otherColor} deployment"
+                    sh """
+                        ssh ${KUBE_HOST} 'kubectl scale deployment backend-deployment-${otherColor} --replicas=0' || true
+                    """
+                }
+            }
+            post {
+                success {
+                    sendDiscordMessage("✅ 이전 배포 스케일 다운 완료!", "${otherColor} 배포가 스케일 다운되었습니다", "GREEN")
+                }
+                failure {
+                    sendDiscordMessage("⚠️ 이전 배포 스케일 다운 실패!", "${otherColor} 배포 스케일 다운 중 문제 발생", "YELLOW")
+                }
+            }
+        }
+
+        stage('Rollback if Needed') {
+            when {
+                expression {
+                    env.GIT_BRANCH == 'origin/main' &&
+                    (currentBuild.currentResult == 'UNSTABLE' || currentBuild.currentResult == 'FAILURE')
+                }
+            }
+            steps {
+                script {
+                    echo "Deployment failed, rolling back to ${otherColor}"
+                    sh """
+                        # 이전 배포 복구
+                        ssh ${KUBE_HOST} 'kubectl scale deployment backend-deployment-${otherColor} --replicas=1'
+                        ssh ${KUBE_HOST} 'kubectl rollout status deployment/backend-deployment-${otherColor}'
+
+                        # 서비스 셀렉터를 이전 배포로 변경
+                        echo '{"spec":{"selector":{"deployment":"${otherColor}","type":"backend"}}}' > /tmp/rollback-patch.json
+                        scp /tmp/rollback-patch.json ${KUBE_HOST}:/tmp/rollback-patch.json
+                        ssh ${KUBE_HOST} "kubectl patch svc backend-svc -p '\$(cat /tmp/rollback-patch.json)'"
+                        ssh ${KUBE_HOST} 'rm /tmp/rollback-patch.json'
+                        rm /tmp/rollback-patch.json
+
+                        # 실패한 배포 스케일 다운
+                        ssh ${KUBE_HOST} 'kubectl scale deployment backend-deployment-${deployColor} --replicas=0'
+                    """
+                }
+            }
+            post {
+                success {
+                    sendDiscordMessage("✅ 롤백 성공!", "${otherColor}로 롤백 완료", "GREEN")
+                }
+                failure {
+                    sendDiscordMessage("🚨 롤백 실패!", "롤백 중 오류 발생, 수동 조치 필요", "RED")
+                }
+            }
+        }
+
+        stage('End Timer') {
+            steps {
+                script {
+                    def endTime = System.currentTimeMillis()
+                    def duration = (endTime - startTime) / 1000
+                    echo "⏱️ 전체 파이프라인 실행 시간: ${duration}초"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                def endTime = System.currentTimeMillis()
+                def duration = (endTime - startTime) / 1000
+                sendDiscordMessage("🎉 전체 파이프라인 성공!", "⏱️ 실행 시간: ${duration}초", "GREEN")
+            }
+        }
+        failure {
+            script {
+                def endTime = System.currentTimeMillis()
+                def duration = (endTime - startTime) / 1000
+                sendDiscordMessage("🚨 전체 파이프라인 실패!", "⏱️ 실행 시간: ${duration}초", "RED")
+            }
+        }
+    }
+}

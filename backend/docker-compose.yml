@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  backend:
+    image: mstar228/techup-backend:latest
+    ports:
+      - 8080:8080
+    environment:
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+      - KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
+      - KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}
+      - PORTONE_CHANNEL_KEY=${PORTONE_CHANNEL_KEY}
+      - PORTONE_SECRET=${PORTONE_SECRET}
+      - PORTONE_STOREID=${PORTONE_STOREID}
+      - MAIL_ADDR=${MAIL_ADDR}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+    command: ["java", "-jar", "/app.jar"]

@@ -1,11 +1,15 @@
 package com.example.backend.product.model;
 
+import com.example.backend.cart.model.CartItem;
+import com.example.backend.coupon.model.Coupon;
+import com.example.backend.order.model.OrderDetail;
+import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.spec.*;
+import com.example.backend.review.model.Review;
+import com.example.backend.user.model.UserProduct;
+import com.example.backend.wishlist.model.Wishlist;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -14,18 +18,27 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idx;
+    private Long productIdx;
+    @Column(nullable = false, unique = true)
     private String name;
-    private double price;
+    @Column(nullable = false)
+    private Double price;
+    private Integer discount;
+    @Column(nullable = false)
     private String brand;
-    private int stock;
+    @Column(nullable = false)
+    private Integer stock;
+    @Column(nullable = false)
     private String description;
+    @Column(nullable = false)
     private String category;
+    private Double rating;
 
-    @OneToMany(mappedBy = "product_image")
+    @OneToMany(mappedBy = "product")
     private List<ProductImage> images;
 
     @OneToOne(mappedBy = "product")
@@ -44,14 +57,37 @@ public class Product {
     private HddSpec hddSpec;
 
     // 리뷰와 일대다 맵핑
+    @OneToMany(mappedBy = "product")
+    private List<Review> reviews;
 
     // 사용자의 제품과 일대다 맵핑
+    @OneToMany(mappedBy = "products")
+    private List<UserProduct> userProducts;
 
     // 쿠폰과 일대다 맵핑
-
-    // 장바구니와 일대다 맵핑
+    @OneToMany(mappedBy = "product")
+    private List<Coupon> coupons;
 
     // 주문 상세 정보와 일대다 맵핑
+    @OneToMany(mappedBy = "product")
+    private List<OrderDetail> orderDetails;
+
+    // 카트아이템과 일대다 맵핑
+    @OneToMany(mappedBy = "product")
+    private List<CartItem> cartItems;
 
     // 위시리스트와 일대다 맵핑
+    @OneToMany(mappedBy = "product")
+      private List<Wishlist> wishlists;
+
+    public void update(ProductRequestDto dto) {
+        this.name = dto.getName();
+        this.price = dto.getPrice();
+        this.discount = dto.getDiscount();
+        this.brand = dto.getBrand();
+        this.stock = dto.getStock();
+        this.description = dto.getDescription();
+        this.category = dto.getCategory();
+    }
+
 }

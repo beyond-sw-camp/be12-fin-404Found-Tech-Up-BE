@@ -1,30 +1,47 @@
 package com.example.backend.review.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.example.backend.product.model.Product;
+import com.example.backend.user.model.User;
+import jakarta.persistence.*;
+import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Schema(description = "리뷰 정보")
 public class Review {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "리뷰 고유 식별자", example = "1")
     private Long reviewIdx;
-    private int reviewRating;
-    private String reviewContent;
-    private String reviewImg;
-    private Date reviewDate;
 
-    // 유저와 다대일 맵핑
-    // 제품과 다대일 맵핑
+    @Schema(description = "리뷰 평점 (1~5)", example = "5")
+    private int reviewRating;
+
+    @Schema(description = "리뷰 내용", example = "정말 좋은 제품이에요!")
+    private String reviewContent;
+
+    @Schema(description = "리뷰 이미지 URL", example = "https://example.com/review-img.jpg")
+    private String reviewImg;
+
+    @Schema(description = "리뷰 작성 날짜", example = "2025-04-01 14:30:00")
+    private LocalDateTime reviewDate;
+
+    @ManyToOne
+    @JoinColumn(name = "user_idx")
+    @Schema(description = "리뷰 작성자 유저")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "product_idx")
+    @Schema(description = "리뷰가 작성된 제품")
+    private Product product;
 }
