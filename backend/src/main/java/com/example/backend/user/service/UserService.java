@@ -44,11 +44,6 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerifyService emailVerifyService;
-    private final ReviewRepository reviewRepository;
-    private final CartRepository cartRepository;
-    private final WishlistRepository wishlistRepository;
-    private final OrderRepository orderRepository;
-    private final UserCouponRepository userCouponRepository;
 
     public VerifyNickNameResponseDto verifyNickName(VerifyNickNameRequestDto dto) {
         // 닉네임으로 사용자 조회

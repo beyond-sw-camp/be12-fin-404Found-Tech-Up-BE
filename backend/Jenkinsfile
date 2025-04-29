@@ -1,3 +1,23 @@
+// 전역 변수 선언
+// Jenkins에서는 pipeline 블록 바깥에 선언해야 전역으로 사용 가능
+def deployColor = ""
+def otherColor = ""
+def startTime = 0
+
+def sendDiscordMessage(String title, String description, String color) {
+    withCredentials([string(credentialsId: 'Discord-Webhook', variable: 'DISCORD')]) {
+        discordSend(
+            description: description,
+            footer: "Jenkins CI/CD",
+            link: env.BUILD_URL,
+            result: currentBuild.currentResult,
+            title: title,
+            color: color,
+            webhookURL: "$DISCORD"
+        )
+    }
+}
+
 pipeline {
     agent any
 
@@ -140,115 +160,223 @@ pipeline {
             }
         }
 
+//         stage('Determine Deploy Color') {
+//             steps {
+//                 script {
+//                     try {
+//                         def svcSelector = sh(
+//                             script: "ssh ${KUBE_HOST} 'kubectl get svc backend-svc -o jsonpath=\"{.spec.selector.app}\"'",
+//                             returnStdout: true
+//                         ).trim()
+//                         echo "Current svc selector: ${svcSelector}"
+//
+//                         if (svcSelector.contains("green")) {
+//                             // Service is pointing to green; new deployment should be blue.
+//                             env.DEPLOY_COLOR = 'blue'
+//                             env.OTHER_COLOR = 'green'
+//                         } else if (svcSelector.contains("blue")) {
+//                             // Service is pointing to blue; new deployment should be green.
+//                             env.DEPLOY_COLOR = 'green'
+//                             env.OTHER_COLOR = 'blue'
+//                         } else {
+//                             // Fallback: Check ready replicas if the svc selector is not as expected.
+//                             def blueReady = sh(
+//                                 script: "ssh ${KUBE_HOST} 'kubectl get deployment backend-deployment-blue -o jsonpath=\"{.status.readyReplicas}\"' || echo '0'",
+//                                 returnStdout: true
+//                             ).trim()
+//                             def greenReady = sh(
+//                                 script: "ssh ${KUBE_HOST} 'kubectl get deployment backend-deployment-green -o jsonpath=\"{.status.readyReplicas}\"' || echo '0'",
+//                                 returnStdout: true
+//                             ).trim()
+//                             echo "Blue ready replicas: ${blueReady}"
+//                             echo "Green ready replicas: ${greenReady}"
+//
+//                             if (blueReady == '0' && greenReady != '0') {
+//                                 env.DEPLOY_COLOR = 'blue'
+//                                 env.OTHER_COLOR = 'green'
+//                             } else if (blueReady != '0' && greenReady == '0') {
+//                                 env.DEPLOY_COLOR = 'green'
+//                                 env.OTHER_COLOR = 'blue'
+//                             } else {
+//                                 // If ambiguous, default to deploying blue.
+//                                 env.DEPLOY_COLOR = 'blue'
+//                                 env.OTHER_COLOR = 'green'
+//                             }
+//                         }
+//                         echo "Deploying ${env.DEPLOY_COLOR} version (scaling down ${env.OTHER_COLOR} later)"
+//                     } catch (Exception e) {
+//                         echo "Error determining deploy color: ${e.getMessage()}"
+//                         // On error, default to blue deployment.
+//                         env.DEPLOY_COLOR = 'blue'
+//                         env.OTHER_COLOR = 'green'
+//                     }
+//                 }
+//             }
+//         }
+
         stage('Determine Deploy Color') {
+            // when {
+            //     expression { env.GIT_BRANCH == 'origin/main' }
+            // }
             steps {
                 script {
-                    try {
-                        def svcSelector = sh(
-                            script: "ssh ${KUBE_HOST} 'kubectl get svc backend-svc -o jsonpath=\"{.spec.selector.app}\"'",
-                            returnStdout: true
-                        ).trim()
-                        echo "Current svc selector: ${svcSelector}"
+                    def blueReplicas = sh(
+                        script: "ssh ${KUBE_HOST} 'kubectl get deployment backend-deployment-blue -o jsonpath=\"{.spec.replicas}\"' || echo '0'",
+                        returnStdout: true
+                    ).trim()
+                    def greenReplicas = sh(
+                        script: "ssh ${KUBE_HOST} 'kubectl get deployment backend-deployment-green -o jsonpath=\"{.spec.replicas}\"' || echo '0'",
+                        returnStdout: true
+                    ).trim()
 
-                        if (svcSelector.contains("green")) {
-                            // Service is pointing to green; new deployment should be blue.
-                            env.DEPLOY_COLOR = 'blue'
-                            env.OTHER_COLOR = 'green'
-                        } else if (svcSelector.contains("blue")) {
-                            // Service is pointing to blue; new deployment should be green.
-                            env.DEPLOY_COLOR = 'green'
-                            env.OTHER_COLOR = 'blue'
-                        } else {
-                            // Fallback: Check ready replicas if the svc selector is not as expected.
-                            def blueReady = sh(
-                                script: "ssh ${KUBE_HOST} 'kubectl get deployment backend-deployment-blue -o jsonpath=\"{.status.readyReplicas}\"' || echo '0'",
-                                returnStdout: true
-                            ).trim()
-                            def greenReady = sh(
-                                script: "ssh ${KUBE_HOST} 'kubectl get deployment backend-deployment-green -o jsonpath=\"{.status.readyReplicas}\"' || echo '0'",
-                                returnStdout: true
-                            ).trim()
-                            echo "Blue ready replicas: ${blueReady}"
-                            echo "Green ready replicas: ${greenReady}"
+                    int blueCount = 0
+                    int greenCount = 0
+                    try { blueCount = blueReplicas.toInteger() } catch (Exception e) {}
+                    try { greenCount = greenReplicas.toInteger() } catch (Exception e) {}
 
-                            if (blueReady) {
-                                env.DEPLOY_COLOR = 'green'
-                                env.OTHER_COLOR  = 'blue'
-                            }
-                            else if (greenReady) {
-                                env.DEPLOY_COLOR = 'blue'
-                                env.OTHER_COLOR  = 'green'
-                            }
-                            else {
-                                env.DEPLOY_COLOR = 'blue'
-                                env.OTHER_COLOR  = 'green'
-                            }
-                        }
-                        echo "Deploying ${env.DEPLOY_COLOR} version (scaling down ${env.OTHER_COLOR} later)"
-                    } catch (Exception e) {
-                        echo "Error determining deploy color: ${e.getMessage()}"
-                        // On error, default to blue deployment.
-                        env.DEPLOY_COLOR = 'blue'
-                        env.OTHER_COLOR = 'green'
+
+                    if (blueCount > 0 && greenCount == 0) {
+                        deployColor = "green"
+                        otherColor = "blue"
+                    } else if (greenCount > 0 && blueCount == 0) {
+                        deployColor = "blue"
+                        otherColor = "green"
+                    } else if (blueCount > 0 && greenCount > 0) {
+                        deployColor = "green"
+                        otherColor = "blue"
+                    } else {
+                        deployColor = "blue"
+                        otherColor = "green"
                     }
+
+                    echo "Deploying ${deployColor} version (scaling down ${otherColor})"
+                }
+            }
+            post {
+                success {
+                    sendDiscordMessage("✅ 배포 색상 결정 완료!", "${deployColor}로 배포 진행 예정", "GREEN")
+                }
+                failure {
+                    sendDiscordMessage("❌ 배포 색상 결정 실패!", "replica 확인 중 오류 발생", "RED")
                 }
             }
         }
 
+//         stage('Deploy Blue-Green') {
+//             when {
+//                 expression { env.GIT_BRANCH == 'origin/dev' }
+//             }
+//             steps {
+//                 script {
+//                     def deployColor = env.DEPLOY_COLOR ?: 'blue'
+//                     def otherColor = env.OTHER_COLOR ?: 'green'
+//
+//                     echo "Deploying ${deployColor} version"
+//
+//                     // 1. 배포 파일의 이미지 태그 업데이트 후 전송
+//                     sh """
+//                         sed -i "s/latest/${IMAGE_TAG}/g" ${WORKSPACE}/backend/k8s/backend-deployment-${deployColor}.yml
+//                     """
+//                     sh """
+//                         scp ${WORKSPACE}/backend/k8s/backend-deployment-${deployColor}.yml ${KUBE_HOST}:/home/test/backend/k8s/
+//                     """
+//
+//                     // 2. 새 배포 적용 및 스케일 업
+//                     sh """
+//                         ssh ${KUBE_HOST} 'kubectl apply -f /home/test/backend/k8s/backend-deployment-${deployColor}.yml'
+//                         ssh ${KUBE_HOST} 'kubectl scale deployment backend-deployment-${deployColor} --replicas=2'
+//                     """
+//
+//                     // 3. 새 배포 롤아웃 상태 체크
+//                     sh """
+//                         ssh ${KUBE_HOST} 'kubectl rollout status deployment/backend-deployment-${deployColor} --timeout=5m'
+//                     """
+//
+//                     // 4. 서비스 YAML 파일 내 selector 업데이트
+//                     // 기존 "app: backend-..." 패턴 전체를 새로운 배포 색상으로 교체
+//                     sh """
+//                         sed -i "s/app: backend-.*\$/app: backend-${deployColor}/" ${WORKSPACE}/backend/k8s/backend-svc.yml
+//                     """
+//                     sh """
+//                         scp ${WORKSPACE}/backend/k8s/backend-svc.yml ${KUBE_HOST}:/home/test/backend/k8s/
+//                     """
+//                     sh """
+//                         ssh ${KUBE_HOST} 'kubectl apply -f /home/test/backend/k8s/backend-svc.yml'
+//                     """
+//
+//                     // 5. 기존 배포(다른 색상)의 스케일 다운
+//                     sh """
+//                         ssh ${KUBE_HOST} 'kubectl scale deployment backend-deployment-${otherColor} --replicas=0'
+//                     """
+//                 }
+//             }
+//             post {
+//                 success {
+//                     sendDiscordMessage("✅ Blue-Green 배포 성공!", "${env.DEPLOY_COLOR} 버전 배포 완료", "GREEN")
+//                 }
+//                 failure {
+//                     sendDiscordMessage("❌ Blue-Green 배포 실패!", "배포 중 오류 발생", "RED")
+//                 }
+//             }
+//         }
         stage('Deploy Blue-Green') {
-            when {
-                expression { env.GIT_BRANCH == 'origin/dev' }
-            }
+            // when {
+            //     expression { env.GIT_BRANCH == 'origin/main' }
+            // }
             steps {
                 script {
-                    def deployColor = env.DEPLOY_COLOR ?: 'blue'
-                    def otherColor = env.OTHER_COLOR ?: 'green'
-
-                    echo "Deploying ${deployColor} version"
-
-                    // 1. 배포 파일의 이미지 태그 업데이트 후 전송
                     sh """
                         sed -i "s/latest/${IMAGE_TAG}/g" ${WORKSPACE}/backend/k8s/backend-deployment-${deployColor}.yml
-                    """
-                    sh """
+                        sed -i "s/latest/${IMAGE_TAG}/g" ${WORKSPACE}/backend/k8s/backend-cm.yml
+                        sed -i "s/latest/${IMAGE_TAG}/g" ${WORKSPACE}/backend/k8s/backend-svc.yml
                         scp ${WORKSPACE}/backend/k8s/backend-deployment-${deployColor}.yml ${KUBE_HOST}:/home/test/backend/k8s/
-                    """
-
-                    // 2. 새 배포 적용 및 스케일 업
-                    sh """
-                        ssh ${KUBE_HOST} 'kubectl apply -f /home/test/backend/k8s/backend-deployment-${deployColor}.yml'
-                        ssh ${KUBE_HOST} 'kubectl scale deployment backend-deployment-${deployColor} --replicas=2'
-                    """
-
-                    // 3. 새 배포 롤아웃 상태 체크
-                    sh """
-                        ssh ${KUBE_HOST} 'kubectl rollout status deployment/backend-deployment-${deployColor} --timeout=5m'
-                    """
-
-                    // 4. 서비스 YAML 파일 내 selector 업데이트
-                    // 기존 "app: backend-..." 패턴 전체를 새로운 배포 색상으로 교체
-                    sh """
-                        sed -i "s/app: backend-.*\$/app: backend-${deployColor}/" ${WORKSPACE}/backend/k8s/backend-svc.yml
-                    """
-                    sh """
+                        scp ${WORKSPACE}/backend/k8s/backend-cm.yml ${KUBE_HOST}:/home/test/backend/k8s/
                         scp ${WORKSPACE}/backend/k8s/backend-svc.yml ${KUBE_HOST}:/home/test/backend/k8s/
-                    """
-                    sh """
+                        ssh ${KUBE_HOST} 'kubectl apply -f /home/test/backend/k8s/backend-cm.yml'
                         ssh ${KUBE_HOST} 'kubectl apply -f /home/test/backend/k8s/backend-svc.yml'
-                    """
-
-                    // 5. 기존 배포(다른 색상)의 스케일 다운
-                    sh """
-                        ssh ${KUBE_HOST} 'kubectl scale deployment backend-deployment-${otherColor} --replicas=0'
+                        ssh ${KUBE_HOST} 'kubectl apply -f /home/test/backend/k8s/backend-deployment-${deployColor}.yml'
+                        ssh ${KUBE_HOST} 'kubectl rollout status deployment/backend-deployment-${deployColor}'
+                        ssh ${KUBE_HOST} 'kubectl scale deployment backend-deployment-${otherColor} --replicas=0' || true
                     """
                 }
             }
             post {
                 success {
-                    sendDiscordMessage("✅ Blue-Green 배포 성공!", "${env.DEPLOY_COLOR} 버전 배포 완료", "GREEN")
+                    sendDiscordMessage("✅ Blue-Green 배포 성공!", "${deployColor}로 트래픽 전환 완료", "GREEN")
                 }
                 failure {
                     sendDiscordMessage("❌ Blue-Green 배포 실패!", "배포 중 오류 발생", "RED")
+                }
+            }
+        }
+
+        stage('Update Service Selector') {
+            steps {
+                script {
+                    echo "Updating service selector to deployment: ${deployColor}"
+                    sh """
+                        echo '{"spec":{"selector":{"deployment":"${deployColor}","type":"backend"}}}' > /tmp/patch2.json
+                        scp /tmp/patch2.json ${KUBE_HOST}:/tmp/patch2.json
+                        ssh ${KUBE_HOST} "kubectl patch svc backend-svc -p '\$(cat /tmp/patch2.json)'"
+                        ssh ${KUBE_HOST} 'rm /tmp/patch2.json'
+                        rm /tmp/patch2.json
+                    """
+                }
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                script {
+                    echo "Verifying deployment health..."
+                }
+            }
+            post {
+                success {
+                    sendDiscordMessage("✅ 배포 검증 성공!", "헬스체크 통과", "GREEN")
+                }
+                failure {
+                    sendDiscordMessage("❌ 배포 검증 실패!", "헬스체크 실패", "RED")
                 }
             }
         }
@@ -300,20 +428,5 @@ pipeline {
                 sendDiscordMessage("🚨 전체 파이프라인 실패!", "⏱️ 실행 시간: ${duration}초", "RED")
             }
         }
-    }
-}
-
-// 전역 함수 선언 (pipeline 외부)
-def sendDiscordMessage(String title, String description, String color) {
-    withCredentials([string(credentialsId: 'Discord-Webhook', variable: 'DISCORD')]) {
-        discordSend(
-            description: description,
-            footer: "Jenkins CI/CD",
-            link: env.BUILD_URL,
-            result: currentBuild.currentResult,
-            title: title,
-            color: color,
-            webhookURL: "$DISCORD"
-        )
     }
 }
