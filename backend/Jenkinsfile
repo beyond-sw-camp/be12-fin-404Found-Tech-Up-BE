@@ -84,10 +84,10 @@ pipeline {
         stage('Deploy Kafka to K8s') {
             steps {
                 script {
-                    echo "Deploying Kafka to Kubernetes"
+                    echo "Deploying Kafka (StatefulSet) to Kubernetes"
                     sh """
-                        scp ${WORKSPACE}/backend/k8s/kafka-deployment.yml ${KUBE_HOST}:/home/test/backend/k8s/
-                        ssh ${KUBE_HOST} 'kubectl apply -f /home/test/backend/k8s/kafka-deployment.yml'
+                        scp ${WORKSPACE}/backend/k8s/kafka-statefulset.yml ${KUBE_HOST}:/home/test/backend/k8s/
+                        ssh ${KUBE_HOST} 'kubectl apply -f /home/test/backend/k8s/kafka-statefulset.yml'
                     """
                 }
             }
