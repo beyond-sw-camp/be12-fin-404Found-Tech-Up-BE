@@ -23,6 +23,7 @@ public class ReviewResponseDto {
     @Schema(description = "리뷰 이미지 URL", example = "https://example.com/review-img.jpg")
     private String reviewImg;
     private LocalDateTime reviewDate;
+    private Long reviewUserId;
     private String userName;
 
     // 리뷰 작성후 결과 반환
@@ -41,6 +42,7 @@ public class ReviewResponseDto {
                 .reviewContent(review.getReviewContent())
                 .reviewImg(review.getReviewImg())
                 .reviewDate(review.getReviewDate())
+                .reviewUserId(review.getUser().getUserIdx())
                 .userName(userName)
                 .build();
     }
