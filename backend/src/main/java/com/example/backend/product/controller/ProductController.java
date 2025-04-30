@@ -5,10 +5,7 @@ import com.example.backend.global.response.BaseResponseService;
 import com.example.backend.global.response.BaseResponseServiceImpl;
 import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.global.response.responseStatus.ProductResponseStatus;
-import com.example.backend.product.model.dto.ProductDeleteResponseDto;
-import com.example.backend.product.model.dto.ProductFilterRequestDto;
-import com.example.backend.product.model.dto.ProductRequestDto;
-import com.example.backend.product.model.dto.ProductResponseDto;
+import com.example.backend.product.model.dto.*;
 import com.example.backend.product.service.ProductService;
 import com.example.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +24,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Tag(name = "상품 기능", description = "상품 관련 기능을 제공합니다.")
@@ -117,6 +115,16 @@ public class ProductController {
     ) {
         Page<ProductResponseDto> page = productService.filterProduct(filterDto, pageable);
         return baseResponseService.getSuccessResponse(page, ProductResponseStatus.SUCCESS);
+    }
+
+    @Operation(summary = "Item-based recommendations")
+    @PostMapping("/recommend/item-based")
+    public BaseResponse<List<ProductResponseDto>> recommendItemBased(
+            @RequestBody ProductRecommendRequestDto request
+    ) {
+        List<ProductResponseDto> recs =
+                productService.getItemBasedRecommendations(request.getProductIdx(), request.getResultNum());
+        return baseResponseService.getSuccessResponse(recs, ProductResponseStatus.SUCCESS);
     }
 
     //-----------------------관리자 전용 상품 기능----------------

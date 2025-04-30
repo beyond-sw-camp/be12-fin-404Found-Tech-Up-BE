@@ -6,10 +6,7 @@ import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.notification.service.NotificationProducerService;
 import com.example.backend.product.model.Product;
 import com.example.backend.product.model.ProductImage;
-import com.example.backend.product.model.dto.ProductDeleteResponseDto;
-import com.example.backend.product.model.dto.ProductFilterRequestDto;
-import com.example.backend.product.model.dto.ProductRequestDto;
-import com.example.backend.product.model.dto.ProductResponseDto;
+import com.example.backend.product.model.dto.*;
 import com.example.backend.product.model.spec.*;
 import com.example.backend.product.repository.*;
 import com.example.backend.review.model.Review;
@@ -20,12 +17,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.IntSummaryStatistics;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,6 +48,7 @@ public class ProductService {
     // 제품 이미지 파일 삭제는 이곳에서 처리
     private final S3Service s3Service;
     private final ProductImageService productImageService;
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public Page<ProductResponseDto> getProductList(Pageable pageable) {
         return productRepository.findAll(pageable)
@@ -213,6 +211,42 @@ public class ProductService {
                 : all.subList(start, end);
 
         return new PageImpl<>(pageContent, pageable, total);
+    }
+
+    public List<ProductResponseDto> getItemBasedRecommendations(Long productIdx, Integer resultNum) {
+        String url = "http://192.0.40.205:8000/recommend/item-based";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("product_idx", productIdx);
+        payload.put("result_num", resultNum);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
+
+        ResponseEntity<RecommendResponseDto> resp =
+                restTemplate.postForEntity(url, request, RecommendResponseDto.class);
+
+        if (!resp.getStatusCode().is2xxSuccessful() || resp.getBody() == null) {
+            throw new IllegalStateException(
+                    "Failed to fetch recommendations (status="
+                            + resp.getStatusCode() + ")"
+            );
+        }
+
+        return resp.getBody()
+                .getRecommendedProducts()
+                .stream()
+                .map(rec -> productRepository
+                        .findById(rec.getProductIdx())
+                        .map(ProductResponseDto::from)
+                        .orElseThrow(() ->
+                                new RuntimeException("Product " + rec.getProductIdx() + " not found")
+                        )
+                )
+                .collect(Collectors.toList());
     }
 
 
