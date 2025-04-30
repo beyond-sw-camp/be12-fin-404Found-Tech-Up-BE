@@ -89,6 +89,9 @@ management:
     ssl:
       enabled: false
 
+kafka:
+   enabled: false
+
 server:
   port: 8443
   ssl:
