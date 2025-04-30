@@ -5,10 +5,7 @@ import com.example.backend.global.response.BaseResponseService;
 import com.example.backend.global.response.BaseResponseServiceImpl;
 import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.global.response.responseStatus.ProductResponseStatus;
-import com.example.backend.product.model.dto.ProductDeleteResponseDto;
-import com.example.backend.product.model.dto.ProductFilterRequestDto;
-import com.example.backend.product.model.dto.ProductRequestDto;
-import com.example.backend.product.model.dto.ProductResponseDto;
+import com.example.backend.product.model.dto.*;
 import com.example.backend.product.service.ProductService;
 import com.example.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -116,8 +113,7 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "30") int size
     ) {
-        Page<ProductResponseDto> result = productService.filterProduct(filterDto, PageRequest.of(page,size));
-        return baseResponseService.getSuccessResponse(result, ProductResponseStatus.SUCCESS);
+        return baseResponseService.getSuccessResponse(productService.filterProduct(filterDto, PageRequest.of(page,size)), ProductResponseStatus.SUCCESS);
     }
 
     //-----------------------관리자 전용 상품 기능----------------
