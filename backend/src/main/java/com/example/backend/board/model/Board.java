@@ -1,5 +1,6 @@
 package com.example.backend.board.model;
 
+import com.example.backend.comment.model.Comment;
 import com.example.backend.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -39,6 +40,9 @@ public class Board {
 
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Likes> likesList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Comment> commentsList = new ArrayList<>();
 
     public void addLikesCount() {
         this.boardLikes = this.boardLikes + 1;

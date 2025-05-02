@@ -81,8 +81,8 @@ public class CartController {
     }
 
     @Operation(
-            summary = "장바구니 항목 삭제",
-            description = "회원이 장바구니에 담긴 특정 상품 항목을 삭제합니다. 해당 항목의 ID(cartItemIdx)를 통해 삭제를 처리합니다."
+            summary = "장바구니 항목 비우기",
+            description = "회원이 장바구니에 담긴 모든 상품 항목을 삭제합니다."
     )
     @DeleteMapping("/clear")
     public BaseResponse<CartItemUpdateResponseDto> clear(

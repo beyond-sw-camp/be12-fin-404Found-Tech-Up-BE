@@ -150,6 +150,10 @@ public class OrderService {
         // 양방향 매핑을 위해 OrderDetail에도 Order를 세팅
         orderDetails.forEach(d -> d.setOrders(order));
 
+        // 주문 완료 후 장바구니 비우기
+        cart.getCartItems().clear();
+        cartRepository.save(cart);
+
         // 주문 엔티티 저장
         return orderRepository.save(order);
     }
@@ -197,8 +201,6 @@ public class OrderService {
         }
 
         // 검증 성공 시 쿠폰 사용했다면 해당 쿠폰 상태 수정(couponUsed = true)
-
-
         if (dto.getCouponIdx() != null) {
             userCouponRepository.findById(dto.getCouponIdx())
                     .ifPresent(userCoupon -> {
@@ -206,6 +208,7 @@ public class OrderService {
                         userCouponRepository.save(userCoupon);
                     });
         }
+
         // 주문 완료 알림 발송 – 첫 상품 이름 기준
 //        String firstProductName = order.getOrderDetails().get(0).getProduct().getName();
 //        notificationProducerService.sendOrderCompleteNotification(orderId, firstProductName, user.getUserIdx());
