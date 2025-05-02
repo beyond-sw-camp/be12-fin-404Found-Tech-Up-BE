@@ -209,48 +209,43 @@ public class CouponService {
     //    return true;
     //}
     
-    @Transactional
-    public synchronized Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) {
-        User user = userRepository.findById(requestUser.getUserIdx())
-                .orElseThrow(() -> new UserException(UserResponseStatus.INVALID_USER_ID));
+    // 기존 로직 유지 + 테스트 전용 쿠폰도 수량 기반 조건으로 테스트할 수 있도록 개선
 
-        Coupon couponEvent = couponRepository.findById(eventCouponIdx)
-                .orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
+@Transactional
+public synchronized Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) {
+    User user = userRepository.findById(requestUser.getUserIdx())
+            .orElseThrow(() -> new UserException(UserResponseStatus.INVALID_USER_ID));
 
-        // ✅ 테스트 전용 쿠폰 (예: idx 9999)은 무제한 발급
-        if (eventCouponIdx == 9999L) {
-            UserCoupon coupon = UserCoupon.builder()
-                    .user(user)
-                    .coupon(couponEvent)
-                    .couponUsed(false)
-                    .build();
-            userCouponRepository.save(coupon);
-            return true;
-        }
+    Coupon couponEvent = couponRepository.findById(eventCouponIdx)
+            .orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
 
-        // 중복 발급 방지 (실제 이벤트용)
-        boolean alreadyIssued = user.getUserCoupons() != null &&
-                user.getUserCoupons().stream()
-                        .anyMatch(coupon -> coupon.getCoupon().getCouponIdx().equals(eventCouponIdx));
+    // ✅ 테스트 전용 쿠폰 (예: idx 9999)도 수량 차감 테스트 가능하게
+    boolean isTestCoupon = eventCouponIdx == 9999L;
 
-        if (alreadyIssued) return false;
+    // 중복 발급 방지 (모든 쿠폰 공통)
+    boolean alreadyIssued = user.getUserCoupons() != null &&
+            user.getUserCoupons().stream()
+                    .anyMatch(coupon -> coupon.getCoupon().getCouponIdx().equals(eventCouponIdx));
 
-        // 재고 체크
-        if (couponEvent.getCouponQuantity() == 0) return false;
+    if (alreadyIssued) return false;
 
-        // 발급 및 수량 차감
-        UserCoupon coupon = UserCoupon.builder()
-                .user(user)
-                .coupon(couponEvent)
-                .couponUsed(false)
-                .build();
+    // 수량이 0이면 실패 (테스트용도 포함)
+    if (couponEvent.getCouponQuantity() == 0) return false;
 
-        couponEvent.setCouponQuantity(couponEvent.getCouponQuantity() - 1);
-        couponRepository.save(couponEvent);
-        userCouponRepository.save(coupon);
+    // 발급 및 수량 차감 (테스트/실제 동일하게 수행)
+    UserCoupon coupon = UserCoupon.builder()
+            .user(user)
+            .coupon(couponEvent)
+            .couponUsed(false)
+            .build();
 
-        return true;
-    }
+    couponEvent.setCouponQuantity(couponEvent.getCouponQuantity() - 1);
+    couponRepository.save(couponEvent);
+    userCouponRepository.save(coupon);
+
+    return true;
+}
+
 
     @Transactional
     public void createEvent(EventCouponCreateRequestDto request) {
