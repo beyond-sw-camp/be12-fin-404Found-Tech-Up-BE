@@ -182,6 +182,7 @@ public class CouponService {
         return CouponListResponseDto.builder().couponList(result).total(pageLength).limit(limit).offset(0).build();
     }
 
+    /*
     @Transactional
     public synchronized Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) {
         User user = userRepository.findById(requestUser.getUserIdx()).orElseThrow(()-> new UserException(UserResponseStatus.INVALID_USER_ID));
@@ -205,8 +206,52 @@ public class CouponService {
         UserNotification userNotification = UserNotification.builder().notificationType(NotificationType.PERSONAL).user(user).createdAt(LocalDateTime.now()).title(title).content(content).template(notification).isRead(false).build();
         userNotificationRepository.save(userNotification);
         */
+    //    return true;
+    //}
+    
+    @Transactional
+    public synchronized Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) {
+        User user = userRepository.findById(requestUser.getUserIdx())
+                .orElseThrow(() -> new UserException(UserResponseStatus.INVALID_USER_ID));
+
+        Coupon couponEvent = couponRepository.findById(eventCouponIdx)
+                .orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
+
+        // ✅ 테스트 전용 쿠폰 (예: idx 9999)은 무제한 발급
+        if (eventCouponIdx == 9999L) {
+            UserCoupon coupon = UserCoupon.builder()
+                    .user(user)
+                    .coupon(couponEvent)
+                    .couponUsed(false)
+                    .build();
+            userCouponRepository.save(coupon);
+            return true;
+        }
+
+        // 중복 발급 방지 (실제 이벤트용)
+        boolean alreadyIssued = user.getUserCoupons() != null &&
+                user.getUserCoupons().stream()
+                        .anyMatch(coupon -> coupon.getCoupon().getCouponIdx().equals(eventCouponIdx));
+
+        if (alreadyIssued) return false;
+
+        // 재고 체크
+        if (couponEvent.getCouponQuantity() == 0) return false;
+
+        // 발급 및 수량 차감
+        UserCoupon coupon = UserCoupon.builder()
+                .user(user)
+                .coupon(couponEvent)
+                .couponUsed(false)
+                .build();
+
+        couponEvent.setCouponQuantity(couponEvent.getCouponQuantity() - 1);
+        couponRepository.save(couponEvent);
+        userCouponRepository.save(coupon);
+
         return true;
     }
+
     @Transactional
     public void createEvent(EventCouponCreateRequestDto request) {
         Product product = productRepository.findById(request.getProductIdx()).orElseThrow(()-> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
