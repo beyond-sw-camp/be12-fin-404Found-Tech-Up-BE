@@ -110,11 +110,11 @@ public class ProductController {
                             }
                     )
             )
-            ProductFilterRequestDto filterDto,
-            Pageable pageable
+            @RequestBody ProductFilterRequestDto filterDto,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size
     ) {
-        Page<ProductResponseDto> page = productService.filterProduct(filterDto, pageable);
-        return baseResponseService.getSuccessResponse(page, ProductResponseStatus.SUCCESS);
+        return baseResponseService.getSuccessResponse(productService.filterProduct(filterDto, PageRequest.of(page,size)), ProductResponseStatus.SUCCESS);
     }
 
     @Operation(summary = "Item-based recommendations")

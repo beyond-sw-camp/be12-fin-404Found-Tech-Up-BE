@@ -120,6 +120,7 @@ public class BoardFilesService {
         if (lowerName.endsWith(".pdf")) return "application/pdf";
         if (lowerName.endsWith(".doc")) return "application/msword";
         if (lowerName.endsWith(".docx")) return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        if (lowerName.endsWith(".txt")) return "text/plain";
         return "application/octet-stream";
     }
 

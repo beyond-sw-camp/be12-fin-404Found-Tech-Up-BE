@@ -4,6 +4,8 @@ import com.example.backend.global.exception.ProductException;
 import com.example.backend.global.exception.ReviewException;
 import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.global.response.responseStatus.ReviewResponseStatus;
+import com.example.backend.notification.model.NotificationType;
+import com.example.backend.notification.model.dto.RealTimeNotificationDto;
 import com.example.backend.review.model.Review;
 import com.example.backend.review.model.dto.ReviewDeleteResponseDto;
 import com.example.backend.review.model.dto.ReviewRequestDto;
@@ -13,9 +15,12 @@ import com.example.backend.product.model.Product;
 import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +30,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
+    private final KafkaTemplate<String, String> stringKafkaTemplate;
 
     @Transactional(readOnly=true)
     public List<ReviewResponseDto> getReviewsByProduct(Long productIdx) {
@@ -44,6 +50,8 @@ public class ReviewService {
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
         Review review = dto.toEntity(loginUser, product);
         review = reviewRepository.save(review);
+        // Kafka 이벤트 발행
+        stringKafkaTemplate.send("review-created-notifications", loginUser.getUserIdx().toString(), "new review register");
         return ReviewResponseDto.from(review);
     }
 

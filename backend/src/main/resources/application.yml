@@ -68,9 +68,6 @@ logging:
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
 
-kafka:
-  enabled: false
-
 management:
   endpoints:
     web:
@@ -91,6 +88,9 @@ management:
       enabled: false
     ssl:
       enabled: false
+
+kafka:
+   enabled: false
 
 server:
   port: 8443

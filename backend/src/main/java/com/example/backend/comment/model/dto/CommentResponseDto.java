@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 public class CommentResponseDto {
     private Long commentIdx;
+    private Long userIdx;
     private String writer;
     private String content;
     private LocalDateTime createdAt;
@@ -17,6 +18,7 @@ public class CommentResponseDto {
     public static CommentResponseDto from(Comment comment) {
         return CommentResponseDto.builder()
                 .commentIdx(comment.getIdx())
+                .userIdx(comment.getUser() != null ? comment.getUser().getUserIdx() : null)
                 .writer(comment.getUser() != null ? comment.getUser().getUserNickname() : "탈퇴한 사용자")
                 .content(comment.getCommentContent())
                 .createdAt(comment.getCommentCreated())
