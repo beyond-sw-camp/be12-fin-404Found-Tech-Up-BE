@@ -16,7 +16,9 @@ java {
 repositories {
 	mavenCentral()
 }
-
+test {
+	useJUnitPlatform()
+}
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -49,6 +51,10 @@ dependencies {
 
 	compileOnly 'org.projectlombok:lombok:1.18.36'
 	annotationProcessor('org.projectlombok:lombok')
+
+	// JUnit 5 (포함되어 있으나 명시적으로 적어도 무방)
+	testImplementation 'org.junit.jupiter:junit-jupiter-api'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

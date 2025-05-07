@@ -4,7 +4,6 @@ WORKDIR /recommend
 
 # 필요한 파일 복사
 COPY *.py /recommend/
-COPY *.csv /recommend/
 COPY requirements.txt /recommend/
 
 # 의존성 설치
