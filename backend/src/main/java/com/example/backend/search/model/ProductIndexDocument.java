@@ -16,7 +16,7 @@ public class ProductIndexDocument {
 
     @Id
     @Field(type= FieldType.Long)
-    private Long idx;
+    private Long productIdx;
 
     @Field(type= FieldType.Text)
     private String productName;
