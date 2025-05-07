@@ -87,6 +87,42 @@ public class ProductService {
         }
     }
 
+    public List<ProductResponseDto> getContentBasedRecommendations(Long productIdx, Integer resultNum) {
+        String url = "http://192.0.40.205:8000/recommend";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("product_idx", productIdx);
+        payload.put("result_num", resultNum);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
+
+        ResponseEntity<ContentRecommendResponseDto> resp =
+                restTemplate.postForEntity(url, request, ContentRecommendResponseDto.class);
+
+        if (!resp.getStatusCode().is2xxSuccessful() || resp.getBody() == null) {
+            throw new IllegalStateException(
+                    "Failed to fetch recommendations (status="
+                            + resp.getStatusCode() + ")"
+            );
+        }
+
+        return resp.getBody()
+                .getSimilarProducts()
+                .stream()
+                .map(rec -> productRepository
+                        .findById(rec.getProductIdx())
+                        .map(ProductResponseDto::from)
+                        .orElseThrow(() ->
+                                new RuntimeException("Product " + rec.getProductIdx() + " not found")
+                        )
+                )
+                .collect(Collectors.toList());
+    }
+
     public List<ProductResponseDto> getItemBasedRecommendations(Long productIdx, Integer resultNum) {
         String url = "http://192.0.40.205:8000/recommend/item-based";
 
@@ -123,6 +159,41 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProductResponseDto> getUserBasedRecommendations(Long userIdx, Integer resultNum) {
+        String url = "http://192.0.40.205:8000/recommend/user-based";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("user_idx", userIdx);
+        payload.put("result_num", resultNum);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
+
+        ResponseEntity<RecommendResponseDto> resp =
+                restTemplate.postForEntity(url, request, RecommendResponseDto.class);
+
+        if (!resp.getStatusCode().is2xxSuccessful() || resp.getBody() == null) {
+            throw new IllegalStateException(
+                    "Failed to fetch recommendations (status="
+                            + resp.getStatusCode() + ")"
+            );
+        }
+
+        return resp.getBody()
+                .getRecommendedProducts()
+                .stream()
+                .map(rec -> productRepository
+                        .findById(rec.getProductIdx())
+                        .map(ProductResponseDto::from)
+                        .orElseThrow(() ->
+                                new RuntimeException("Product " + rec.getProductIdx() + " not found")
+                        )
+                )
+                .collect(Collectors.toList());
+    }
 
     @Transactional
     public ProductResponseDto registerProduct(ProductRequestDto requestDto) {
