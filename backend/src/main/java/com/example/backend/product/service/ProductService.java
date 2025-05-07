@@ -71,7 +71,7 @@ public class ProductService {
             return productRepository.filterProductsWithoutCategory( dto.getMinPrice(), dto.getMaxPrice(), pageable).map(ProductResponseDto::from);
         }
         else {
-            return switch (dto.getCategory()) {
+            return switch (dto.getCategory().toUpperCase()) {
                 case "CPU" ->
                         productRepository.filterCPUProducts(dto.getMinPrice(), dto.getMaxPrice(), pageable).map(ProductResponseDto::from);
                 case "GPU" ->
