@@ -1,5 +1,6 @@
 package com.example.backend.coupon.repository;
 
+import com.example.backend.coupon.model.Coupon;
 import com.example.backend.coupon.model.UserCoupon;
 import com.example.backend.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
