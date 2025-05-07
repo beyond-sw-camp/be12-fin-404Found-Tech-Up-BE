@@ -14,10 +14,18 @@ public class ElasticConfig extends ElasticsearchConfiguration {
     @Value("${elasticsearch.host}")
     private String host;
 
+    @Value("${elasticsearch.username}")
+    private String username;
+
+    @Value("${elasticsearch.password}")
+    private String password;
+
     @Override
     public ClientConfiguration clientConfiguration() {
         return ClientConfiguration.builder()
                 .connectedTo(host + ":9200")
+                .usingSsl(false)
+                .withBasicAuth(username, password)
                 .build();
     }
 }

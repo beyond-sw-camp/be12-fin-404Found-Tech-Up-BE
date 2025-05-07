@@ -24,7 +24,14 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-
+  elasticsearch:
+    uris: ${ELASTIC_HOST}:9200
+    username: elastic
+    password: changeme
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
   cloud:
     aws:
       credentials:
@@ -99,6 +106,7 @@ server:
     key-store-password: qwer1234
     key-store-type: PKCS12
     key-alias: springboot
-
 elasticsearch:
   host: ${ELASTIC_HOST}
+  username: elastic
+  password: changeme
