@@ -12,10 +12,10 @@ def feature_engineering(data_dict):
 
     for category, df in data_dict.items():
         # Name과 url 컬럼 분리 (나중에 참조용)
-        product_info = df[["Name", "url"]].copy()
+        product_info = df[["name", "product_idx", category.lower() + "_idx"]].copy()
 
         # 전처리할 데이터 선택 (Name, url 제외)
-        features_df = df.drop(["Name", "url"], axis=1)
+        features_df = df.drop(["name", "product_idx", category.lower() + "_idx"], axis=1)
 
         # 수치형 변수와 범주형 변수 분리
         numeric_features = []
@@ -104,8 +104,8 @@ def calculate_content_similarity(processed_data):
         # 유사도 행렬을 데이터프레임으로 변환
         similarity_df = pd.DataFrame(
             similarity_matrix,
-            index=data["product_info"]["Name"],
-            columns=data["product_info"]["Name"]
+            index=data["product_info"]["product_idx"],
+            columns=data["product_info"]["product_idx"]
         )
 
         similarity_dict[category] = similarity_df
@@ -113,17 +113,17 @@ def calculate_content_similarity(processed_data):
     return similarity_dict
 
 
-def recommend_content_based(product_name, category, similarity_df, data_dict, top_n=3):
+def recommend_content_based(product_idx, category, similarity_df, data_dict, top_n=3):
     """
     콘텐츠 기반 추천 수행 함수
     """
     # 입력된 제품과 다른 제품과의 유사도
-    product_similarities = similarity_df.loc[product_name]
+    product_similarities = similarity_df.loc[product_idx]
 
     # 자기 자신을 제외하고 유사도가 높은 top_n개 제품 선택
     similar_products = (
         product_similarities
-        .drop(product_name)  # 자기 자신 제외
+        .drop(product_idx)  # 자기 자신 제외
         .sort_values(ascending=False)  # 유사도 내림차순 정렬
         .head(top_n)  # 상위 n개 선택
     )
@@ -132,10 +132,10 @@ def recommend_content_based(product_name, category, similarity_df, data_dict, to
     result = []
     for idx, similarity in similar_products.items():
         # 해당 제품 정보 찾기
-        product_info = data_dict[category].loc[data_dict[category]["Name"] == idx].iloc[0]
+        product_info = data_dict[category].loc[data_dict[category]["product_idx"] == idx].iloc[0]
 
         result.append({
-            "name": idx,
+            "product_idx": idx,
             "similarity": float(similarity),
             "price": product_info.get("Price", "정보 없음"),
             "url": product_info.get("url", "정보 없음"),
