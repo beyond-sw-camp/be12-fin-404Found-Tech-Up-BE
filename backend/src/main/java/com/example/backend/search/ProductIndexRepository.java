@@ -10,4 +10,6 @@ public interface ProductIndexRepository extends ElasticsearchRepository<ProductI
     Page<ProductIndexDocument> findByCategory(String category, Pageable pageable);
     Page<ProductIndexDocument> findByPriceBetween(Double lower, Double higher, Pageable pageable);
     Page<ProductIndexDocument> findByBrand(String brand, Pageable pageable);
+    Page<ProductIndexDocument> findByDiscountGreaterThan(Integer discount, Pageable pageable);
+    Page<ProductIndexDocument> findByStockGreaterThan(Integer stock, Pageable pageable);
 }
