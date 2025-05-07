@@ -5,23 +5,20 @@ import lombok.*;
 
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RecommendResponseDto {
-
-    @JsonProperty("recommended_products")
-    private List<RecommendedProduct> recommendedProducts;
+public class ContentRecommendResponseDto {
+    @JsonProperty("similar_products")
+    private List<SimilarProduct> similarProducts;
 
     @Getter @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RecommendedProduct {
+    public static class SimilarProduct {
         @JsonProperty("product_idx")
         private Long productIdx;
-
-//        @JsonProperty("similarity")
-//        private Double similarity;
     }
 }

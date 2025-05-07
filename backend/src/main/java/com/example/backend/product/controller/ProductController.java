@@ -117,6 +117,16 @@ public class ProductController {
         return baseResponseService.getSuccessResponse(productService.filterProduct(filterDto, PageRequest.of(page,size)), ProductResponseStatus.SUCCESS);
     }
 
+    @Operation(summary = "Content-based recommendations")
+    @PostMapping("/recommend/content-based")
+    public BaseResponse<List<ProductResponseDto>> recommendContentBased(
+            @RequestBody ProductRecommendRequestDto request
+    ) {
+        List<ProductResponseDto> recs =
+                productService.getContentBasedRecommendations(request.getProductIdx(), request.getResultNum());
+        return baseResponseService.getSuccessResponse(recs, ProductResponseStatus.SUCCESS);
+    }
+
     @Operation(summary = "Item-based recommendations")
     @PostMapping("/recommend/item-based")
     public BaseResponse<List<ProductResponseDto>> recommendItemBased(
@@ -124,6 +134,16 @@ public class ProductController {
     ) {
         List<ProductResponseDto> recs =
                 productService.getItemBasedRecommendations(request.getProductIdx(), request.getResultNum());
+        return baseResponseService.getSuccessResponse(recs, ProductResponseStatus.SUCCESS);
+    }
+
+    @Operation(summary = "User-based recommendations")
+    @PostMapping("/recommend/user-based")
+    public BaseResponse<List<ProductResponseDto>> recommendUserBased(
+            @AuthenticationPrincipal User user, @RequestBody ProductRecommendUserRequestDto request
+    ) {
+        List<ProductResponseDto> recs =
+                productService.getUserBasedRecommendations(user.getUserIdx(), request.getResultNum());
         return baseResponseService.getSuccessResponse(recs, ProductResponseStatus.SUCCESS);
     }
 
