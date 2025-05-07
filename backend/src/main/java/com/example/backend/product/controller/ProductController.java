@@ -24,6 +24,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Tag(name = "상품 기능", description = "상품 관련 기능을 제공합니다.")
@@ -114,6 +115,36 @@ public class ProductController {
             @RequestParam(defaultValue = "30") int size
     ) {
         return baseResponseService.getSuccessResponse(productService.filterProduct(filterDto, PageRequest.of(page,size)), ProductResponseStatus.SUCCESS);
+    }
+
+    @Operation(summary = "Content-based recommendations")
+    @PostMapping("/recommend/content-based")
+    public BaseResponse<List<ProductResponseDto>> recommendContentBased(
+            @RequestBody ProductRecommendRequestDto request
+    ) {
+        List<ProductResponseDto> recs =
+                productService.getContentBasedRecommendations(request.getProductIdx(), request.getResultNum());
+        return baseResponseService.getSuccessResponse(recs, ProductResponseStatus.SUCCESS);
+    }
+
+    @Operation(summary = "Item-based recommendations")
+    @PostMapping("/recommend/item-based")
+    public BaseResponse<List<ProductResponseDto>> recommendItemBased(
+            @RequestBody ProductRecommendRequestDto request
+    ) {
+        List<ProductResponseDto> recs =
+                productService.getItemBasedRecommendations(request.getProductIdx(), request.getResultNum());
+        return baseResponseService.getSuccessResponse(recs, ProductResponseStatus.SUCCESS);
+    }
+
+    @Operation(summary = "User-based recommendations")
+    @PostMapping("/recommend/user-based")
+    public BaseResponse<List<ProductResponseDto>> recommendUserBased(
+            @AuthenticationPrincipal User user, @RequestBody ProductRecommendUserRequestDto request
+    ) {
+        List<ProductResponseDto> recs =
+                productService.getUserBasedRecommendations(user.getUserIdx(), request.getResultNum());
+        return baseResponseService.getSuccessResponse(recs, ProductResponseStatus.SUCCESS);
     }
 
     //-----------------------관리자 전용 상품 기능----------------
