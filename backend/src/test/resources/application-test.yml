@@ -6,6 +6,10 @@ spring:
     password: ${DB_PASSWORD}
     hikari:
       maximum-pool-size: 50
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
 logging:
   level:
     org.hibernate.SQL: off
