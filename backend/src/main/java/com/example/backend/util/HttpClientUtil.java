@@ -3,6 +3,7 @@ package com.example.backend.util;
 import com.example.backend.search.model.ProductIndexDocument;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -116,15 +118,15 @@ public class HttpClientUtil {
                     .build();
             HttpResponse<String> resp = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             String body = resp.body();
-            System.out.println(body);
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(body);
             List<ProductIndexDocument> result = new ArrayList<>();
-            if (root.has("hits") && root.path("hits").has("hits")) {
-                List<JsonNode> values = root.path("hits").withArray("hits");
-                for (JsonNode value : values) {
-                    result.add(new ObjectMapper().readValue(value.toString(), ProductIndexDocument.class));
+            if (root.has("hits") && root.get("hits").has("hits")) {
+                Iterator<JsonNode> values = root.get("hits").withArrayProperty("hits").elements();
+                while (values.hasNext()) {
+                    JsonNode value = values.next();
+                    result.add(new ObjectMapper().readValue(value.get("_source").asText(), ProductIndexDocument.class));
                 }
             }
             return result;

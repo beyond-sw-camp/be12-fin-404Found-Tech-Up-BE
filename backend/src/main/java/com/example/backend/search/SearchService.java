@@ -31,6 +31,7 @@ public class SearchService {
             List<ProductIndexDocument> nodes = HttpClientUtil.getSearchResults(elasticHost, category, priceLow, priceHigh, name, page, size);
             return nodes.stream().map(ReducedProductResponseDto::from).toList();
         } catch (Exception e) {
+            e.printStackTrace();
             return new ArrayList<>();
         }
     }
