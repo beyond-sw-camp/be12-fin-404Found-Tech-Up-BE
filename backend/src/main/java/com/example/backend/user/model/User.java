@@ -89,6 +89,14 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserProduct> userProducts;
 
+    // User.java
+    public static User of(String email) {
+        return User.builder()
+                .userEmail(email)
+                .build();
+    }
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();

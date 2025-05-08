@@ -198,53 +198,53 @@ public class CouponService {
         // 발급된 쿠폰 DB에 저장
         userCouponRepository.save(coupon);
         // TODO: 알림 생성이 여기서 필요한지 논의
-        /*
+
         String title = "이벤트 쿠폰 :"+ couponEvent.getCouponName();
         String content = couponEvent.getCouponDiscountRate()+"% 할인, 만료일: "+ couponEvent.getCouponValidDate();
         Notification notification = Notification.builder().title(title).content(content).notificationType(NotificationType.PERSONAL).cronExpression("").createdAt(LocalDateTime.now()).build();
         notificationRepository.save(notification);
         UserNotification userNotification = UserNotification.builder().notificationType(NotificationType.PERSONAL).user(user).createdAt(LocalDateTime.now()).title(title).content(content).template(notification).isRead(false).build();
         userNotificationRepository.save(userNotification);
-        */
-    //    return true;
-    //}
-    
-    // 기존 로직 유지 + 테스트 전용 쿠폰도 수량 기반 조건으로 테스트할 수 있도록 개선
 
-@Transactional
-public synchronized Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) {
-    User user = userRepository.findById(requestUser.getUserIdx())
-            .orElseThrow(() -> new UserException(UserResponseStatus.INVALID_USER_ID));
+        return true;
+    }
 
-    Coupon couponEvent = couponRepository.findById(eventCouponIdx)
-            .orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
+    */
+    @Transactional
+    public Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) {
+        User user = userRepository.findById(requestUser.getUserIdx())
+                .orElseThrow(() -> new UserException(UserResponseStatus.INVALID_USER_ID));
 
-    // ✅ 테스트 전용 쿠폰 (예: idx 9999)도 수량 차감 테스트 가능하게
-    boolean isTestCoupon = eventCouponIdx == 9999L;
+        // 쿠폰 조회 (flush delay 유도)
+        Coupon couponEvent = couponRepository.findById(eventCouponIdx)
+                .orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
 
-    // 중복 발급 방지 (모든 쿠폰 공통)
-    boolean alreadyIssued = user.getUserCoupons() != null &&
-            user.getUserCoupons().stream()
-                    .anyMatch(coupon -> coupon.getCoupon().getCouponIdx().equals(eventCouponIdx));
+        // 지연으로 동시성 충돌 유도
+        try {
+            Thread.sleep(300); // 시간 충분히 줘야 race 유도됨
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-    if (alreadyIssued) return false;
+        if (couponEvent.getCouponQuantity() == 0) return false;
 
-    // 수량이 0이면 실패 (테스트용도 포함)
-    if (couponEvent.getCouponQuantity() == 0) return false;
+        // 쿠폰 수량 차감 및 저장
+        int currentQuantity = couponEvent.getCouponQuantity();
+        couponEvent.setCouponQuantity(currentQuantity - 1);
 
-    // 발급 및 수량 차감 (테스트/실제 동일하게 수행)
-    UserCoupon coupon = UserCoupon.builder()
-            .user(user)
-            .coupon(couponEvent)
-            .couponUsed(false)
-            .build();
+        // 쿠폰 저장 → flush 지연됨 (동시성 충돌 발생 유도)
+        couponRepository.save(couponEvent);
 
-    couponEvent.setCouponQuantity(couponEvent.getCouponQuantity() - 1);
-    couponRepository.save(couponEvent);
-    userCouponRepository.save(coupon);
+        UserCoupon coupon = UserCoupon.builder()
+                .user(user)
+                .coupon(couponEvent)
+                .couponUsed(false)
+                .build();
+        userCouponRepository.save(coupon);
 
-    return true;
-}
+        return true;
+    }
+
 
 
     @Transactional
