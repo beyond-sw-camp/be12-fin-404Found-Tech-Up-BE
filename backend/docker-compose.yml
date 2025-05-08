@@ -18,4 +18,8 @@ services:
       - PORTONE_STOREID=${PORTONE_STOREID}
       - MAIL_ADDR=${MAIL_ADDR}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
     command: ["java", "-jar", "/app.jar"]

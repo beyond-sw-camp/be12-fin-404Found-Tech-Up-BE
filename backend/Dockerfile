@@ -1,5 +1,5 @@
 FROM    openjdk:17-ea-slim-buster
-EXPOSE  8080
+EXPOSE  8443
 COPY     ./build/libs/backend-0.0.1-SNAPSHOT.jar  /app.jar
 ENTRYPOINT     ["java", "-jar", "/app.jar"]
 
