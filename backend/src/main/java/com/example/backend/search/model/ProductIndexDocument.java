@@ -18,22 +18,22 @@ public class ProductIndexDocument {
     @Field(type= FieldType.Long)
     private Long productIdx;
 
-    @Field(type= FieldType.Text)
+    @Field(name="name", type= FieldType.Text)
     private String productName;
-    @Field(type= FieldType.Double)
+    @Field(name="price", type= FieldType.Double)
     private Double price;
-    @Field(type= FieldType.Integer)
+    @Field(name="discount", type= FieldType.Integer)
     private Integer discount;
-    @Field(type= FieldType.Text)
+    @Field(name="brand", type= FieldType.Text)
     private String brand;
-    @Field(type= FieldType.Integer)
+    @Field(name="stock", type= FieldType.Integer)
     private Integer stock;
-    @Field(type= FieldType.Text)
+    @Field(name="description", type= FieldType.Text)
     private String description;
-    @Field(type= FieldType.Text)
+    @Field(name= "category", type= FieldType.Text)
     private String category;
-    @Field(type= FieldType.Double)
+    @Field(name= "rating", type= FieldType.Double)
     private Double rating;
-    @Field(type= FieldType.Text)
+    @Field(name= "image", type= FieldType.Text)
     private String image;
 }

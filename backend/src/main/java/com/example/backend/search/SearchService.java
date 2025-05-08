@@ -39,10 +39,10 @@ public class SearchService {
     public void createIndex() {
         // 이전 색인 존재 여부 확인
         Iterable<ProductIndexDocument> previous = productIndexRepository.findAll();
-        if (previous.iterator().hasNext()) {
-            productIndexRepository.deleteAll();
+        previous.forEach(productIndexDocument -> productIndexRepository.delete(productIndexDocument));
+        List<Product> products = productRepository.findAll();
+        for (Product product : products) {
+            productIndexRepository.save(product.toSearchDocument());
         }
-        List<ProductIndexDocument> index = productRepository.findAll().stream().map(product->product.toSearchDocument()).toList();
-        productIndexRepository.saveAll(index);
     }
 }
