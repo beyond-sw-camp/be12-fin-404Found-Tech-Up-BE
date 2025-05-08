@@ -23,12 +23,16 @@ import java.util.Objects;
 public class SearchService {
     private final ProductIndexRepository productIndexRepository;
 
-    @Value("{elasticsearch.host}")
+    @Value("${elasticsearch.host}")
     private String elasticHost;
 
     public List<ReducedProductResponseDto> searchByName(String name, String category, Double priceLow, Double priceHigh, Integer page, Integer size) {
-        List<ProductIndexDocument> nodes = HttpClientUtil.getSearchResults(elasticHost, category, priceLow, priceHigh, name, page, size);
-        return Objects.requireNonNull(nodes).stream().map(ReducedProductResponseDto::from).toList();
+        try {
+            List<ProductIndexDocument> nodes = HttpClientUtil.getSearchResults(elasticHost, category, priceLow, priceHigh, name, page, size);
+            return nodes.stream().map(ReducedProductResponseDto::from).toList();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
     }
 
     public List<ReducedProductResponseDto> searchByNameAndCategory(String name, String category) {

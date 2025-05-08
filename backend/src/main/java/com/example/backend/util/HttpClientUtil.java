@@ -74,8 +74,7 @@ public class HttpClientUtil {
         }
     }
 
-    public static List<ProductIndexDocument> getSearchResults(String elasticHost_static, String category, Double priceLow, Double priceHigh, String searchKeyword, Integer page, Integer size) {
-        try {
+    public static List<ProductIndexDocument> getSearchResults(String elasticHost_static, String category, Double priceLow, Double priceHigh, String searchKeyword, Integer page, Integer size) throws IOException, InterruptedException {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("http://"+ elasticHost_static + ":9200/product/_search" ))
                     .method("GET", HttpRequest.BodyPublishers.ofString("""
@@ -91,25 +90,29 @@ public class HttpClientUtil {
                                       "range": {
                                         "price": {
                                             "lt": """ + priceHigh + """
+                                            ,
                                             "gt": """ + priceLow + """
                                         }
                                       }
                                     },
                                     {
                                       "match_phrase": {
-                                        "productname": """ + searchKeyword + """
+                                        "productname": \"""" + searchKeyword + """
+                                      \"
                                       }
                                     },
                                     {
                                       "match_phrase": {
-                                        "category": """ + category + """
+                                        "category": \"""" + category + """
+                                      \"
                                       }
-                                    },
+                                    }
                                   ]
                                 }
                               }
                             }
                             """))
+                    .setHeader("Content-Type", "application/json")
                     .build();
             HttpResponse<String> resp = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             String body = resp.body();
@@ -125,8 +128,5 @@ public class HttpClientUtil {
                 }
             }
             return result;
-        } catch (Exception e) {
-            return null;
-        }
     }
 }
