@@ -6,6 +6,16 @@ spring:
     password: ${DB_PASSWORD}
     hikari:
       maximum-pool-size: 50
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
 logging:
   level:
     org.hibernate.SQL: off

@@ -209,7 +209,7 @@ public class CouponService {
         return true;
     }
 
-         */
+    */
     @Transactional
     public Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) {
         User user = userRepository.findById(requestUser.getUserIdx())
@@ -244,6 +244,7 @@ public class CouponService {
 
         return true;
     }
+
 
 
     @Transactional
