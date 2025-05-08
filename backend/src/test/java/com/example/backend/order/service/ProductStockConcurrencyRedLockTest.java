@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -21,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @ActiveProfiles("test")
 public class ProductStockConcurrencyRedLockTest {
+    private static final Logger log = LoggerFactory.getLogger(ProductStockConcurrencySuccessTest.class);
 
     @Autowired
     private ProductRepository productRepository;
@@ -90,8 +93,12 @@ public class ProductStockConcurrencyRedLockTest {
                 .orElseThrow(() -> new RuntimeException("상품이 없습니다"));
         int actualFinalStock = updated.getStock();
 
+        log.info("기대 최종 재고={}, 실제 최종 재고={}", expectedFinalStock, actualFinalStock);
+
         // Redis 분산락이 적용되면 항상 기대값과 일치해야 한다
         assertEquals(expectedFinalStock, actualFinalStock,
                 "Redis 분산락 적용 후에는 재고가 정확히 차감되어야 합니다");
+
+        log.info("분산락 테스트 성공: 재고가 정확히 차감되었습니다.");
     }
 }
