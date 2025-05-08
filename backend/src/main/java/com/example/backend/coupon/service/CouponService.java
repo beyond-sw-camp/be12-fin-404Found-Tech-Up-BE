@@ -1,6 +1,7 @@
 package com.example.backend.coupon.service;
 
 import com.example.backend.coupon.model.Coupon;
+import com.example.backend.coupon.model.CouponRedisEntity;
 import com.example.backend.coupon.model.UserCoupon;
 import com.example.backend.coupon.model.dto.request.AllCouponCreateRequestDto;
 import com.example.backend.coupon.model.dto.request.EventCouponCreateRequestDto;
@@ -9,6 +10,7 @@ import com.example.backend.coupon.model.dto.request.UserCouponCreateRequestDto;
 import com.example.backend.coupon.model.dto.response.CouponInfoDto;
 import com.example.backend.coupon.model.dto.response.CouponListResponseDto;
 import com.example.backend.coupon.model.dto.response.MyCouponInfoResponseDto;
+import com.example.backend.coupon.repository.CouponRedisRepository;
 import com.example.backend.coupon.repository.CouponRepository;
 import com.example.backend.coupon.repository.UserCouponRepository;
 import com.example.backend.global.exception.CouponException;
@@ -27,6 +29,8 @@ import com.example.backend.product.model.Product;
 import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.user.model.User;
 import com.example.backend.user.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -53,6 +57,14 @@ public class CouponService {
     private final UserCouponRepository userCouponRepository;
     private final NotificationRepository notificationRepository;
     private final UserNotificationRepository userNotificationRepository;
+
+    private final CouponRedisRepository couponRedisRepository;
+
+    private final CouponDBService couponDBService;
+
+    private final CouponCacheService couponCacheService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CouponListResponseDto getEventList() {
         List<Coupon> coupons = couponRepository.findAllByCouponQuantityGreaterThanEqual(0);
@@ -209,7 +221,7 @@ public class CouponService {
         return true;
     }
 
-         */
+
     @Transactional
     public Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) {
         User user = userRepository.findById(requestUser.getUserIdx())
@@ -244,7 +256,32 @@ public class CouponService {
 
         return true;
     }
+    */
+    public Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) throws JsonProcessingException {
+        String key = "set.receive.couponId." + eventCouponIdx;
+        CouponRedisEntity couponRedisEntity = couponCacheService.findCoupon(eventCouponIdx);
 
+        // 이미 쿠폰을 발급받은 유저인지 체크
+        if (checkDuplicate(key ,requestUser.getUserIdx())) {
+            throw new RuntimeException("쿠폰을 이미 발급 받았습니다.");
+        }
+
+        synchronized (this) {
+            if(checkQuantity(couponRedisEntity, key)) {
+                throw new RuntimeException("쿠폰이 모두 소진되었습니다.");
+            }
+
+            // Redis 처리
+            couponRedisRepository.sAdd(key, "" + requestUser.getUserIdx());
+            couponRedisRepository.rPush("list.received.user", JsonSerializer(requestUser));
+
+            // DB 저장 처리 메서드 호출
+            couponDBService.saveIssuedCouponToDB(requestUser.getUserIdx(), eventCouponIdx);
+
+        }
+
+        return true;
+    }
 
     @Transactional
     public void createEvent(EventCouponCreateRequestDto request) {
@@ -270,5 +307,21 @@ public class CouponService {
         userCouponRepository.deleteAll(issuedCoupons);
         couponRepository.delete(coupon);
     }
+
+
+
+    private Boolean checkDuplicate(String key, Long userIdx) {
+        return couponRedisRepository.sIsMember(key, ""+userIdx);
+    }
+
+    private Boolean checkQuantity(CouponRedisEntity couponRedisEntity, String key) {
+        return couponRedisEntity.getCouponQuantity() <= couponRedisRepository.sCard(key);
+    }
+
+    private String JsonSerializer(User requestUser) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(requestUser);
+    }
+
+
 
 }
