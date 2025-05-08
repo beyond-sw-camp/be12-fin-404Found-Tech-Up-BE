@@ -93,14 +93,14 @@ public class Product {
 
     public ProductIndexDocument toSearchDocument() {
         return ProductIndexDocument.builder()
-                .productIdx(productIdx)
+                .productidx(productIdx)
                 .brand(brand)
                 .description(description)
                 .category(category)
                 .stock(stock)
                 .rating(rating)
                 .discount(discount)
-                .productName(name)
+                .productname(name)
                 .image(images != null ? images.get(0).getImageUrl() : "")
                 .price(price)
                 .build();

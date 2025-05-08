@@ -32,8 +32,8 @@ public class ReducedProductResponseDto {
 
     public static ReducedProductResponseDto from(ProductIndexDocument product) {
         return ReducedProductResponseDto.builder()
-                .idx(product.getProductIdx())
-                .name(product.getProductName())
+                .idx(product.getProductidx())
+                .name(product.getProductname())
                 .price(product.getPrice())
                 .discount(product.getDiscount())
                 .brand(product.getBrand())

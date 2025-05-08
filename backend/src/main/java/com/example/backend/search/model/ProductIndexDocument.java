@@ -16,10 +16,10 @@ public class ProductIndexDocument {
 
     @Id
     @Field(type= FieldType.Long)
-    private Long productIdx;
+    private Long productidx;
 
     @Field(name="name", type= FieldType.Text)
-    private String productName;
+    private String productname;
     @Field(name="price", type= FieldType.Double)
     private Double price;
     @Field(name="discount", type= FieldType.Integer)

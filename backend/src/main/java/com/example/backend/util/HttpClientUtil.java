@@ -1,7 +1,9 @@
 package com.example.backend.util;
 
+import com.example.backend.search.model.ProductIndexDocument;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.net.URI;
@@ -10,6 +12,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class HttpClientUtil {
@@ -67,6 +71,62 @@ public class HttpClientUtil {
             return resp.statusCode() >= 200 && resp.statusCode() < 300;
         } catch (Exception e) {
             throw new RuntimeException("Refund request failed", e);
+        }
+    }
+
+    public static List<ProductIndexDocument> getSearchResults(String elasticHost_static, String category, Double priceLow, Double priceHigh, String searchKeyword, Integer page, Integer size) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://"+ elasticHost_static + ":9200/product/_search" ))
+                    .method("GET", HttpRequest.BodyPublishers.ofString("""
+                            {
+                              "from": """+ page + """
+                              ,
+                              "size": """+ size +"""
+                              ,
+                              "query": {
+                                "bool": {
+                                  "must": [
+                                    {
+                                      "range": {
+                                        "price": {
+                                            "lt": """ + priceHigh + """
+                                            "gt": """ + priceLow + """
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "match_phrase": {
+                                        "productname": """ + searchKeyword + """
+                                      }
+                                    },
+                                    {
+                                      "match_phrase": {
+                                        "category": """ + category + """
+                                      }
+                                    },
+                                  ]
+                                }
+                              }
+                            }
+                            """))
+                    .build();
+            HttpResponse<String> resp = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            String body = resp.body();
+            System.out.println(body);
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(body);
+            List<ProductIndexDocument> result = new ArrayList<>();
+            if (root.has("hits") && root.path("hits").has("hits")) {
+                List<JsonNode> values = root.path("hits").withArray("hits");
+                for (JsonNode value : values) {
+                    result.add(new ObjectMapper().readValue(value.toString(), ProductIndexDocument.class));
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            return null;
         }
     }
 }
