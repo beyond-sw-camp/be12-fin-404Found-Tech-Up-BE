@@ -6,6 +6,7 @@ import com.example.backend.order.model.OrderDetail;
 import com.example.backend.product.model.dto.ProductRequestDto;
 import com.example.backend.product.model.spec.*;
 import com.example.backend.review.model.Review;
+import com.example.backend.search.model.ProductIndexDocument;
 import com.example.backend.user.model.UserProduct;
 import com.example.backend.wishlist.model.Wishlist;
 import jakarta.persistence.*;
@@ -90,4 +91,18 @@ public class Product {
         this.category = dto.getCategory();
     }
 
+    public ProductIndexDocument toSearchDocument() {
+        return ProductIndexDocument.builder()
+                .productidx(productIdx)
+                .brand(brand)
+                .description(description)
+                .category(category)
+                .stock(stock)
+                .rating(rating)
+                .discount(discount)
+                .productname(name)
+                .image(images != null ? images.get(0).getImageUrl() : "")
+                .price(price)
+                .build();
+    }
 }
