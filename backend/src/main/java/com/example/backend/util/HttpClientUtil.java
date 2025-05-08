@@ -77,56 +77,92 @@ public class HttpClientUtil {
     }
 
     public static List<ProductIndexDocument> getSearchResults(String elasticHost_static, String category, Double priceLow, Double priceHigh, String searchKeyword, Integer page, Integer size) throws IOException, InterruptedException {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://"+ elasticHost_static + ":9200/product/_search" ))
-                    .method("GET", HttpRequest.BodyPublishers.ofString("""
+            String body = "";
+            if (category.isBlank()) {
+                body = """
+                    {
+                      "from": """+ page + """
+                      ,
+                      "size": """+ size +"""
+                      ,
+                      "query": {
+                        "bool": {
+                          "must": [
                             {
-                              "from": """+ page + """
-                              ,
-                              "size": """+ size +"""
-                              ,
-                              "query": {
-                                "bool": {
-                                  "must": [
-                                    {
-                                      "range": {
-                                        "price": {
-                                            "lt": """ + priceHigh + """
-                                            ,
-                                            "gt": """ + priceLow + """
-                                        }
-                                      }
-                                    },
-                                    {
-                                      "match_phrase": {
-                                        "productname": \"""" + searchKeyword + """
-                                      \"
-                                      }
-                                    },
-                                    {
-                                      "match_phrase": {
-                                        "category": \"""" + category + """
-                                      \"
-                                      }
-                                    }
-                                  ]
+                              "range": {
+                                "price": {
+                                    "lt": """ + priceHigh + """
+                                    ,
+                                    "gt": """ + priceLow + """
                                 }
                               }
+                            },
+                            {
+                              "match_phrase": {
+                                "productname": \"""" + searchKeyword + """
+                              \"
+                              }
                             }
-                            """))
-                    .setHeader("Content-Type", "application/json")
-                    .build();
+                          ]
+                        }
+                      }
+                    }
+                    """;
+            } else {
+                body = """
+                    {
+                      "from": """+ page + """
+                      ,
+                      "size": """+ size +"""
+                      ,
+                      "query": {
+                        "bool": {
+                          "must": [
+                            {
+                              "range": {
+                                "price": {
+                                    "lt": """ + priceHigh + """
+                                    ,
+                                    "gt": """ + priceLow + """
+                                }
+                              }
+                            },
+                            {
+                              "match_phrase": {
+                                "productname": \"""" + searchKeyword + """
+                              \"
+                              }
+                            },
+                            {
+                              "match_phrase": {
+                                "category": \"""" + category + """
+                              \"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                    """;
+            }
+
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+ elasticHost_static + ":9200/product/_search" ))
+                .method("GET", HttpRequest.BodyPublishers.ofString(body))
+                .setHeader("Content-Type", "application/json")
+                .build();
             HttpResponse<String> resp = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            String body = resp.body();
+            String responsebody = resp.body();
 
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(body);
+            JsonNode root = mapper.readTree(responsebody);
             List<ProductIndexDocument> result = new ArrayList<>();
             if (root.has("hits") && root.get("hits").has("hits")) {
                 Iterator<JsonNode> values = root.get("hits").withArrayProperty("hits").elements();
                 while (values.hasNext()) {
-                    JsonNode value = values.next();
-                    result.add(new ObjectMapper().readValue(value.get("_source").asText(), ProductIndexDocument.class));
+                    JsonNode value = values.next().get("_source");
+                    String text = value.toPrettyString();
+                    result.add(new ObjectMapper().readValue(text, ProductIndexDocument.class));
                 }
             }
             return result;
