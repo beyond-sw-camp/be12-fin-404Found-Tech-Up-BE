@@ -31,4 +31,10 @@ public class CouponRedisRepository {
                 .getConnection()
                 .flushAll();
     }
+
+    public Long hIncrBy(String key, String field, long delta) {
+        return redisTemplate.opsForHash().increment(key, field, delta);
+    }
+
+
 }

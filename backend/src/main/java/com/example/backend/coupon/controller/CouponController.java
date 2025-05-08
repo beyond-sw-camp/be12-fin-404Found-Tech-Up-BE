@@ -38,7 +38,7 @@ public class CouponController {
 
     @Operation( summary= "이벤트 쿠폰 발급", description="이벤트에서 쿠폰을 발행하고 이벤트 쿠폰 재고를 차감합니다")
     @GetMapping("/events/{idx}")
-    public BaseResponse<Object> issueEventCoupon(@AuthenticationPrincipal User user, @PathVariable Long idx) throws JsonProcessingException {
+    public BaseResponse<Object> issueEventCoupon(@AuthenticationPrincipal User user, @PathVariable Long idx) throws JsonProcessingException, InterruptedException {
         // 중복 발행 방지
         if (user == null) return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
         Boolean result = couponService.issueEventCoupon(user,idx);

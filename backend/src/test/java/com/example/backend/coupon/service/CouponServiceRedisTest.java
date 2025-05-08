@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -59,7 +60,7 @@ class CouponServiceRedisTest {
     void 동시성_테스트_쿠폰_정상_발급_수량_초과_없음() throws InterruptedException {
         // given
         int totalQuantity = 5;
-        int 요청수 = 10;
+        int 요청수 = 20;
 
         Coupon coupon = couponRepository.save(Coupon.of("동시성쿠폰", totalQuantity));
 
@@ -69,19 +70,23 @@ class CouponServiceRedisTest {
         for (int i = 0; i < 요청수; i++) {
             executor.submit(() -> {
                 try {
-                    User user = userRepository.save(User.of("user" + UUID.randomUUID() + "@test.com"));
+                    // --- User 생성부 수정 ---
+                    User user = User.of("user" + UUID.randomUUID() + "@test.com");
+                    user.setIsAdmin(false);                            // isAdmin 기본값 설정
+                    user = userRepository.save(user);
+                    // --------------------------
+
                     Boolean result = couponService.issueEventCoupon(user, coupon.getCouponIdx());
                     System.out.println(Thread.currentThread().getName() + " ▶ 발급 성공: " + result);
                 } catch (Exception e) {
                     System.err.println(Thread.currentThread().getName() + " ▶ 예외 발생: " + e.getMessage());
                 } finally {
-                    latch.countDown(); // 예외가 발생해도 반드시 호출
+                    latch.countDown();
                 }
             });
         }
 
         latch.await(30, TimeUnit.SECONDS);
-
 
         // then
         String key = "set.receive.couponId." + coupon.getCouponIdx();
@@ -95,7 +100,7 @@ class CouponServiceRedisTest {
     }
 
     @Test
-    void 쿠폰_정상_발급() throws JsonProcessingException {
+    void 쿠폰_정상_발급() throws JsonProcessingException, InterruptedException {
         // given
         User user = userRepository.save(User.of("test@test.com"));
         Coupon coupon = couponRepository.save(Coupon.of("이벤트", 10));
@@ -122,7 +127,7 @@ class CouponServiceRedisTest {
     }
 
     @Test
-    void 쿠폰_수량초과_예외() throws JsonProcessingException {
+    void 쿠폰_수량초과_예외() throws JsonProcessingException, InterruptedException {
         // given
         Coupon coupon = couponRepository.save(Coupon.of("수량1", 1));
 

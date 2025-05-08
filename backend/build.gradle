@@ -18,6 +18,7 @@ repositories {
 }
 test {
 	useJUnitPlatform()
+	timeout = Duration.ofMinutes(2)
 }
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'

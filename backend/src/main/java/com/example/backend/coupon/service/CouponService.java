@@ -33,6 +33,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /*
@@ -63,6 +66,8 @@ public class CouponService {
     private final CouponDBService couponDBService;
 
     private final CouponCacheService couponCacheService;
+
+    private final RedissonClient redissonClient;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -258,29 +263,40 @@ public class CouponService {
     }
     */
     public Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) throws JsonProcessingException {
-        String key = "set.receive.couponId." + eventCouponIdx;
-        CouponRedisEntity couponRedisEntity = couponCacheService.findCoupon(eventCouponIdx);
+        String userSetKey   = "set.receive.couponId."    + eventCouponIdx;
 
-        // 이미 쿠폰을 발급받은 유저인지 체크
-        if (checkDuplicate(key ,requestUser.getUserIdx())) {
-            throw new RuntimeException("쿠폰을 이미 발급 받았습니다.");
-        }
+        String lockKey      = "lock:coupon:"             + eventCouponIdx;
+        RLock lock          = redissonClient.getLock(lockKey);
 
-        synchronized (this) {
-            if(checkQuantity(couponRedisEntity, key)) {
+        // 무한 대기 → 테스트에서 CountDownLatch 타임아웃으로 전체 타임아웃 관리
+        lock.lock();
+        try {
+            // 1) 중복 발급 체크
+            String userIdStr = String.valueOf(requestUser.getUserIdx());
+            if (couponRedisRepository.sIsMember(userSetKey, userIdStr)) {
+                throw new RuntimeException("쿠폰을 이미 발급 받았습니다.");
+            }
+
+            // 2) 재고 차감 (atomic)
+            String stockHashKey = "hash.coupon:" + eventCouponIdx;
+
+// 재고를 1 감소시키고 남은 재고를 얻는다.
+            Long remain = couponRedisRepository.hIncrBy(stockHashKey, "quantity", -1L);
+            if (remain < 0) {
+                // 재고 부족 시 롤백
+                couponRedisRepository.hIncrBy(stockHashKey, "quantity", 1L);
                 throw new RuntimeException("쿠폰이 모두 소진되었습니다.");
             }
 
-            // Redis 처리
-            couponRedisRepository.sAdd(key, "" + requestUser.getUserIdx());
+            // 3) 발급 처리
+            couponRedisRepository.sAdd(userSetKey, userIdStr);
             couponRedisRepository.rPush("list.received.user", JsonSerializer(requestUser));
-
-            // DB 저장 처리 메서드 호출
             couponDBService.saveIssuedCouponToDB(requestUser.getUserIdx(), eventCouponIdx);
 
+            return true;
+        } finally {
+            lock.unlock();
         }
-
-        return true;
     }
 
     @Transactional
