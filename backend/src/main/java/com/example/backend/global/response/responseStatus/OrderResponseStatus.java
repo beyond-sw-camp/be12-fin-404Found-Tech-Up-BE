@@ -16,6 +16,8 @@ public enum OrderResponseStatus implements BaseResponseStatus {
     ORDER_ALREADY_CANCELED(false, 4012, "이미 취소된 주문입니다."),
     ORDER_CANNOT_CANCEL(false, 4013, "이미 배송중입니다."),
     ORDER_REFUND_FAILED(false, 4014, "환불에 실패했습니다."),
+    ORDER_CONCURRENCY_FAIL(false, 4020, "재고 동기화 실패"),
+    ORDER_LOCK_INTERRUPT(false, 4021, "재고 차감 분산 락 실패"),
 
 
     // 성공적인 응답 상태

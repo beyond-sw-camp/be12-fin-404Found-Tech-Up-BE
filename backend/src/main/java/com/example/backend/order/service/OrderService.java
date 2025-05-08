@@ -28,6 +28,8 @@ import com.example.backend.user.repository.UserRepository;
 import com.example.backend.util.HttpClientUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +46,7 @@ public class OrderService {
     private final ShippingAddressRepository shippingAddressRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final RedissonClient redissonClient;
     private final NotificationProducerService notificationProducerService;
 
     @Value("${portone.store-id}")
@@ -188,16 +191,32 @@ public class OrderService {
         }
         order.setOrderStatus("PAID");
         order.setPaymentId(dto.getPaymentId());
+        orderRepository.save(order);
 
         // 검증 성공 시 각 상품 해당 상품의 주문 수만큼 차감
         for (OrderDetail detail : order.getOrderDetails()) {
-            Product product = detail.getProduct();
-            int remaining = product.getStock() - detail.getOrderDetailQuantity();
-            if (remaining < 0) {
-                throw new OrderException(OrderResponseStatus.ORDER_STOCK_INSUFFICIENT);
+            Long productId = detail.getProduct().getProductIdx();
+            RLock lock = redissonClient.getLock("lock:product:" + productId);
+
+            // 블로킹 락 획득
+            lock.lock();
+
+            try {
+                Product product = productRepository.findById(productId)
+                        .orElseThrow(() -> new OrderException(OrderResponseStatus.ORDER_STOCK_INSUFFICIENT));
+
+                int remaining = product.getStock() - detail.getOrderDetailQuantity();
+                if (remaining < 0) {
+                    throw new OrderException(OrderResponseStatus.ORDER_STOCK_INSUFFICIENT);
+                }
+
+                product.setStock(remaining);
+                productRepository.save(product);
+
+            } finally {
+                // 락 해제
+                lock.unlock();
             }
-            product.setStock(remaining);
-            productRepository.save(product);
         }
 
         // 검증 성공 시 쿠폰 사용했다면 해당 쿠폰 상태 수정(couponUsed = true)

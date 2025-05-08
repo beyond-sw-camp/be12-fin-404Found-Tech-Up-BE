@@ -1,11 +1,11 @@
 package com.example.backend.product.service;
 
+import lombok.extern.slf4j.Slf4j;
 import com.example.backend.common.s3.S3Service;
 import com.example.backend.global.exception.ProductException;
 import com.example.backend.global.response.responseStatus.ProductResponseStatus;
 import com.example.backend.notification.service.NotificationProducerService;
 import com.example.backend.product.model.Product;
-import com.example.backend.product.model.ProductImage;
 import com.example.backend.product.model.dto.*;
 import com.example.backend.product.model.spec.*;
 import com.example.backend.product.repository.*;
@@ -15,7 +15,6 @@ import com.example.backend.review.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -90,6 +90,9 @@ public class ProductService {
     public List<ProductResponseDto> getContentBasedRecommendations(Long productIdx, Integer resultNum) {
         String url = "http://192.0.40.205:8000/recommend";
 
+        // 요청 전 시간 기록
+        long startTime = System.currentTimeMillis();
+        log.trace("Sending item-based recommendation request for productIdx={} to URL={}", productIdx, url);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -100,8 +103,16 @@ public class ProductService {
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 
-        ResponseEntity<ContentRecommendResponseDto> resp =
-                restTemplate.postForEntity(url, request, ContentRecommendResponseDto.class);
+        ResponseEntity<ContentRecommendResponseDto> resp;
+        try{
+            resp = restTemplate.postForEntity(url, request, ContentRecommendResponseDto.class);
+
+        } finally {
+            // 요청 후 시간 기록 및 소요 시간 계산
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            log.trace("Received item-based recommendation response for productIdx={}, duration={} ms", productIdx, duration);
+        }
 
         if (!resp.getStatusCode().is2xxSuccessful() || resp.getBody() == null) {
             throw new IllegalStateException(
@@ -126,6 +137,9 @@ public class ProductService {
     public List<ProductResponseDto> getItemBasedRecommendations(Long productIdx, Integer resultNum) {
         String url = "http://192.0.40.205:8000/recommend/item-based";
 
+        // 요청 전 시간 기록
+        long startTime = System.currentTimeMillis();
+        log.trace("Sending item-based recommendation request for productIdx={} to URL={}", productIdx, url);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -136,8 +150,15 @@ public class ProductService {
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 
-        ResponseEntity<RecommendResponseDto> resp =
-                restTemplate.postForEntity(url, request, RecommendResponseDto.class);
+        ResponseEntity<RecommendResponseDto> resp;
+        try {
+            resp = restTemplate.postForEntity(url, request, RecommendResponseDto.class);
+        } finally {
+            // 요청 후 시간 기록 및 소요 시간 계산
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            log.trace("Received item-based recommendation response for productIdx={}, duration={} ms", productIdx, duration);
+        }
 
         if (!resp.getStatusCode().is2xxSuccessful() || resp.getBody() == null) {
             throw new IllegalStateException(
@@ -162,6 +183,9 @@ public class ProductService {
     public List<ProductResponseDto> getUserBasedRecommendations(Long userIdx, Integer resultNum) {
         String url = "http://192.0.40.205:8000/recommend/user-based";
 
+        // 요청 전 시간 기록
+        long startTime = System.currentTimeMillis();
+        log.trace("Sending item-based recommendation request for userIdx={} to URL={}", userIdx, url);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -172,8 +196,17 @@ public class ProductService {
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 
-        ResponseEntity<RecommendResponseDto> resp =
-                restTemplate.postForEntity(url, request, RecommendResponseDto.class);
+        ResponseEntity<RecommendResponseDto> resp;
+
+        try {
+            resp = restTemplate.postForEntity(url, request, RecommendResponseDto.class);
+        } finally {
+            // 요청 후 시간 기록 및 소요 시간 계산
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            log.trace("Received item-based recommendation response for userIdx={}, duration={} ms", userIdx, duration);
+        }
+
 
         if (!resp.getStatusCode().is2xxSuccessful() || resp.getBody() == null) {
             throw new IllegalStateException(
