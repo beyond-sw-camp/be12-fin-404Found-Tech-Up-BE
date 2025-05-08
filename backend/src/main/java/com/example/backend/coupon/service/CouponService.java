@@ -182,6 +182,7 @@ public class CouponService {
         return CouponListResponseDto.builder().couponList(result).total(pageLength).limit(limit).offset(0).build();
     }
 
+    /*
     @Transactional
     public synchronized Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) {
         User user = userRepository.findById(requestUser.getUserIdx()).orElseThrow(()-> new UserException(UserResponseStatus.INVALID_USER_ID));
@@ -197,16 +198,55 @@ public class CouponService {
         // 발급된 쿠폰 DB에 저장
         userCouponRepository.save(coupon);
         // TODO: 알림 생성이 여기서 필요한지 논의
-        /*
+
         String title = "이벤트 쿠폰 :"+ couponEvent.getCouponName();
         String content = couponEvent.getCouponDiscountRate()+"% 할인, 만료일: "+ couponEvent.getCouponValidDate();
         Notification notification = Notification.builder().title(title).content(content).notificationType(NotificationType.PERSONAL).cronExpression("").createdAt(LocalDateTime.now()).build();
         notificationRepository.save(notification);
         UserNotification userNotification = UserNotification.builder().notificationType(NotificationType.PERSONAL).user(user).createdAt(LocalDateTime.now()).title(title).content(content).template(notification).isRead(false).build();
         userNotificationRepository.save(userNotification);
-        */
+
         return true;
     }
+
+    */
+    @Transactional
+    public Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) {
+        User user = userRepository.findById(requestUser.getUserIdx())
+                .orElseThrow(() -> new UserException(UserResponseStatus.INVALID_USER_ID));
+
+        // 쿠폰 조회 (flush delay 유도)
+        Coupon couponEvent = couponRepository.findById(eventCouponIdx)
+                .orElseThrow(() -> new CouponException(CouponResponseStatus.COUPON_NOT_FOUND));
+
+        // 지연으로 동시성 충돌 유도
+        try {
+            Thread.sleep(300); // 시간 충분히 줘야 race 유도됨
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (couponEvent.getCouponQuantity() == 0) return false;
+
+        // 쿠폰 수량 차감 및 저장
+        int currentQuantity = couponEvent.getCouponQuantity();
+        couponEvent.setCouponQuantity(currentQuantity - 1);
+
+        // 쿠폰 저장 → flush 지연됨 (동시성 충돌 발생 유도)
+        couponRepository.save(couponEvent);
+
+        UserCoupon coupon = UserCoupon.builder()
+                .user(user)
+                .coupon(couponEvent)
+                .couponUsed(false)
+                .build();
+        userCouponRepository.save(coupon);
+
+        return true;
+    }
+
+
+
     @Transactional
     public void createEvent(EventCouponCreateRequestDto request) {
         Product product = productRepository.findById(request.getProductIdx()).orElseThrow(()-> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
