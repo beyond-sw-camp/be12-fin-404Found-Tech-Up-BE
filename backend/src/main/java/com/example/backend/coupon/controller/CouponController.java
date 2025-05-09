@@ -12,6 +12,7 @@ import com.example.backend.global.response.BaseResponseServiceImpl;
 import com.example.backend.global.response.responseStatus.CommonResponseStatus;
 import com.example.backend.global.response.responseStatus.CouponResponseStatus;
 import com.example.backend.user.model.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class CouponController {
 
     @Operation( summary= "이벤트 쿠폰 발급", description="이벤트에서 쿠폰을 발행하고 이벤트 쿠폰 재고를 차감합니다")
     @GetMapping("/events/{idx}")
-    public BaseResponse<Object> issueEventCoupon(@AuthenticationPrincipal User user, @PathVariable Long idx) {
+    public BaseResponse<Object> issueEventCoupon(@AuthenticationPrincipal User user, @PathVariable Long idx) throws JsonProcessingException, InterruptedException {
         // 중복 발행 방지
         if (user == null) return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
         Boolean result = couponService.issueEventCoupon(user,idx);

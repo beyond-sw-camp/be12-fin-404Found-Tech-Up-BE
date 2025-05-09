@@ -1,4 +1,22 @@
+# src/main/resources/application-test.yml
+
 spring:
+  config:
+    activate:
+      on-profile: test
+
+redis:
+  host: 192.0.40.206
+  port: 6379
+
+  timeout: 10s
+  connect-timeout: 10s
+
+  lettuce:
+    pool:
+      max-active: 5
+      min-idle: 1
+
   datasource:
     url: ${DB_URL}
     driver-class-name: org.mariadb.jdbc.Driver
