@@ -1,7 +1,13 @@
 spring:
   application:
     name: techup-backend
-
+  data:
+    redis:
+      host: 192.0.40.206
+      port: 6379
+    elasticsearch:
+      repositories:
+        enabled: true
   mail:
     host: smtp.gmail.com
     port: 587
@@ -28,10 +34,7 @@ spring:
     uris: ${ELASTIC_HOST}:9200
     username: elastic
     password: changeme
-  data:
-    elasticsearch:
-      repositories:
-        enabled: true
+
   cloud:
     aws:
       credentials:
