@@ -2,6 +2,7 @@ spring:
   application:
     name: techup-backend
 
+
   redis:
     host: 192.0.40.206
     port: 6379
@@ -9,10 +10,12 @@ spring:
     connect-timeout: 5s
     lettuce:
       pool:
-        max-active: 20
+        max-active: 50
         min-idle: 10
-
-
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
   mail:
     host: smtp.gmail.com
     port: 587
@@ -35,6 +38,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  elasticsearch:
+    uris: ${ELASTIC_HOST}:9200
+    username: elastic
+    password: changeme
 
   cloud:
     aws:
@@ -101,7 +108,7 @@ management:
       enabled: false
 
 kafka:
-  enabled: false
+   enabled: true
 
 server:
   port: 8443
@@ -110,3 +117,7 @@ server:
     key-store-password: qwer1234
     key-store-type: PKCS12
     key-alias: springboot
+elasticsearch:
+  host: ${ELASTIC_HOST}
+  username: elastic
+  password: changeme

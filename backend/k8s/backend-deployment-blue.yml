@@ -101,6 +101,11 @@ spec:
                 configMapKeyRef:
                   name: backend-secret
                   key: JWT_EXPIRATION
+            - name: ELASTIC_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-cm
+                  key: ELASTIC_HOST
           ports:
             - containerPort: 8080
       terminationGracePeriodSeconds: 0
