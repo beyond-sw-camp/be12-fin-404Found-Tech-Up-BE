@@ -31,7 +31,9 @@ public class SearchLatencyTest {
         String jsonBody = """
                             {
                               "category": "CPU",
-                              "nameKeyword": "AMD"
+                              "nameKeyword": "AMD",
+                              "minPrice": 10000,
+                              "maxPrice": 100000
                             }
                             """;
 
