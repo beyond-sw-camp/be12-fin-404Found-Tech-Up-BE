@@ -37,15 +37,15 @@ public class SearchService {
     }
 
     public List<ReducedProductResponseDto> searchByNameAndCategory(String name, String category) {
-        return productIndexRepository.findByProductnameContainingIgnoreCaseAndCategory(name,category).stream().map(ReducedProductResponseDto::from).toList();
+        return productIndexRepository.findAllByProductnameContainingIgnoreCaseAndCategory(name,category).stream().map(ReducedProductResponseDto::from).toList();
     }
 
-    public List<ReducedProductResponseDto> searchByNameAndPriceRange(String name, Double low, Double high) {
-        return productIndexRepository.findByProductnameContainingIgnoreCaseAndPriceBetween(name,low,high).stream().map(ReducedProductResponseDto::from).toList();
+    public List<ReducedProductResponseDto> searchByNameAndPriceRange(String name, Double low, Double high, Pageable pageable) {
+        return productIndexRepository.findAllByProductnameContainingIgnoreCaseAndPriceBetween(name,low,high, pageable).map(ReducedProductResponseDto::from).toList();
     }
 
     public List<ReducedProductResponseDto> searchByNameAndCategoryAndPriceRange(String name, String category, Double low, Double high) {
-        return productIndexRepository.findByProductnameContainingIgnoreCaseAndCategoryIgnoreCaseAndPriceBetween(name,category, low,high).stream().map(ReducedProductResponseDto::from).toList();
+        return productIndexRepository.findAllByProductnameContainingIgnoreCaseAndCategoryIgnoreCaseAndPriceBetween(name,category, low,high).stream().map(ReducedProductResponseDto::from).toList();
     }
 
 }

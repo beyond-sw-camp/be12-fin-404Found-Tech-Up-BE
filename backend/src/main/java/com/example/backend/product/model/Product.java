@@ -101,7 +101,7 @@ public class Product {
                 .rating(rating)
                 .discount(discount)
                 .productname(name)
-                .image(images != null ? images.get(0).getImageUrl() : "")
+                .image(images != null ? "https://"+ images.get(0).getImageUrl() : "")
                 .price(price)
                 .build();
     }

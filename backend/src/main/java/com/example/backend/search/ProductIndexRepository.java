@@ -9,12 +9,12 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import java.util.List;
 
 public interface ProductIndexRepository extends ElasticsearchRepository<ProductIndexDocument, Long> {
-    List<ProductIndexDocument> findByProductnameContainingIgnoreCase(String productName);
-    List<ProductIndexDocument> findByProductnameContainingIgnoreCaseAndCategory(String name, String category);
-    List<ProductIndexDocument> findByProductnameContainingIgnoreCaseAndPriceBetween(String name, Double lower, Double higher);
-    List<ProductIndexDocument> findByProductnameContainingIgnoreCaseAndCategoryIgnoreCaseAndPriceBetween(String name, String category, Double lower, Double higher);
+    List<ProductIndexDocument> findAllByProductnameContainingIgnoreCase(String productName);
+    List<ProductIndexDocument> findAllByProductnameContainingIgnoreCaseAndCategory(String name, String category);
+    Page<ProductIndexDocument> findAllByProductnameContainingIgnoreCaseAndPriceBetween(String name, Double lower, Double higher, Pageable pageable);
+    List<ProductIndexDocument> findAllByProductnameContainingIgnoreCaseAndCategoryIgnoreCaseAndPriceBetween(String name, String category, Double lower, Double higher);
     // TODO: 아래 분류도 사용할 것인가?
-    List<ProductIndexDocument> findByBrandIgnoreCase(String brand, Pageable pageable);
-    List<ProductIndexDocument> findByDiscountGreaterThan(Integer discount, Pageable pageable);
-    List<ProductIndexDocument> findByStockGreaterThan(Integer stock, Pageable pageable);
+    List<ProductIndexDocument> findAllByBrandIgnoreCase(String brand, Pageable pageable);
+    List<ProductIndexDocument> findAllByDiscountGreaterThan(Integer discount, Pageable pageable);
+    List<ProductIndexDocument> findAllByStockGreaterThan(Integer stock, Pageable pageable);
 }
