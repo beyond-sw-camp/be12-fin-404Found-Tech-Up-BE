@@ -17,7 +17,7 @@ import java.time.Duration;
 @ActiveProfiles("test")
 public class SearchLatencyTest {
 
-    private final String BASE_URL = "https://localhost:8443/product/list"; // HTTPS 주의
+    private final String BASE_URL = "https://localhost:8443/product/list?page=0&size=10"; // HTTPS 주의
     private final String ELASTICSEARCH_URL = "https://localhost:8443/search?keyword=AMD&category=CPU&priceLow=10000&priceHigh=100000&page=0&size=10";
 
     @Test
