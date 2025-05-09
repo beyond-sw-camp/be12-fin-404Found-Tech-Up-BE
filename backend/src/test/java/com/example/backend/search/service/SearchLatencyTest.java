@@ -29,11 +29,11 @@ public class SearchLatencyTest {
                 .build();
 
         String jsonBody = """
-                {
-                    "from": "value1",
-                    "": "value2"
-                }
-                """;
+                            {
+                              "category": "CPU",
+                              "nameKeyword": "AMD"
+                            }
+                            """;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL))
