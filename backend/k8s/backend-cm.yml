@@ -4,8 +4,12 @@ metadata:
   name: backend-cm
 data:
   AWS_REGION: 'ap-northeast-2'
-  MASTER_DB_URL: 'jdbc:mariadb://mariadb:3306/techup'
-  SLAVE_DB_URL: 'jdbc:mariadb://mariadb:3306/techup'
-  DB_USERNAME: 'test'
-  DB_PASSWORD: 'qwer1234'
   SECRET_KEY: 'abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789'
+  AWS_S3_BUCKET: frontbucket-xenamaniac
+  DB_PASSWORD: qwer1234
+  DB_URL: jdbc:mariadb://mariadb:3306/techup
+  DB_USERNAME: test
+  ELASTIC_HOST: http://elasticsearch
+  MASTER_DB_URL: jdbc:mariadb://mariadb:3306/techup
+  SECRET_KEY: abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789
+  SLAVE_DB_URL: jdbc:mariadb://mariadb:3306/techup
