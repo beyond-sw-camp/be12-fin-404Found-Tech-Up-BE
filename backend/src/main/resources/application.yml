@@ -1,10 +1,17 @@
 spring:
   application:
     name: techup-backend
-  data:
-    redis:
-      host: 192.0.40.206
-      port: 6379
+
+  redis:
+    host: 192.0.40.206
+    port: 6379
+    timeout: 3s
+    connect-timeout: 5s
+    lettuce:
+      pool:
+        max-active: 20
+        min-idle: 10
+
 
   mail:
     host: smtp.gmail.com
@@ -51,13 +58,13 @@ spring:
             client-name: Kakao
             scope:
               - profile_nickname
-        #              - account_email
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
+
 jwtData:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
@@ -94,7 +101,7 @@ management:
       enabled: false
 
 kafka:
-   enabled: false
+  enabled: false
 
 server:
   port: 8443

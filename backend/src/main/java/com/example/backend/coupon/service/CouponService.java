@@ -262,40 +262,55 @@ public class CouponService {
         return true;
     }
     */
-    public Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) throws JsonProcessingException {
-        String userSetKey   = "set.receive.couponId."    + eventCouponIdx;
 
-        String lockKey      = "lock:coupon:"             + eventCouponIdx;
-        RLock lock          = redissonClient.getLock(lockKey);
+    public Boolean issueEventCoupon(User user, Long couponId) {
+        String userSetKey   = "set.receive.couponId." + couponId;
+        String stockHashKey = "hash.coupon.stock."  + couponId;
+        String userIdx      = user.getUserIdx().toString();
 
-        // 무한 대기 → 테스트에서 CountDownLatch 타임아웃으로 전체 타임아웃 관리
-        lock.lock();
+        RLock lock = redissonClient.getLock("lock:coupon:" + couponId);
+        boolean locked = false;
         try {
-            // 1) 중복 발급 체크
-            String userIdStr = String.valueOf(requestUser.getUserIdx());
-            if (couponRedisRepository.sIsMember(userSetKey, userIdStr)) {
+            // 최대 5초 대기, 성공 시 10초 후 자동 해제
+            locked = lock.tryLock(5, 10, TimeUnit.SECONDS);
+            if (!locked) {
+                throw new RuntimeException("락 획득 실패");
+            }
+
+            // 1) 중복 체크
+            if (!couponRedisRepository.sAdd(userSetKey, userIdx)) {
                 throw new RuntimeException("쿠폰을 이미 발급 받았습니다.");
             }
 
-            // 2) 재고 차감 (atomic)
-            String stockHashKey = "hash.coupon:" + eventCouponIdx;
-
-// 재고를 1 감소시키고 남은 재고를 얻는다.
-            Long remain = couponRedisRepository.hIncrBy(stockHashKey, "quantity", -1L);
+            // 2) 재고 차감
+            long remain = couponRedisRepository.hIncrBy(stockHashKey, "quantity", -1);
             if (remain < 0) {
-                // 재고 부족 시 롤백
-                couponRedisRepository.hIncrBy(stockHashKey, "quantity", 1L);
+                // 롤백
+                couponRedisRepository.hIncrBy(stockHashKey, "quantity", +1);
+                couponRedisRepository.sRem(userSetKey, userIdx);
                 throw new RuntimeException("쿠폰이 모두 소진되었습니다.");
             }
 
-            // 3) 발급 처리
-            couponRedisRepository.sAdd(userSetKey, userIdStr);
-            couponRedisRepository.rPush("list.received.user", JsonSerializer(requestUser));
-            couponDBService.saveIssuedCouponToDB(requestUser.getUserIdx(), eventCouponIdx);
+            // 3) 발급 로그 및 DB 저장
+            couponRedisRepository.rPush(
+                    "list.received.user",
+                    objectMapper.writeValueAsString(user)
+            );
+            couponDBService.saveIssuedCouponToDB(user.getUserIdx(), couponId);
 
             return true;
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("락 대기 중 인터럽트", e);
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("직렬화 실패", e);
+
         } finally {
-            lock.unlock();
+            if (locked && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
     }
 
@@ -338,6 +353,20 @@ public class CouponService {
         return objectMapper.writeValueAsString(requestUser);
     }
 
+    /**
+     * 남은 쿠폰 수량 조회
+     */
+    public Long getRemainingQuantity(Long couponId) {
+        String stockHashKey = "hash.coupon.stock." + couponId;
+        return couponRedisRepository.hGet(stockHashKey, "quantity");
+    }
 
+    /**
+     * 발급받은 유저 수 조회
+     */
+    public long countIssuedUsers(Long couponId) {
+        String userSetKey = "set.receive.couponId." + couponId;
+        return couponRedisRepository.sCard(userSetKey);
+    }
 
 }
