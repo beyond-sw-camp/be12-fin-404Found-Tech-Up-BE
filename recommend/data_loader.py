@@ -12,11 +12,11 @@ def get_db_connection():
     """
     try:
         connection = mysql.connector.connect(
-            host='mariadb',  # 데이터베이스 호스트
-            # host='192.0.44.44',  # 데이터베이스 호스트
+            # host='mariadb',  # 데이터베이스 호스트
+            host='192.0.44.44',  # 데이터베이스 호스트
             database='techup',  # 데이터베이스 이름
-            user='test',  # 데이터베이스 사용자
-            # user='techup',  # 데이터베이스 사용자
+            # user='test',  # 데이터베이스 사용자
+            user='techup',  # 데이터베이스 사용자
             password='qwer1234',  # 데이터베이스 비밀번호
             port=3306  # MariaDB 기본 포트
         )
@@ -168,21 +168,19 @@ def load_rating_data():
 
     return rating_df
 
-
-# def load_rating_data_from_csv():
-#     """
-#     CSV 파일에서 평점 데이터를 로드하는 함수 (백업 방법)
-#     """
-#     # 평점 데이터 로드
-#     if os.path.exists("rating.csv"):
-#         rating_df = pd.read_csv("rating.csv")
-#         return rating_df
-#     else:
-#         # 파일이 없는 경우 예외 처리
-#         print("rating.csv 파일을 찾을 수 없습니다. 샘플 데이터를 사용합니다.")
-#         sample_df = pd.read_csv("rating_sample.csv")
-#         return sample_df
-
+def load_rating_data_from_csv():
+    """
+    CSV 파일에서 평점 데이터를 로드하는 함수 (백업 방법)
+    """
+    # 평점 데이터 로드
+    if os.path.exists("test_rating.csv"):
+        rating_df = pd.read_csv("test_rating.csv")
+        return rating_df
+    else:
+        # 파일이 없는 경우 예외 처리
+        print("test_rating.csv 파일을 찾을 수 없습니다. 샘플 데이터를 사용합니다.")
+        sample_df = pd.read_csv("test_rating.csv")
+        return sample_df
 
 def create_user_item_matrix(rating_df):
     """

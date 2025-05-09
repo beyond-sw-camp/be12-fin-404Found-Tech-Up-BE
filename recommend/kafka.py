@@ -8,8 +8,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Kafka 설정
-KAFKA_BOOTSTRAP_SERVERS = "kafka-0.kafka-headless.default.svc.cluster.local:9092,kafka-1.kafka-headless.default.svc.cluster.local:9092"
-# KAFKA_BOOTSTRAP_SERVERS = "localhost:9092"
+# KAFKA_BOOTSTRAP_SERVERS = "kafka-0.kafka-headless.default.svc.cluster.local:9092,kafka-1.kafka-headless.default.svc.cluster.local:9092"
+KAFKA_BOOTSTRAP_SERVERS = "localhost:9092"
 KAFKA_TOPIC = "review-created-notifications"
 KAFKA_GROUP_ID = "review-notification-group"
 
