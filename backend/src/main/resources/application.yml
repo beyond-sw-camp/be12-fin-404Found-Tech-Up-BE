@@ -1,10 +1,6 @@
 spring:
   application:
     name: techup-backend
-  data:
-    redis:
-      host: 192.0.40.206
-      port: 6379
 
   mail:
     host: smtp.gmail.com
@@ -76,7 +72,6 @@ portone:
 
 logging:
   level:
-    com.example.backend: TRACE
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
 
@@ -102,7 +97,7 @@ management:
       enabled: false
 
 kafka:
-   enabled: false
+   enabled: true
 
 server:
   port: 8443
