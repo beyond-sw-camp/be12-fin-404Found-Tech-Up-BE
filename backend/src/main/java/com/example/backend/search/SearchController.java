@@ -34,4 +34,14 @@ public class SearchController {
         return new BaseResponseServiceImpl().getSuccessResponse(searchService.searchByName(name, category, priceLow, priceHigh, page, size), ProductResponseStatus.SUCCESS);
     }
 
+    @Operation(summary="카테고리 없는 기본 검색")
+    @GetMapping("/title-only")
+    public BaseResponse<List<ReducedProductResponseDto>> getSearchResultWithoutCategory(@RequestParam String name, @RequestParam Double priceLow, @RequestParam Double priceHigh, @RequestParam Integer page, @RequestParam Integer size) {
+        if (page < 0 || size < 0) {
+            return new BaseResponseServiceImpl().getFailureResponse(ProductResponseStatus.PRODUCT_NOT_FOUND);
+        }
+        return new BaseResponseServiceImpl().getSuccessResponse(searchService.searchByNameAndPriceRange(name, priceLow, priceHigh, PageRequest.of(page, size)), ProductResponseStatus.SUCCESS);
+    }
+
+
 }
