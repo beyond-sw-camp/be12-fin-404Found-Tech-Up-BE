@@ -100,7 +100,7 @@ management:
       enabled: false
 
 kafka:
-   enabled: false
+   enabled: true
 
 server:
   port: 8443
