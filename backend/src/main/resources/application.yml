@@ -83,6 +83,7 @@ portone:
 
 logging:
   level:
+    org.com.example.backend: trace
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
 
