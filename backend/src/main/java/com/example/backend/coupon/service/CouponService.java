@@ -227,7 +227,7 @@ public class CouponService {
     }
 
 
-    */
+    
 
     @Transactional
     public Boolean issueEventCoupon(User requestUser, Long eventCouponIdx) {
