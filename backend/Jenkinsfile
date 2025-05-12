@@ -106,54 +106,54 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2') {
-            when {
-                expression { env.GIT_BRANCH == 'origin/main' }
-            }
-            steps {
-                script {
-                    echo "MODIFY DOCKER-COMPOSE.YML"
-                    sh """
-                        sed -i 's|mstar228/techup-backend:latest|mstar228/techup-backend:${IMAGE_TAG}|' ${WORKSPACE}/backend/docker-compose.yml
-                    """
+        // stage('Deploy to EC2') {
+        //     when {
+        //         expression { env.GIT_BRANCH == 'origin/main' }
+        //     }
+        //     steps {
+        //         script {
+        //             echo "MODIFY DOCKER-COMPOSE.YML"
+        //             sh """
+        //                 sed -i 's|mstar228/techup-backend:latest|mstar228/techup-backend:${IMAGE_TAG}|' ${WORKSPACE}/backend/docker-compose.yml
+        //             """
 
-                    echo "CREATE .ENV"
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${EC2_HOST} <<EOF
-                        cat > /home/ubuntu/.env <<EOL
-                        DB_URL=${DB_URL}
-                        DB_USERNAME=${DB_USERNAME}
-                        DB_PASSWORD=${DB_PASSWORD}
-                        JWT_SECRET=${JWT_SECRET}
-                        JWT_EXPIRATION=${JWT_EXPIRATION}
-                        KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
-                        KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}
-                        PORTONE_CHANNEL_KEY=${PORTONE_CHANNEL_KEY}
-                        PORTONE_SECRET=${PORTONE_SECRET}
-                        PORTONE_STOREID=${PORTONE_STOREID}
-                        MAIL_ADDR=${MAIL_ADDR}
-                        MAIL_PASSWORD=${MAIL_PASSWORD}
-                        AWS_REGION=${AWS_REGION}
-                        AWS_SECRET_KEY=${AWS_SECRET_KEY}
-                        AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
-                        AWS_S3_BUCKET=${AWS_S3_BUCKET}
-                    """
+        //             echo "CREATE .ENV"
+        //             sh """
+        //                 ssh -o StrictHostKeyChecking=no ${EC2_HOST} <<EOF
+        //                 cat > /home/ubuntu/.env <<EOL
+        //                 DB_URL=${DB_URL}
+        //                 DB_USERNAME=${DB_USERNAME}
+        //                 DB_PASSWORD=${DB_PASSWORD}
+        //                 JWT_SECRET=${JWT_SECRET}
+        //                 JWT_EXPIRATION=${JWT_EXPIRATION}
+        //                 KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
+        //                 KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}
+        //                 PORTONE_CHANNEL_KEY=${PORTONE_CHANNEL_KEY}
+        //                 PORTONE_SECRET=${PORTONE_SECRET}
+        //                 PORTONE_STOREID=${PORTONE_STOREID}
+        //                 MAIL_ADDR=${MAIL_ADDR}
+        //                 MAIL_PASSWORD=${MAIL_PASSWORD}
+        //                 AWS_REGION=${AWS_REGION}
+        //                 AWS_SECRET_KEY=${AWS_SECRET_KEY}
+        //                 AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+        //                 AWS_S3_BUCKET=${AWS_S3_BUCKET}
+        //             """
 
-                    echo "SCP DOCKER-COMPOSE.YML"
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${EC2_HOST} "[ -f /home/ubuntu/docker-compose.yml ] && echo 'File exists, overwriting' || echo 'File does not exist'"
-                        scp -o StrictHostKeyChecking=no ${WORKSPACE}/backend/docker-compose.yml ${EC2_HOST}:/home/ubuntu/docker-compose.yml
-                    """
+        //             echo "SCP DOCKER-COMPOSE.YML"
+        //             sh """
+        //                 ssh -o StrictHostKeyChecking=no ${EC2_HOST} "[ -f /home/ubuntu/docker-compose.yml ] && echo 'File exists, overwriting' || echo 'File does not exist'"
+        //                 scp -o StrictHostKeyChecking=no ${WORKSPACE}/backend/docker-compose.yml ${EC2_HOST}:/home/ubuntu/docker-compose.yml
+        //             """
 
-                    echo "RUN DOCKER-COMPOSE"
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${EC2_HOST} <<'EOF'
-                        docker-compose -f /home/ubuntu/docker-compose.yml down  # 기존 컨테이너 중지 및 삭제
-                        docker-compose -f /home/ubuntu/docker-compose.yml up -d  # 새 컨테이너 실행
-                    """
-                }
-            }
-        }
+        //             echo "RUN DOCKER-COMPOSE"
+        //             sh """
+        //                 ssh -o StrictHostKeyChecking=no ${EC2_HOST} <<'EOF'
+        //                 docker-compose -f /home/ubuntu/docker-compose.yml down  # 기존 컨테이너 중지 및 삭제
+        //                 docker-compose -f /home/ubuntu/docker-compose.yml up -d  # 새 컨테이너 실행
+        //             """
+        //         }
+        //     }
+        // }
 
         stage('Determine Deploy Color') {
             when {
