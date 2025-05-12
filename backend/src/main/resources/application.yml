@@ -1,8 +1,6 @@
 spring:
   application:
     name: techup-backend
-
-
   redis:
     host: 192.0.40.206
     port: 6379
