@@ -48,7 +48,7 @@ public class RedissonConfig {
                 .addNodeAddress(String.format("redis://%s:%d", redisHost, redisPort))
                 .setPassword(redisPassword)
                 .setScanInterval(2000);
-
+        
         /*
         String address = String.format("redis://%s:%d", redisHost, redisPort);
         SingleServerConfig serverConfig = config.useSingleServer()

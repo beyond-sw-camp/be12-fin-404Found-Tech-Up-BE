@@ -111,16 +111,19 @@ spec:
                 configMapKeyRef:
                   name: backend-cm
                   key: REDIS_HOST
+
             - name: REDIS_PORT
               valueFrom:
                 configMapKeyRef:
                   name: backend-cm
                   key: REDIS_PORT
+
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: redis-cluster
                   key: redis-password
+
 
           ports:
             - containerPort: 8080

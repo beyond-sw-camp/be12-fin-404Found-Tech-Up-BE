@@ -106,17 +106,19 @@ spec:
                 configMapKeyRef:
                   name: backend-cm
                   key: ELASTIC_HOST
-            - name: REDIS_HOST
+            - name: REDIS_HOST       # 앱이 직접 읽는 변수
               valueFrom:
                 configMapKeyRef:
                   name: backend-cm
                   key: REDIS_HOST
+
             - name: REDIS_PORT
               valueFrom:
                 configMapKeyRef:
                   name: backend-cm
                   key: REDIS_PORT
-            - name: REDIS_PASSWORD
+
+            - name: REDIS_PASSWORD   # spring.redis.password 으로 바인딩
               valueFrom:
                 secretKeyRef:
                   name: redis-cluster

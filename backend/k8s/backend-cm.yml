@@ -11,7 +11,6 @@ data:
   DB_USERNAME: test
   ELASTIC_HOST: elasticsearch
   MASTER_DB_URL: jdbc:mariadb://mariadb:3306/techup
-  SECRET_KEY: abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789
   SLAVE_DB_URL: jdbc:mariadb://mariadb:3306/techup
-  REDIS_HOST: 'redis-cluster-headless.default.svc.cluster.local'
+  REDIS_HOST: 'redis-cluster-headless'
   REDIS_PORT: '6379'
