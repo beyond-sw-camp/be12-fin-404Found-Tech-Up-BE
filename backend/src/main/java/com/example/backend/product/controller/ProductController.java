@@ -39,12 +39,18 @@ public class ProductController {
     @Operation(summary = "상품 리스트 조회 (paged)", description = "페이지 단위로 상품 리스트를 조회합니다.")
     @GetMapping("/list")
     public BaseResponse<Page<ProductResponseDto>> getProductList(
+            @RequestParam(defaultValue = "") String category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "30") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProductResponseDto> dtos = productService.getProductList(pageable);
-        return baseResponseService.getSuccessResponse(dtos, ProductResponseStatus.SUCCESS);
+        if (category == null || category.isEmpty()) {
+            Page<ProductResponseDto> dtos = productService.getProductList(category, pageable);
+            return baseResponseService.getSuccessResponse(dtos, ProductResponseStatus.SUCCESS);
+        } else {
+            Page<ProductResponseDto> dtos = productService.getProductList(pageable);
+            return baseResponseService.getSuccessResponse(dtos, ProductResponseStatus.SUCCESS);
+        }
     }
 
     @Operation(summary = "상품 상세 조회", description = "상품 ID로 상세 정보를 조회합니다.")
