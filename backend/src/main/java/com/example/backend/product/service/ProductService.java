@@ -55,6 +55,11 @@ public class ProductService {
                 .map(ProductResponseDto::from);
     }
 
+    public Page<ProductResponseDto> getProductList(String category, Pageable pageable) {
+        return productRepository.findAllByCategoryIgnoreCase(category, pageable)
+                .map(ProductResponseDto::from);
+    }
+
     public ProductResponseDto getProductDetail(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));

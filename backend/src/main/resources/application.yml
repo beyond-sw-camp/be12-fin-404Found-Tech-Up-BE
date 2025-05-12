@@ -1,7 +1,6 @@
 spring:
   application:
     name: techup-backend
-
   redis:
     cluster:
       nodes:
