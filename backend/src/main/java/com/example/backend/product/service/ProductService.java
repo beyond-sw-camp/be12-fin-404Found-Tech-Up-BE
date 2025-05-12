@@ -66,8 +66,12 @@ public class ProductService {
         return ProductResponseDto.from(product);
     }
 
-    public Page<ProductResponseDto> searchProduct(String keyword, Pageable pageable) {
-        return productRepository.findByNameContaining(keyword, pageable)
+    public Page<ProductResponseDto> searchProduct(String keyword, String category, Pageable pageable) {
+        if (category == null || category.isEmpty()) {
+            return productRepository.findByNameContainingIgnoreCase(keyword, pageable)
+                    .map(ProductResponseDto::from);
+        }
+        return productRepository.findByNameContainingIgnoreCaseAndCategoryContaining(keyword, category, pageable)
                 .map(ProductResponseDto::from);
     }
 
