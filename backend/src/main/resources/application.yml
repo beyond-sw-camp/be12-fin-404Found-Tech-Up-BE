@@ -110,6 +110,8 @@ management:
   health:
     db:
       enabled: true
+    redis:
+      enabled: true
     mail:
       enabled: false
     diskspace:
