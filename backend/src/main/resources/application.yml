@@ -4,7 +4,7 @@ spring:
   redis:
     cluster:
       max-redirects: 3
-      nodes: redis-cluster-0.redis-cluster.default.svc.cluster.local:6379,redis-cluster-1.redis-cluster.default.svc.cluster.local:6379,redis-cluster-2.redis-cluster.default.svc.cluster.local:6379
+      nodes: redis-cluster-0.redis-cluster-headless.default.svc.cluster.local:6379,redis-cluster-1.redis-cluster-headless.default.svc.cluster.local:6379,redis-cluster-2.redis-cluster-headless.default.svc.cluster.local:6379
     password: ${REDIS_PASSWORD}
   autoconfigure:
     exclude: org.redisson.spring.starter.RedissonAutoConfigurationV2
