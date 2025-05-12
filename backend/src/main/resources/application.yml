@@ -13,16 +13,6 @@ spring:
       pool:
         max-active: 50
         min-idle: 10
-#  redis:
-#    host: 192.0.40.206
-#    port: 6379
-#    timeout: 3s
-#    connect-timeout: 5s
-#    lettuce:
-#      pool:
-#        max-active: 50
-#        min-idle: 10
-
   data:
     elasticsearch:
       repositories:
