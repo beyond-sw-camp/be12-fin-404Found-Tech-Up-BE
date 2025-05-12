@@ -24,18 +24,6 @@ public class RedissonConfig {
     @Value("${spring.redis.password:}")
     private String redisPassword;
 
-    @Value("${spring.redis.timeout}")
-    private Duration timeout;
-
-    @Value("${spring.redis.connect-timeout}")
-    private Duration connectTimeout;
-
-    @Value("${spring.redis.lettuce.pool.max-active}")
-    private int poolSize;
-
-    @Value("${spring.redis.lettuce.pool.min-idle}")
-    private int minIdle;
-
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient() {
         try {
