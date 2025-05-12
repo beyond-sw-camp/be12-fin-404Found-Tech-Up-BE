@@ -6,31 +6,43 @@ import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
+import org.springframework.core.env.Environment;
 
 @Configuration
 public class RedissonConfig {
 
-    @Value("${spring.redis.cluster.nodes}")
-    private List<String> clusterNodes;
+    private final Environment env;
 
-    @Value("${spring.redis.password}")
+    public RedissonConfig(Environment env) {
+        this.env = env;
+    }
+
+    @Value("${spring.redis.password:}")
     private String redisPassword;
 
     @Bean
     public RedissonClient redissonClient() {
-        Config config = new Config();
+        try {
+            String[] nodeAddresses = env.getProperty("spring.redis.cluster.nodes", String[].class);
 
-        config.setNettyThreads(Runtime.getRuntime().availableProcessors() * 2);
+            if (nodeAddresses == null || nodeAddresses.length == 0) {
+                System.err.println("⚠️ spring.redis.cluster.nodes 설정이 없어서 Redis 연결을 생략합니다.");
+                return null;
+            }
 
-        config.useClusterServers()
-                .addNodeAddress(clusterNodes.stream()
-                        .map(node -> node.startsWith("redis://") ? node : "redis://" + node)
-                        .toArray(String[]::new))
-                .setPassword(redisPassword)
-                .setScanInterval(2000);
+            Config config = new Config();
+            config.setNettyThreads(32);
 
-        return Redisson.create(config);
+            config.useClusterServers()
+                    .addNodeAddress(nodeAddresses)
+                    .setPassword(redisPassword.isEmpty() ? null : redisPassword)
+                    .setScanInterval(2000);
+
+            return Redisson.create(config);
+
+        } catch (Exception e) {
+            System.err.println("⚠️ Redisson 연결 실패: " + e.getMessage());
+            return null;
+        }
     }
 }
