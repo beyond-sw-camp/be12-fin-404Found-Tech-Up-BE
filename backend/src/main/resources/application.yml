@@ -5,14 +5,11 @@ spring:
   redis:
     cluster:
       nodes:
-        - "${REDIS_HOST}:${REDIS_PORT}"
-    password: "${REDIS_PASSWORD}"
-    timeout: 3s
-    connect-timeout: 5s
-    lettuce:
-      pool:
-        max-active: 50
-        min-idle: 10
+        - redis://redis-cluster-0.redis-cluster-headless.default.svc.cluster.local:6379
+        - redis://redis-cluster-1.redis-cluster-headless.default.svc.cluster.local:6379
+        - redis://redis-cluster-2.redis-cluster-headless.default.svc.cluster.local:6379
+    password: ${REDIS_PASSWORD}
+
 
   data:
     elasticsearch:
