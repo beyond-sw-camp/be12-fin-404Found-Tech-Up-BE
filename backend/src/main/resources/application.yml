@@ -5,9 +5,9 @@ spring:
   redis:
     cluster:
       nodes:
-        - redis://redis-cluster-0.redis-cluster-headless.default.svc.cluster.local:6379
-        - redis://redis-cluster-1.redis-cluster-headless.default.svc.cluster.local:6379
-        - redis://redis-cluster-2.redis-cluster-headless.default.svc.cluster.local:6379
+        - redis-cluster-0.redis-cluster.default.svc.cluster.local:6379
+        - redis-cluster-1.redis-cluster.default.svc.cluster.local:6379
+        - redis-cluster-2.redis-cluster.default.svc.cluster.local:6379
     password: ${REDIS_PASSWORD}
 
 
