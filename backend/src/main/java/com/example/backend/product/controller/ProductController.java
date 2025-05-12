@@ -45,10 +45,10 @@ public class ProductController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         if (category == null || category.isEmpty()) {
-            Page<ProductResponseDto> dtos = productService.getProductList(category, pageable);
+            Page<ProductResponseDto> dtos = productService.getProductList(pageable);
             return baseResponseService.getSuccessResponse(dtos, ProductResponseStatus.SUCCESS);
         } else {
-            Page<ProductResponseDto> dtos = productService.getProductList(pageable);
+            Page<ProductResponseDto> dtos = productService.getProductList(category, pageable);
             return baseResponseService.getSuccessResponse(dtos, ProductResponseStatus.SUCCESS);
         }
     }
