@@ -62,23 +62,30 @@ public class ProductController {
 
     @Operation(
             summary = "상품 검색",
-            description = "이름에 특정 키워드가 포함된 상품을 검색합니다.",
+            description = "이름에 특정 키워드가 포함된 카테고리별 상품을 검색합니다.",
             parameters = {
                     @io.swagger.v3.oas.annotations.Parameter(
                             name = "keyword",
                             description = "상품 이름에 포함된 키워드 (예: i7)",
                             example = "i7"
+                    ),
+                    @io.swagger.v3.oas.annotations.Parameter(
+                            name = "category",
+                            description = "상품 분류",
+                            example = "CPU"
                     )
             }
     )
+
     @GetMapping("/search")
     public BaseResponse<Page<ProductResponseDto>> searchProduct(
             @RequestParam String keyword,
+            @RequestParam String category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "30") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProductResponseDto> results = productService.searchProduct(keyword, pageable);
+        Page<ProductResponseDto> results = productService.searchProduct(keyword, category, pageable);
         return baseResponseService.getSuccessResponse(results, ProductResponseStatus.SUCCESS);
     }
 
