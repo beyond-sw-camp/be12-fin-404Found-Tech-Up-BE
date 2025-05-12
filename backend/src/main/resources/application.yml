@@ -108,6 +108,8 @@ management:
       show-details: always
       show-components: always
   health:
+    redis:
+      enabled: true
     db:
       enabled: true
     mail:
