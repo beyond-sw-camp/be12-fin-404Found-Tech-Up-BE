@@ -14,10 +14,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 @Configuration
 public class RedissonConfig {
 
-    @Value("${redis.cluster.nodes}")
+    @Value("${spring.redis.cluster.nodes}")
     private String redisNodes;
 
-    @Value("${redis.password:}")
+    @Value("${spring.redis.password:}")
     private String redisPassword;
 
     @Bean(destroyMethod = "shutdown")
