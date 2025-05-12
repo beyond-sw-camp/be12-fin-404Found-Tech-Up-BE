@@ -8,18 +8,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.time.Duration;
+import org.springframework.core.env.Environment;
+
 
 @Configuration
 public class RedissonConfig {
 
-    @Value("${spring.redis.host}")
-    private String redisHost;
+    private final Environment env;
 
-    @Value("${spring.redis.port}")
-    private int redisPort;
+    public RedissonConfig(Environment env) {
+        this.env = env;
+    }
 
-    @Value("${spring.redis.password}")
+
+    @Value("${spring.redis.password:}")
     private String redisPassword;
 
     @Value("${spring.redis.timeout}")
@@ -36,31 +38,28 @@ public class RedissonConfig {
 
     @Bean
     public RedissonClient redissonClient() {
-        Config config = new Config();
+        try {
+            String[] nodeAddresses = env.getProperty("spring.redis.cluster.nodes", String[].class);
 
-        // nettyThreads 는 Config 에 설정해야 합니다 (SingleServerConfig 에는 없음)
-        int nettyThreads = Math.max(poolSize / 2, Runtime.getRuntime().availableProcessors() * 2);
-        config.setNettyThreads(nettyThreads);
+            if (nodeAddresses == null || nodeAddresses.length == 0) {
+                System.err.println("⚠️ spring.redis.cluster.nodes 설정이 없어서 Redis 연결을 생략합니다.");
+                return null;
+            }
 
+            Config config = new Config();
+            config.setNettyThreads(32);
 
-        // 단일 서버 모드 → 클러스터 모드로만 변경
-        config.useClusterServers()
-                .addNodeAddress(String.format("redis://%s:%d", redisHost, redisPort))
-                .setPassword(redisPassword)
-                .setScanInterval(2000);
-        
-        /*
-        String address = String.format("redis://%s:%d", redisHost, redisPort);
-        SingleServerConfig serverConfig = config.useSingleServer()
-                .setAddress(address)
-                .setTimeout((int) timeout.toMillis())
-                .setConnectTimeout((int) connectTimeout.toMillis())
-                .setConnectionPoolSize(poolSize)
-                .setConnectionMinimumIdleSize(minIdle)
-                .setPingConnectionInterval(1_000)
-                .setRetryAttempts(2)
-                .setRetryInterval(1_500);
-        */
-        return Redisson.create(config);
+            config.useClusterServers()
+                    .addNodeAddress(nodeAddresses)
+                    .setPassword(redisPassword.isEmpty() ? null : redisPassword)
+                    .setScanInterval(2000);
+
+            return Redisson.create(config);
+
+        } catch (Exception e) {
+            System.err.println("⚠️ Redisson 연결 실패: " + e.getMessage());
+            return null;
+        }
+
     }
 }
