@@ -44,13 +44,12 @@ public class RedissonConfig {
 
 
         // 단일 서버 모드 → 클러스터 모드로만 변경
-        /*
         config.useClusterServers()
                 .addNodeAddress(String.format("redis://%s:%d", redisHost, redisPort))
                 .setPassword(redisPassword)
                 .setScanInterval(2000);
-        */
-
+        
+        /*
         String address = String.format("redis://%s:%d", redisHost, redisPort);
         SingleServerConfig serverConfig = config.useSingleServer()
                 .setAddress(address)
@@ -61,7 +60,7 @@ public class RedissonConfig {
                 .setPingConnectionInterval(1_000)
                 .setRetryAttempts(2)
                 .setRetryInterval(1_500);
-
+        */
         return Redisson.create(config);
     }
 }
