@@ -36,4 +36,6 @@ public class ProductIndexDocument {
     private Double rating;
     @Field(name= "image", type= FieldType.Text)
     private String image;
+    @Field(name= "reviews", type= FieldType.Integer)
+    private Integer reviews;
 }
