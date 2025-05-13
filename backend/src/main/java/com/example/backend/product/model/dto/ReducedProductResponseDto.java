@@ -39,7 +39,7 @@ public class ReducedProductResponseDto {
 
     public static ReducedProductResponseDto from(ProductIndexDocument product) {
         List<String> images = new ArrayList<>();
-        images.add("https://"+ product.getImage());
+        images.add("https:"+ product.getImage());
         return ReducedProductResponseDto.builder()
                 .idx(product.getProductidx())
                 .name(product.getProductname())
@@ -57,7 +57,7 @@ public class ReducedProductResponseDto {
     public static ReducedProductResponseDto from(Product product) {
         List<String> images = new ArrayList<>();
         if (product.getImages() != null) {
-            images.add("https://"+ product.getImages().get(0).getImageUrl());
+            images.add("https:"+ product.getImages().get(0).getImageUrl());
         }
         return ReducedProductResponseDto.builder()
                 .idx(product.getProductIdx())
