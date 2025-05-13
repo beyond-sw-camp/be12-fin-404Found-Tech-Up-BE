@@ -31,15 +31,15 @@ public class ReducedProductResponseDto {
     private Double rating;
 
     @Schema(description = "등록한 첫번째 이미지를 불러옵니다. 앞에 http: 또는 https:가 생략되어 있으니 주의해야 합니다.", example="//image.danawa.com/12")
-    private List<String> image;
+    private List<String> images;
 
     @Schema(description = "누적 리뷰 수를 불러옵니다", example="2")
     private List<Integer> reviews;
 
 
     public static ReducedProductResponseDto from(ProductIndexDocument product) {
-        List<String> images = new ArrayList<>();
-        images.add("https:"+ product.getImage());
+        List<String> imageList = new ArrayList<>();
+        imageList.add("https:"+ product.getImage());
         return ReducedProductResponseDto.builder()
                 .idx(product.getProductidx())
                 .name(product.getProductname())
@@ -50,14 +50,14 @@ public class ReducedProductResponseDto {
                 .description(product.getDescription())
                 .category(product.getCategory())
                 .rating(product.getRating())
-                .image(images)
+                .images(imageList)
                 .reviews(new ArrayList<>(product.getReviews()))
                 .build();
     }
     public static ReducedProductResponseDto from(Product product) {
-        List<String> images = new ArrayList<>();
+        List<String> imageList = new ArrayList<>();
         if (product.getImages() != null) {
-            images.add("https:"+ product.getImages().get(0).getImageUrl());
+            imageList.add("https:"+ product.getImages().get(0).getImageUrl());
         }
         return ReducedProductResponseDto.builder()
                 .idx(product.getProductIdx())
@@ -69,7 +69,7 @@ public class ReducedProductResponseDto {
                 .description(product.getDescription())
                 .category(product.getCategory())
                 .rating(product.getRating())
-                .image(images)
+                .images(imageList)
                 .reviews(product.getReviews() != null ? product.getReviews().stream().map(Review::getReviewRating).toList(): null)
                 .build();
     }
