@@ -21,5 +21,5 @@ public interface EsRepository {
      * @param resultNum 결과 개수
      * @return 유사한 사용자 목록
      */
-    List<EsEntity> findSimilarEntities(List<Float> vector, int resultNum);
+    List<EsEntity> findSimilarEntities(List<Float> vector, int resultNum, String type);
 }
