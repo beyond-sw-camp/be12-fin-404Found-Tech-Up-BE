@@ -31,9 +31,15 @@ public class ReducedProductResponseDto {
     private Double rating;
 
     @Schema(description = "등록한 첫번째 이미지를 불러옵니다. 앞에 http: 또는 https:가 생략되어 있으니 주의해야 합니다.", example="//image.danawa.com/12")
-    private String image;
+    private List<String> image;
+
+    @Schema(description = "누적 리뷰 수를 불러옵니다", example="2")
+    private Integer reviews;
+
 
     public static ReducedProductResponseDto from(ProductIndexDocument product) {
+        List<String> images = new ArrayList<>();
+        images.add(product.getImage());
         return ReducedProductResponseDto.builder()
                 .idx(product.getProductidx())
                 .name(product.getProductname())
@@ -44,7 +50,27 @@ public class ReducedProductResponseDto {
                 .description(product.getDescription())
                 .category(product.getCategory())
                 .rating(product.getRating())
-                .image(product.getImage())
+                .image(images)
+                .reviews(product.getReviews())
+                .build();
+    }
+    public static ReducedProductResponseDto from(Product product) {
+        List<String> images = new ArrayList<>();
+        if (product.getImages() != null) {
+            images.add(product.getImages().get(0).getImageUrl());
+        }
+        return ReducedProductResponseDto.builder()
+                .idx(product.getProductIdx())
+                .name(product.getName())
+                .price(product.getPrice())
+                .discount(product.getDiscount())
+                .brand(product.getBrand())
+                .stock(product.getStock())
+                .description(product.getDescription())
+                .category(product.getCategory())
+                .rating(product.getRating())
+                .image(images)
+                .reviews(product.getReviews().size())
                 .build();
     }
 }

@@ -50,14 +50,14 @@ public class ProductService {
     private final ProductImageService productImageService;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public Page<ProductResponseDto> getProductList(Pageable pageable) {
+    public Page<ReducedProductResponseDto> getProductList(Pageable pageable) {
         return productRepository.findAll(pageable)
-                .map(ProductResponseDto::from);
+                .map(ReducedProductResponseDto::from);
     }
 
-    public Page<ProductResponseDto> getProductList(String category, Pageable pageable) {
+    public Page<ReducedProductResponseDto> getProductList(String category, Pageable pageable) {
         return productRepository.findAllByCategoryIgnoreCase(category, pageable)
-                .map(ProductResponseDto::from);
+                .map(ReducedProductResponseDto::from);
     }
 
     public ProductResponseDto getProductDetail(Long productId) {
