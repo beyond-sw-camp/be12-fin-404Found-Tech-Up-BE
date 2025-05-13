@@ -27,7 +27,7 @@ public class ShippingAddress {
     private String memo;
 
     // 유저와 다대일 맵핑
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_idx")
     private User user;
 }

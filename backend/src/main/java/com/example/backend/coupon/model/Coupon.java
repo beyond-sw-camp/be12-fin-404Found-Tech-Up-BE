@@ -6,6 +6,7 @@ import com.example.backend.coupon.model.dto.response.CouponInfoDto;
 import com.example.backend.product.model.Product;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.*;
 import java.util.Date;
@@ -30,6 +31,7 @@ public class Coupon {
     @JoinColumn(name = "product_idx")
     private Product product;
     // 유저 쿠폰과 일대다 맵핑
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "coupon")
     private List<UserCoupon> userCoupons;
     // Coupon.java
