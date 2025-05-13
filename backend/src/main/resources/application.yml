@@ -1,16 +1,19 @@
----
 spring:
   application:
     name: techup-backend
+    
   redis:
-    cluster:
-      max-redirects: 3
-      nodes:
-        - redis-cluster-0.redis-cluster.default.svc.cluster.local:6379
-        - redis-cluster-1.redis-cluster.default.svc.cluster.local:6379
-        - redis-cluster-2.redis-cluster.default.svc.cluster.local:6379
-    password: ${REDIS_PASSWORD}
-
+    host: 192.0.40.206
+    port: 6379
+    timeout: 3s
+    connect-timeout: 5s
+    lettuce:
+      pool:
+        max-active: 20
+        min-idle: 10
+        
+  autoconfigure:
+    exclude: org.redisson.spring.starter.RedissonAutoConfigurationV2
 
   data:
     elasticsearch:
@@ -123,9 +126,3 @@ elasticsearch:
   host: ${ELASTIC_HOST}
   username: elastic
   password: changeme
-
-clusterServersConfig:
-  nodeAddresses:
-    - redis://redis-cluster-0.redis-cluster.default.svc.cluster.local:6379
-    - redis://redis-cluster-1.redis-cluster.default.svc.cluster.local:6379
-    - redis://redis-cluster-2.redis-cluster.default.svc.cluster.local:6379

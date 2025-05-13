@@ -2,33 +2,49 @@
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+import logging
+# 로깅 설정
+logger = logging.getLogger(__name__)
 
-
-def calculate_item_similarity(user_item_matrix):
+def calculate_item_similarity(user_item_matrix, product_idx=1):
     """
     아이템 기반 협업 필터링 유사도 계산
     """
-    # 아이템-아이템 코사인 유사도 계산 (전치행렬 사용)
-    item_similarity = cosine_similarity(user_item_matrix.T)
+    # 입력 아이템과 다른 모든 아이템 간
+    item_similarity = cosine_similarity(user_item_matrix.T.loc[product_idx].values.reshape(1, -1), user_item_matrix.T)
     item_similarity_df = pd.DataFrame(
-        item_similarity,
-        index=user_item_matrix.columns,
-        columns=user_item_matrix.columns
+        item_similarity.T,
+        index=user_item_matrix.T.index,
+        columns=[product_idx]
     )
+    # 모든 아이템 간 (전치행렬 사용)
+    # item_similarity = cosine_similarity(user_item_matrix.T)
+    # item_similarity_df = pd.DataFrame(
+    #     item_similarity,
+    #     index=user_item_matrix.columns,
+    #     columns=user_item_matrix.columns
+    # )
     return item_similarity_df
 
 
-def calculate_user_similarity(user_item_matrix):
+def calculate_user_similarity(user_item_matrix, user_idx=1):
     """
     사용자 기반 협업 필터링 유사도 계산
     """
-    # 사용자-사용자 코사인 유사도 계산
-    user_similarity = cosine_similarity(user_item_matrix)
+    # 입력 사용자와 다른 모든 사용자 간
+    user_similarity = cosine_similarity(user_item_matrix.loc[user_idx].values.reshape(1, -1), user_item_matrix)
     user_similarity_df = pd.DataFrame(
-        user_similarity,
+        user_similarity.T,
         index=user_item_matrix.index,
-        columns=user_item_matrix.index
+        columns=[user_idx]
     )
+    # 모든 사용자 간
+    # user_similarity = cosine_similarity(user_item_matrix)
+    # user_similarity_df = pd.DataFrame(
+    #     user_similarity,
+    #     index=user_item_matrix.index,
+    #     columns=user_item_matrix.index
+    # )
     return user_similarity_df
 
 
@@ -41,7 +57,8 @@ def item_based_recommend(item_id, item_similarity_df, user_item_matrix, top_n=5)
         return []
 
     # 해당 아이템과 다른 아이템 간의 유사도
-    item_similarities = item_similarity_df.loc[item_id]
+    item_similarities = item_similarity_df[item_id].copy()
+    # item_similarities = item_similarity_df.loc[item_id]
 
     # 자기 자신 제외하고 유사도 높은 상위 N개 아이템 추천
     similar_items = (
@@ -71,7 +88,8 @@ def user_based_recommend(user_id, user_similarity_df, user_item_matrix, top_n=5)
         return []
 
     # 해당 사용자와 다른 사용자 간의 유사도
-    user_similarities = user_similarity_df.loc[user_id]
+    user_similarities = user_similarity_df[user_id].copy()
+    # user_similarities = user_similarity_df.loc[user_id]
 
     # 자기 자신 제외하고 유사도 높은 상위 사용자들 선택
     similar_users = (
