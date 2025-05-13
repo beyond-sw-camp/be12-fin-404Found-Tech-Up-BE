@@ -26,7 +26,7 @@ public class EsService {
         long startTime = System.currentTimeMillis();
         log.trace("Sending item-based recommendation request for productIdx={}", productIdx);
         EsEntity esEntity = esRepository.findEntityById(productIdx.toString()).orElseThrow();
-        List<EsEntity> results = esRepository.findSimilarEntities(esEntity.getVector(), resultNum+1);
+        List<EsEntity> results = esRepository.findSimilarEntities(esEntity.getVector(), resultNum+1, "item");
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
         log.trace("Received item-based recommendation response for productIdx={}, duration={} ms", productIdx, duration);
@@ -47,7 +47,7 @@ public class EsService {
         long startTime = System.currentTimeMillis();
         log.trace("Sending item-based recommendation request for productIdx={}", userIdx);
         EsEntity esEntity = esRepository.findEntityById(userIdx.toString()).orElseThrow();
-        List<EsEntity> results = esRepository.findSimilarEntities(esEntity.getVector(), resultNum);
+        List<EsEntity> results = esRepository.findSimilarEntities(esEntity.getVector(), resultNum+1, "user");
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
         log.trace("Received item-based recommendation response for productIdx={}, duration={} ms", userIdx, duration);
