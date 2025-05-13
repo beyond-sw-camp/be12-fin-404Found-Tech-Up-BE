@@ -35,12 +35,12 @@ public class Review {
     @Schema(description = "리뷰 작성 날짜", example = "2025-04-01 14:30:00")
     private LocalDateTime reviewDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx")
     @Schema(description = "리뷰 작성자 유저")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_idx")
     @Schema(description = "리뷰가 작성된 제품")
     private Product product;
