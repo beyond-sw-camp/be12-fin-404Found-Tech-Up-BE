@@ -11,10 +11,13 @@ from content_based import (
     recommend_content_based
 )
 from collaborative_filtering import (
-    calculate_item_similarity,
-    calculate_user_similarity,
     item_based_recommend,
-    user_based_recommend
+    user_based_recommend,
+    calculate_user_similarity,
+    calculate_item_similarity,
+)
+from es import (
+    update_es
 )
 import logging
 import traceback
@@ -50,6 +53,7 @@ class Recommender:
             # 최신 평점 데이터 로드
             logger.info("Loading latest rating data...")
             self.rating_df = load_rating_data()
+            # self.rating_df = load_rating_data_from_csv()
             if self.rating_df.empty:
                 logger.warning("Rating data is empty - this might indicate a data loading issue")
             else:
@@ -60,11 +64,14 @@ class Recommender:
             self.user_item_matrix = create_user_item_matrix(self.rating_df)
             logger.info(f"Created user-item matrix with shape {self.user_item_matrix.shape}")
 
-            # 협업 필터링 유사도 계산
-            logger.info("Calculating item similarity...")
-            self.item_similarity_df = calculate_item_similarity(self.user_item_matrix)
-            logger.info("Calculating user similarity...")
-            self.user_similarity_df = calculate_user_similarity(self.user_item_matrix)
+            # # 협업 필터링 유사도 계산
+            # logger.info("Calculating item similarity...")
+            # self.item_similarity_df = calculate_item_similarity(self.user_item_matrix)
+            # logger.info("Calculating user similarity...")
+            # self.user_similarity_df = calculate_user_similarity(self.user_item_matrix)
+
+            logger.info("Update user-item elasticsearch index...")
+            update_es(self.user_item_matrix)
 
             logger.info("Collaborative filtering data successfully reinitialized!")
             return True
@@ -103,8 +110,11 @@ class Recommender:
 
     def get_item_based_recommendations(self, product_idx, top_n=5):
         """아이템 기반 협업 필터링 추천"""
-        if product_idx not in self.item_similarity_df.index:
+        if product_idx not in self.user_item_matrix.columns:
             return None, f"제품 ID '{product_idx}'를 찾을 수 없습니다."
+
+        logger.info("Calculating item similarity...")
+        self.item_similarity_df = calculate_item_similarity(self.user_item_matrix, product_idx)
 
         recommendations = item_based_recommend(
             product_idx,
@@ -117,8 +127,11 @@ class Recommender:
 
     def get_user_based_recommendations(self, user_idx, top_n=5):
         """사용자 기반 협업 필터링 추천"""
-        if user_idx not in self.user_similarity_df.index:
+        if user_idx not in self.user_item_matrix.index:
             return None, f"사용자 ID '{user_idx}'를 찾을 수 없습니다."
+
+        logger.info("Calculating user similarity...")
+        self.user_similarity_df = calculate_user_similarity(self.user_item_matrix, user_idx)
 
         recommendations = user_based_recommend(
             user_idx,

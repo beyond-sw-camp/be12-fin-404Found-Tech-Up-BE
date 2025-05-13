@@ -97,7 +97,7 @@ public class ProductService {
     }
 
     public List<ProductResponseDto> getContentBasedRecommendations(Long productIdx, Integer resultNum) {
-        String url = "http://192.0.40.205:8000/recommend";
+        String url = "http://recommender-svc:8000/recommend";
 
         // 요청 전 시간 기록
         long startTime = System.currentTimeMillis();
@@ -144,7 +144,7 @@ public class ProductService {
     }
 
     public List<ProductResponseDto> getItemBasedRecommendations(Long productIdx, Integer resultNum) {
-        String url = "http://192.0.40.205:8000/recommend/item-based";
+        String url = "http://recommender-svc:8000/recommend/item-based";
 
         // 요청 전 시간 기록
         long startTime = System.currentTimeMillis();
@@ -190,7 +190,7 @@ public class ProductService {
     }
 
     public List<ProductResponseDto> getUserBasedRecommendations(Long userIdx, Integer resultNum) {
-        String url = "http://192.0.40.205:8000/recommend/user-based";
+        String url = "http://recommender-svc:8000/recommend/user-based";
 
         // 요청 전 시간 기록
         long startTime = System.currentTimeMillis();
