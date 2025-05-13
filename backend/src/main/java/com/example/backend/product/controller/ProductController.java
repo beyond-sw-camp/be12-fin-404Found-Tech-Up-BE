@@ -44,7 +44,8 @@ public class ProductController {
             @RequestParam(defaultValue = "30") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        if (category == null || category.isEmpty()) {
+        log.info("listing category {}", category);
+        if (category == null || category.isBlank() || category.equals("ALL")) {
             Page<ProductResponseDto> dtos = productService.getProductList(pageable);
             return baseResponseService.getSuccessResponse(dtos, ProductResponseStatus.SUCCESS);
         } else {
