@@ -35,6 +35,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -45,6 +47,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /*
@@ -65,7 +68,9 @@ public class CouponService {
 
     private final CouponDBService couponDBService;
 
-    private final CouponCacheService couponCacheService;
+    private final AtomicBoolean serializationErrorLogged = new AtomicBoolean(false);
+
+    private final Logger log = LoggerFactory.getLogger(CouponService.class);
 
     private final RedissonClient redissonClient;
 
@@ -272,6 +277,7 @@ public class CouponService {
 
         RLock lock = redissonClient.getLock("lock:coupon:" + couponId);
         boolean locked = false;
+
         try {
             // 최대 5초 대기, 성공 시 10초 후 자동 해제
             locked = lock.tryLock(5, 10, TimeUnit.SECONDS);
@@ -293,21 +299,26 @@ public class CouponService {
                 throw new RuntimeException("쿠폰이 모두 소진되었습니다.");
             }
 
-            // 3) 발급 로그 및 DB 저장
-            couponRedisRepository.rPush(
-                    "list.received.user",
-                    objectMapper.writeValueAsString(user)
-            );
-            couponDBService.saveIssuedCouponToDB(user.getUserIdx(), couponId);
+            // 3) 발급 로그 (Redis 리스트에) 및 DB 저장
+            try {
+                couponRedisRepository.rPush(
+                        "list.received.user",
+                        objectMapper.writeValueAsString(user)
+                );
+            } catch (JsonProcessingException e) {
+                // 최초 1회만 WARN 레벨로 로깅
+                if (serializationErrorLogged.compareAndSet(false, true)) {
+                    log.warn("[직렬화 실패] userId={}", userIdx, e);
+                }
+                throw new RuntimeException("직렬화 실패", e);
+            }
 
+            couponDBService.saveIssuedCouponToDB(user.getUserIdx(), couponId);
             return true;
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("락 대기 중 인터럽트", e);
-
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("직렬화 실패", e);
 
         } finally {
             if (locked && lock.isHeldByCurrentThread()) {
@@ -315,7 +326,6 @@ public class CouponService {
             }
         }
     }
-
 
     @Transactional
     public void createEvent(EventCouponCreateRequestDto request) {
