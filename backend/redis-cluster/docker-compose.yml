@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  redis-node-0:
+    image: redis:6.2
+    container_name: redis-node-0
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - ./redis-cluster/conf/redis.conf/redis-7000.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "17000:7000"
+    networks:
+      redis-cluster:
+        ipv4_address: 172.28.0.10
+
+  redis-node-1:
+    image: redis:6.2
+    container_name: redis-node-1
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - ./redis-cluster/conf/redis.conf/redis-7001.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "17001:7001"
+    networks:
+      redis-cluster:
+        ipv4_address: 172.28.0.11
+
+  redis-node-2:
+    image: redis:6.2
+    container_name: redis-node-2
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - ./redis-cluster/conf/redis.conf/redis-7002.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "17002:7002"
+    networks:
+      redis-cluster:
+        ipv4_address: 172.28.0.12
+
+  redis-node-3:
+    image: redis:6.2
+    container_name: redis-node-3
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - ./redis-cluster/conf/redis.conf/redis-7003.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "17003:7003"
+    networks:
+      redis-cluster:
+        ipv4_address: 172.28.0.13
+
+  redis-node-4:
+    image: redis:6.2
+    container_name: redis-node-4
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - ./redis-cluster/conf/redis.conf/redis-7004.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "17004:7004"
+    networks:
+      redis-cluster:
+        ipv4_address: 172.28.0.14
+
+  redis-node-5:
+    image: redis:6.2
+    container_name: redis-node-5
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - ./redis-cluster/conf/redis.conf/redis-7005.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "17005:7005"
+    networks:
+      redis-cluster:
+        ipv4_address: 172.28.0.15
+
+networks:
+  redis-cluster:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
