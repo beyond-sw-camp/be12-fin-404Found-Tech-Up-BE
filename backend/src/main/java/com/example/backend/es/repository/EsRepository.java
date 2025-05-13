@@ -13,7 +13,7 @@ public interface EsRepository {
      * @param idx 사용자 인덱스
      * @return 사용자 정보
      */
-    Optional<EsEntity> findEntityById(String idx);
+    Optional<EsEntity> findEntityById(String idx, String type);
 
     /**
      * 벡터 유사성 검색으로 관련 사용자 찾기
