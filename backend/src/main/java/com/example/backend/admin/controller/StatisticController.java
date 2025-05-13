@@ -26,6 +26,7 @@ import java.util.List;
 public class StatisticController {
     private final StatisticsService statisticsService;
 
+    @Operation(summary="관리자 대시보드용 통계", description = "접속한 관리자 유저에게 대시보드 통계를 반환합니다.")
     @GetMapping
     public BaseResponse<StatisticsResponseDto> statistics(@AuthenticationPrincipal User user) {
         if (user == null || !user.getIsAdmin()) {
@@ -49,6 +50,7 @@ public class StatisticController {
         return ResponseEntity.ok(statisticsService.getTotalRefunds());
     }
     */
+    @Operation(summary="총 주문 수", description = "총 주문 수를 정수로 반환합니다")
     @GetMapping("/order")
     public ResponseEntity<Integer> getTotalOrder() {
         return ResponseEntity.ok(statisticsService.getTotalOrders());
@@ -63,6 +65,7 @@ public class StatisticController {
         return new BaseResponseServiceImpl().getSuccessResponse(statisticsService.getTopSales(), CommonResponseStatus.SUCCESS);
     }
 
+    @Operation(summary="상위 매출 목록", description = "상위 매출 목록을 정수 리스트로 반환합니다.")
     @GetMapping("/incomes")
     public BaseResponse<List<Integer>> getTopIncomes() {
         return new BaseResponseServiceImpl().getSuccessResponse(statisticsService.getRecentEarningList(), CommonResponseStatus.SUCCESS);
