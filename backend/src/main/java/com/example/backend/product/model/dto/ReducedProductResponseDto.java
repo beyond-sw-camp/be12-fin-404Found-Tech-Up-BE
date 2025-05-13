@@ -34,12 +34,12 @@ public class ReducedProductResponseDto {
     private List<String> image;
 
     @Schema(description = "누적 리뷰 수를 불러옵니다", example="2")
-    private Integer reviews;
+    private List<Integer> reviews;
 
 
     public static ReducedProductResponseDto from(ProductIndexDocument product) {
         List<String> images = new ArrayList<>();
-        images.add(product.getImage());
+        images.add("https://"+ product.getImage());
         return ReducedProductResponseDto.builder()
                 .idx(product.getProductidx())
                 .name(product.getProductname())
@@ -51,13 +51,13 @@ public class ReducedProductResponseDto {
                 .category(product.getCategory())
                 .rating(product.getRating())
                 .image(images)
-                .reviews(product.getReviews())
+                .reviews(new ArrayList<>(product.getReviews()))
                 .build();
     }
     public static ReducedProductResponseDto from(Product product) {
         List<String> images = new ArrayList<>();
         if (product.getImages() != null) {
-            images.add(product.getImages().get(0).getImageUrl());
+            images.add("https://"+ product.getImages().get(0).getImageUrl());
         }
         return ReducedProductResponseDto.builder()
                 .idx(product.getProductIdx())
@@ -70,7 +70,7 @@ public class ReducedProductResponseDto {
                 .category(product.getCategory())
                 .rating(product.getRating())
                 .image(images)
-                .reviews(product.getReviews().size())
+                .reviews(product.getReviews() != null ? product.getReviews().stream().map(Review::getReviewRating).toList(): null)
                 .build();
     }
 }
