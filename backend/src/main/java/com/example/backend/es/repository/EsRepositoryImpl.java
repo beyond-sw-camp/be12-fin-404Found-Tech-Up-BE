@@ -5,14 +5,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,8 +51,13 @@ public class EsRepositoryImpl implements EsRepository {
     }
 
     @Override
-    public List<EsEntity> findSimilarEntities(List<Float> vector, int resultNum) {
-        String url = String.format("%s/user-based/_search?pretty", "http://192.0.40.207:9200");
+    public List<EsEntity> findSimilarEntities(List<Float> vector, int resultNum, String type) {
+        String url;
+        if (type.equals("user")){
+            url = String.format("%s/user-based/_search?pretty", "http://192.0.40.207:9200");
+        } else {
+            url = String.format("%s/item-based/_search?pretty", "http://192.0.40.207:9200");
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
