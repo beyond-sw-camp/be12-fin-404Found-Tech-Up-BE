@@ -19,11 +19,11 @@ public class UserCoupon {
     private Boolean couponUsed;
 
     // 쿠폰과 다대일 맵핑
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_idx")
     private Coupon coupon;
     // 유저와 다대일 맵핑
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx")
     private User user;
     // 오더디테일과 일대일 맵핑

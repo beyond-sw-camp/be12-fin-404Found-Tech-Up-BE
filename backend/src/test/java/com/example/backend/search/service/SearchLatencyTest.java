@@ -1,5 +1,7 @@
 package com.example.backend.search.service;
 
+import com.example.backend.search.model.ProductIndexDocument;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,11 @@ import java.time.Duration;
 @SpringBootTest
 @ActiveProfiles("test")
 public class SearchLatencyTest {
+
+    @Autowired
+    private ProductIndexDocument productIndexDocument;
+
+
 
     private final String BASE_URL = "https://localhost:8443/product/list?page=0&size=10"; // HTTPS 주의
     private final String ELASTICSEARCH_URL = "https://localhost:8443/search?keyword=AMD&category=CPU&priceLow=10000&priceHigh=100000&page=0&size=10";

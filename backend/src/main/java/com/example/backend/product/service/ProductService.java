@@ -50,9 +50,14 @@ public class ProductService {
     private final ProductImageService productImageService;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public Page<ProductResponseDto> getProductList(Pageable pageable) {
+    public Page<ReducedProductResponseDto> getProductList(Pageable pageable) {
         return productRepository.findAll(pageable)
-                .map(ProductResponseDto::from);
+                .map(ReducedProductResponseDto::from);
+    }
+
+    public Page<ReducedProductResponseDto> getProductList(String category, Pageable pageable) {
+        return productRepository.findAllByCategoryIgnoreCase(category, pageable)
+                .map(ReducedProductResponseDto::from);
     }
 
     public ProductResponseDto getProductDetail(Long productId) {
@@ -61,8 +66,12 @@ public class ProductService {
         return ProductResponseDto.from(product);
     }
 
-    public Page<ProductResponseDto> searchProduct(String keyword, Pageable pageable) {
-        return productRepository.findByNameContaining(keyword, pageable)
+    public Page<ProductResponseDto> searchProduct(String keyword, String category, Pageable pageable) {
+        if (category == null || category.isEmpty()) {
+            return productRepository.findByNameContainingIgnoreCase(keyword, pageable)
+                    .map(ProductResponseDto::from);
+        }
+        return productRepository.findByNameContainingIgnoreCaseAndCategoryContaining(keyword, category, pageable)
                 .map(ProductResponseDto::from);
     }
 
@@ -88,7 +97,7 @@ public class ProductService {
     }
 
     public List<ProductResponseDto> getContentBasedRecommendations(Long productIdx, Integer resultNum) {
-        String url = "http://192.0.40.205:8000/recommend";
+        String url = "http://recommender-svc:8000/recommend";
 
         // 요청 전 시간 기록
         long startTime = System.currentTimeMillis();
@@ -135,7 +144,7 @@ public class ProductService {
     }
 
     public List<ProductResponseDto> getItemBasedRecommendations(Long productIdx, Integer resultNum) {
-        String url = "http://192.0.40.205:8000/recommend/item-based";
+        String url = "http://recommender-svc:8000/recommend/item-based";
 
         // 요청 전 시간 기록
         long startTime = System.currentTimeMillis();
@@ -181,7 +190,7 @@ public class ProductService {
     }
 
     public List<ProductResponseDto> getUserBasedRecommendations(Long userIdx, Integer resultNum) {
-        String url = "http://192.0.40.205:8000/recommend/user-based";
+        String url = "http://recommender-svc:8000/recommend/user-based";
 
         // 요청 전 시간 기록
         long startTime = System.currentTimeMillis();

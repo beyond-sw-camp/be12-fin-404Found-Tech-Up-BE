@@ -38,13 +38,20 @@ public class ProductController {
 
     @Operation(summary = "상품 리스트 조회 (paged)", description = "페이지 단위로 상품 리스트를 조회합니다.")
     @GetMapping("/list")
-    public BaseResponse<Page<ProductResponseDto>> getProductList(
+    public BaseResponse<Page<ReducedProductResponseDto>> getProductList(
+            @RequestParam(defaultValue = "") String category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "30") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProductResponseDto> dtos = productService.getProductList(pageable);
-        return baseResponseService.getSuccessResponse(dtos, ProductResponseStatus.SUCCESS);
+        log.info("listing category {}", category);
+        if (category == null || category.isBlank() || category.equals("ALL")) {
+            Page<ReducedProductResponseDto> dtos = productService.getProductList(pageable);
+            return baseResponseService.getSuccessResponse(dtos, ProductResponseStatus.SUCCESS);
+        } else {
+            Page<ReducedProductResponseDto> dtos = productService.getProductList(category, pageable);
+            return baseResponseService.getSuccessResponse(dtos, ProductResponseStatus.SUCCESS);
+        }
     }
 
     @Operation(summary = "상품 상세 조회", description = "상품 ID로 상세 정보를 조회합니다.")
@@ -56,23 +63,30 @@ public class ProductController {
 
     @Operation(
             summary = "상품 검색",
-            description = "이름에 특정 키워드가 포함된 상품을 검색합니다.",
+            description = "이름에 특정 키워드가 포함된 카테고리별 상품을 검색합니다.",
             parameters = {
                     @io.swagger.v3.oas.annotations.Parameter(
                             name = "keyword",
                             description = "상품 이름에 포함된 키워드 (예: i7)",
                             example = "i7"
+                    ),
+                    @io.swagger.v3.oas.annotations.Parameter(
+                            name = "category",
+                            description = "상품 분류",
+                            example = "CPU"
                     )
             }
     )
+
     @GetMapping("/search")
     public BaseResponse<Page<ProductResponseDto>> searchProduct(
             @RequestParam String keyword,
+            @RequestParam String category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "30") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProductResponseDto> results = productService.searchProduct(keyword, pageable);
+        Page<ProductResponseDto> results = productService.searchProduct(keyword, category, pageable);
         return baseResponseService.getSuccessResponse(results, ProductResponseStatus.SUCCESS);
     }
 

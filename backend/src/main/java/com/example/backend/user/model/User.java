@@ -15,6 +15,7 @@ import lombok.Setter;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+import org.hibernate.annotations.BatchSize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -59,6 +60,7 @@ public class User implements UserDetails {
     private Map<String, Object> oauth2Attributes;
 
     // review와 일대다 맵핑
+    @BatchSize(size=10)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Review> reviews;
 
@@ -67,25 +69,31 @@ public class User implements UserDetails {
     private Cart cart;
 
     // WishList와 일대다 맵핑
+    @BatchSize(size=10)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Wishlist> wishlists;
 
     // Order와 일대다 맵핑
+    @BatchSize(size=100)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Orders> orders;
 
+    @BatchSize(size=100)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Board> posts;
 
     // Order와 일대다 맵핑
+    @BatchSize(size=10)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<ShippingAddress> shippingAddresses;
 
     // UserCoupon 과 일대다 맵핑
+    @BatchSize(size=100)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserCoupon> userCoupons;
 
     // UserCoupon 과 일대다 맵핑
+    @BatchSize(size=100)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserProduct> userProducts;
 

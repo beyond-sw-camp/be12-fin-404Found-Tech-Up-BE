@@ -1,21 +1,19 @@
 spring:
   application:
     name: techup-backend
-
-
   redis:
-    host: 192.0.40.206
-    port: 6379
-    timeout: 3s
-    connect-timeout: 5s
-    lettuce:
-      pool:
-        max-active: 50
-        min-idle: 10
+    cluster:
+      max-redirects: 3
+      nodes: redis-cluster-0.redis-cluster.default.svc.cluster.local:6379,redis-cluster-1.redis-cluster.default.svc.cluster.local:6379,redis-cluster-2.redis-cluster.default.svc.cluster.local:6379
+    password: ${REDIS_PASSWORD}
+  autoconfigure:
+    exclude: org.redisson.spring.starter.RedissonAutoConfigurationV2
+
   data:
     elasticsearch:
       repositories:
         enabled: true
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -35,9 +33,11 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
   jpa:
     hibernate:
       ddl-auto: update
+
   elasticsearch:
     uris: ${ELASTIC_HOST}:9200
     username: elastic
@@ -65,12 +65,12 @@ spring:
             client-name: Kakao
             scope:
               - profile_nickname
-        provider:
-          kakao:
-            authorization-uri: https://kauth.kakao.com/oauth/authorize
-            token-uri: https://kauth.kakao.com/oauth/token
-            user-info-uri: https://kapi.kakao.com/v2/user/me
-            user-name-attribute: id
+      provider:
+        kakao:
+          authorization-uri: https://kauth.kakao.com/oauth/authorize
+          token-uri: https://kauth.kakao.com/oauth/token
+          user-info-uri: https://kapi.kakao.com/v2/user/me
+          user-name-attribute: id
 
 jwtData:
   secret: ${JWT_SECRET}
@@ -97,6 +97,8 @@ management:
       show-details: always
       show-components: always
   health:
+    redis:
+      enabled: true
     db:
       enabled: true
     mail:
@@ -109,7 +111,7 @@ management:
       enabled: false
 
 kafka:
-   enabled: true
+  enabled: true
 
 server:
   port: 8443
@@ -118,6 +120,7 @@ server:
     key-store-password: qwer1234
     key-store-type: PKCS12
     key-alias: springboot
+
 elasticsearch:
   host: ${ELASTIC_HOST}
   username: elastic
