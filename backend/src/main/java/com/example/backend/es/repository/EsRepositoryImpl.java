@@ -28,8 +28,13 @@ public class EsRepositoryImpl implements EsRepository {
     }
 
     @Override
-    public Optional<EsEntity> findEntityById(String idx) {
-        String url = String.format("%s/user-based/_doc/%s?pretty", "http://192.0.40.207:9200", idx);
+    public Optional<EsEntity> findEntityById(String idx, String type) {
+        String url;
+        if (type.equals("user")){
+            url = String.format("%s/user-based/_doc/%s?pretty", "http://192.0.40.207:9200", idx);
+        } else {
+            url = String.format("%s/item-based/_doc/%s?pretty", "http://192.0.40.207:9200", idx);
+        }
 
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
