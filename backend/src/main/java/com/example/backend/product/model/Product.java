@@ -11,6 +11,7 @@ import com.example.backend.user.model.UserProduct;
 import com.example.backend.wishlist.model.Wishlist;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.List;
 
@@ -62,22 +63,27 @@ public class Product {
     private List<Review> reviews;
 
     // 사용자의 제품과 일대다 맵핑
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "products")
     private List<UserProduct> userProducts;
 
     // 쿠폰과 일대다 맵핑
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "product")
     private List<Coupon> coupons;
 
     // 주문 상세 정보와 일대다 맵핑
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "product")
     private List<OrderDetail> orderDetails;
 
     // 카트아이템과 일대다 맵핑
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "product")
     private List<CartItem> cartItems;
 
     // 위시리스트와 일대다 맵핑
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "product")
       private List<Wishlist> wishlists;
 
