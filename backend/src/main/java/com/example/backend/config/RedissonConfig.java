@@ -37,6 +37,7 @@ public class RedissonConfig {
             config.setNettyThreads(32);
             config.useClusterServers()
                     .addNodeAddress( nodeAddresses )
+                    .setTimeout(30000)
                     .setPassword(redisPassword.isEmpty() ? null : redisPassword)
                     .setScanInterval(2000);;
 

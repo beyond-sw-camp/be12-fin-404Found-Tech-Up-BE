@@ -13,6 +13,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -146,7 +147,7 @@ public class HttpClientUtil {
                     """;
             }
 
-            HttpRequest request = HttpRequest.newBuilder()
+            HttpRequest request = HttpRequest.newBuilder().timeout(Duration.ofSeconds(30))
                 .uri(URI.create("http://"+ elasticHost_static + ":9200/product/_search" ))
                 .method("GET", HttpRequest.BodyPublishers.ofString(body))
                 .setHeader("Content-Type", "application/json")
