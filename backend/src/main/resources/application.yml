@@ -3,9 +3,14 @@ spring:
     name: techup-backend
   redis:
     cluster:
-      max-redirects: 3
-      nodes: redis-cluster-0.redis-cluster.default.svc.cluster.local:6379,redis-cluster-1.redis-cluster.default.svc.cluster.local:6379,redis-cluster-2.redis-cluster.default.svc.cluster.local:6379
-    password: ${REDIS_PASSWORD}
+      nodes:
+        - localhost:17000
+        - localhost:17001
+        - localhost:17002
+        - localhost:17003
+        - localhost:17004
+        - localhost:17005
+
   autoconfigure:
     exclude: org.redisson.spring.starter.RedissonAutoConfigurationV2
 
@@ -33,15 +38,12 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-  elasticsearch:
-    uris: ${ELASTIC_HOST}:9200
-    username: elastic
-    password: changeme
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
 
   cloud:
     aws:
@@ -53,24 +55,34 @@ spring:
       region:
         static: ${AWS_REGION}
 
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+
   security:
     oauth2:
       client:
         registration:
           kakao:
             client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
             redirect-uri: ${KAKAO_REDIRECT_URI}
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
             client-name: Kakao
             scope:
               - profile_nickname
-      provider:
-        kakao:
-          authorization-uri: https://kauth.kakao.com/oauth/authorize
-          token-uri: https://kauth.kakao.com/oauth/token
-          user-info-uri: https://kapi.kakao.com/v2/user/me
-          user-name-attribute: id
+              - account_email
+            provider: kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
 
 jwtData:
   secret: ${JWT_SECRET}
@@ -86,6 +98,9 @@ logging:
     com.example.backend: trace
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
+    org.hibernate.SQL: off
+    org.hibernate.type.descriptor.sql.BasicBinder: off
+    org.springframework.orm.jpa: error
 
 management:
   endpoints:
@@ -111,7 +126,7 @@ management:
       enabled: false
 
 kafka:
-  enabled: true
+  enabled: false
 
 server:
   port: 8443

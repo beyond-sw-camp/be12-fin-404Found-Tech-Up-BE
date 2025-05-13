@@ -1,21 +1,37 @@
-# src/main/resources/application-test.yml
-
 spring:
-  config:
-    activate:
-      on-profile: test
+  application:
+    name: techup-backend
+  redis:
+    cluster:
+      nodes:
+        - localhost:17000
+        - localhost:17001
+        - localhost:17002
+        - localhost:17003
+        - localhost:17004
+        - localhost:17005
 
-redis:
-  host: 192.0.40.206
-  port: 6379
+  autoconfigure:
+    exclude: org.redisson.spring.starter.RedissonAutoConfigurationV2
 
-  timeout: 10s
-  connect-timeout: 10s
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
 
-  lettuce:
-    pool:
-      max-active: 5
-      min-idle: 1
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_ADDR}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+            required: true
+          auth: true
+          timeout: 5000
 
   datasource:
     url: ${DB_URL}
@@ -24,19 +40,103 @@ redis:
     password: ${DB_PASSWORD}
     hikari:
       maximum-pool-size: 50
+      minimum-idle: 10
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+
   cloud:
     aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      s3:
+        bucket: ${AWS_S3_BUCKET}
       region:
-        static: ap-northeast-2
+        static: ${AWS_REGION}
+
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            redirect-uri: ${KAKAO_REDIRECT_URI}
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            client-name: Kakao
+            scope:
+              - profile_nickname
+              - account_email
+            provider: kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+jwtData:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+
+portone:
+  secret: ${PORTONE_SECRET}
+  store-id: ${PORTONE_STOREID}
+  channel-key: ${PORTONE_CHANNEL_KEY}
+
 logging:
   level:
+    com.example.backend: trace
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
     org.hibernate.SQL: off
     org.hibernate.type.descriptor.sql.BasicBinder: off
     org.springframework.orm.jpa: error
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
+    mail:
+      enabled: false
+    diskspace:
+      enabled: false
+    ping:
+      enabled: false
+    ssl:
+      enabled: false
+
+kafka:
+  enabled: false
+
+server:
+  port: 8443
+  ssl:
+    key-store: classpath:keystore.p12
+    key-store-password: qwer1234
+    key-store-type: PKCS12
+    key-alias: springboot
+
+elasticsearch:
+  host: ${ELASTIC_HOST}
+  username: elastic
+  password: changeme

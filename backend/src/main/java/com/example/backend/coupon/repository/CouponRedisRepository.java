@@ -1,6 +1,7 @@
 package com.example.backend.coupon.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -59,7 +60,7 @@ public class CouponRedisRepository {
         }
     }
 
-    /** 모든 키-값 초기화 */
+/** 모든 키-값 초기화 */
     public void flushAll() {
         redisTemplate.getConnectionFactory()
                 .getConnection()

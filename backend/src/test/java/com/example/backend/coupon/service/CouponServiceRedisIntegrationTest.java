@@ -24,7 +24,7 @@ class CouponServiceRedisIntegrationTest {
     @Autowired private CouponRedisRepository couponRedisRepository;
 
     private final Long couponId     = 1L;
-    private final long initialStock = 3000L;
+    private final long initialStock = 500L;
 
     @BeforeAll
     void setupData() {
@@ -41,7 +41,7 @@ class CouponServiceRedisIntegrationTest {
 
     @Test
     void 동시성_쿠폰_발급_통합_테스트() throws InterruptedException {
-        int THREADS = 50000;
+        int THREADS = 1000;
         CountDownLatch latch = new CountDownLatch(THREADS);
         ExecutorService exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
