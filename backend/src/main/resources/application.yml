@@ -1,7 +1,7 @@
 spring:
   application:
     name: techup-backend
-    
+
   redis:
     host: 192.0.40.206
     port: 6379
@@ -119,6 +119,7 @@ kafka:
 
 server:
   port: 8443
+  connection-time
   ssl:
     key-store: classpath:keystore.p12
     key-store-password: qwer1234

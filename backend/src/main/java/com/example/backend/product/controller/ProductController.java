@@ -80,8 +80,8 @@ public class ProductController {
 
     @GetMapping("/search")
     public BaseResponse<Page<ProductResponseDto>> searchProduct(
-            @RequestParam String keyword,
-            @RequestParam String category,
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "") String category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "30") int size
     ) {
