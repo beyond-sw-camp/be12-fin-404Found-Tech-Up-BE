@@ -14,6 +14,9 @@ import com.example.backend.product.model.Product;
 import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,12 +25,14 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = "cart")
 public class CartService {
 
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
 
     // 로그인한 사용자의 장바구니 목록 조회
+    @Cacheable(key = "#user.userIdx")
     public List<CartItemResponseDto> getCartItems(User user) {
         Cart cart = getOrCreateCart(user);
         return cart.getCartItems().stream()
@@ -37,6 +42,7 @@ public class CartService {
 
     // 장바구니에 상품 추가
     // CartItemRequestDto의 'idx' 필드를 상품 수량으로 사용
+    @CacheEvict(key = "#user.userIdx")
     public CartItemResponseDto addToCart(User user, Long productId, CartItemRequestDto dto) {
         Cart cart = getOrCreateCart(user);
         Product product = productRepository.findById(productId)
@@ -78,6 +84,7 @@ public class CartService {
     }
 
     // 장바구니 항목 삭제
+    @CacheEvict(key = "#user.userIdx")
     public CartItemUpdateResponseDto removeCartItem(User user, Long cartItemId) {
         Cart cart = getOrCreateCart(user);
         Optional<CartItem> optionalItem = cart.getCartItems().stream()
@@ -91,6 +98,8 @@ public class CartService {
         return CartItemUpdateResponseDto.from(cartItemId);
     }
 
+    // 장바구니 비우기
+    @CacheEvict(key = "#user.userIdx")
     public CartItemUpdateResponseDto clearCart(User user) {
         Cart cart = getOrCreateCart(user);
         cart.getCartItems().clear();
@@ -99,6 +108,7 @@ public class CartService {
     }
 
     // 장바구니 항목 수량 업데이트
+    @CacheEvict(key = "#user.userIdx")
     public CartItemUpdateResponseDto updateCartItemQuantity(User user, Long productId, int deltaQuantity) {
         Cart cart = getOrCreateCart(user);
 
