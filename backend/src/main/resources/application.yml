@@ -40,11 +40,6 @@ spring:
     hibernate:
       ddl-auto: update
 
-  elasticsearch:
-    uris: ${ELASTIC_HOST}:9200
-    username: elastic
-    password: changeme
-
   cloud:
     aws:
       credentials:

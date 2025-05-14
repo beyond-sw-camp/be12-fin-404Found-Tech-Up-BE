@@ -52,10 +52,10 @@ public class EsController {
 
     @Operation(summary = "User-based recommendations")
     @PostMapping("/recommend/user-based")
-    public BaseResponse<List<ProductResponseDto>> recommendUserBased(
+    public BaseResponse<List<EsEntity>> recommendUserBased(
             @AuthenticationPrincipal User user, @RequestBody ProductRecommendUserRequestDto request
     ) {
-        List<ProductResponseDto> recs =
+        List<EsEntity> recs =
                 esService.getUserBasedRecommendations(user.getUserIdx(), request.getResultNum());
         return baseResponseService.getSuccessResponse(recs, ProductResponseStatus.SUCCESS);
     }

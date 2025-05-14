@@ -2,6 +2,7 @@ package com.example.backend.review.model;
 
 import com.example.backend.product.model.Product;
 import com.example.backend.user.model.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,6 +34,7 @@ public class Review {
     private String reviewImg;
 
     @Schema(description = "리뷰 작성 날짜", example = "2025-04-01 14:30:00")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime reviewDate;
 
     @ManyToOne(fetch = FetchType.LAZY)

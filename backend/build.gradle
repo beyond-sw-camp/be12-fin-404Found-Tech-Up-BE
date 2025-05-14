@@ -36,7 +36,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
-
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
 	// Kafka 의존성
 	implementation 'org.springframework.kafka:spring-kafka'
