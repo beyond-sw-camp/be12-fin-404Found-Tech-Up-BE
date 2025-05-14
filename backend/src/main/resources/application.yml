@@ -66,12 +66,14 @@ spring:
             client-name: Kakao
             scope:
               - profile_nickname
-      provider:
-        kakao:
-          authorization-uri: https://kauth.kakao.com/oauth/authorize
-          token-uri: https://kauth.kakao.com/oauth/token
-          user-info-uri: https://kapi.kakao.com/v2/user/me
-          user-name-attribute: id
+              - account_email
+            provider: kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
 
 jwtData:
   secret: ${JWT_SECRET}
@@ -112,7 +114,7 @@ management:
       enabled: false
 
 kafka:
-  enabled: true
+  enabled: false
 
 server:
   port: 8443
