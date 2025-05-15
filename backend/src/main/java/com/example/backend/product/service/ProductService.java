@@ -50,16 +50,16 @@ public class ProductService {
     private final ProductImageService productImageService;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public Page<ReducedProductResponseDto> getProductList(Pageable pageable) {
+    public Page<ProductResponseDto> getProductList(Pageable pageable) {
         return productRepository.findAll(pageable)
-                .map(ReducedProductResponseDto::from);
+                .map(ProductResponseDto::from);
     }
 
-    public Page<ReducedProductResponseDto> getProductList(String category, Pageable pageable) {
+    public Page<ProductResponseDto> getProductList(String category, Pageable pageable) {
         return productRepository.findAllByCategoryIgnoreCase(category, pageable)
-                .map(ReducedProductResponseDto::from);
+                .map(ProductResponseDto::from);
     }
-
+    /*
     public Page<ProductResponseDto> getProductListWithSpec(Pageable pageable) {
         return productRepository.findAll(pageable)
                 .map(ProductResponseDto::from);
@@ -69,7 +69,7 @@ public class ProductService {
         return productRepository.findAllByCategoryIgnoreCase(category, pageable)
                 .map(ProductResponseDto::from);
     }
-
+    */
     public ProductResponseDto getProductDetail(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
