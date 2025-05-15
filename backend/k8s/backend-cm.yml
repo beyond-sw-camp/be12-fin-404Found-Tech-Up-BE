@@ -9,7 +9,7 @@ data:
   DB_PASSWORD: qwer1234
   DB_URL: jdbc:mariadb://mariadb:3306/techup
   DB_USERNAME: test
-  ELASTIC_HOST: elasticsearch
+  ELASTIC_HOST: 192.0.40.207
   MASTER_DB_URL: jdbc:mariadb://mariadb:3306/techup
   SLAVE_DB_URL: jdbc:mariadb://mariadb:3306/techup
   REDIS_HOST: 'redis-cluster-headless'

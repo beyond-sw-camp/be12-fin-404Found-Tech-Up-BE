@@ -26,9 +26,9 @@ public class SearchService {
     @Value("${elasticsearch.host}")
     private String elasticHost;
 
-    public List<ReducedProductResponseDto> searchByName(String name, String category, Double priceLow, Double priceHigh, Integer page, Integer size) {
+    public List<ReducedProductResponseDto> searchByName(String name, String category, Integer page, Integer size) {
         try {
-            List<ProductIndexDocument> nodes = HttpClientUtil.getSearchResults(elasticHost, category, priceLow, priceHigh, name, page, size);
+            List<ProductIndexDocument> nodes = HttpClientUtil.getSearchResults(elasticHost, category, name, page, size);
             return nodes.stream().map(ReducedProductResponseDto::from).toList();
         } catch (Exception e) {
             e.printStackTrace();
