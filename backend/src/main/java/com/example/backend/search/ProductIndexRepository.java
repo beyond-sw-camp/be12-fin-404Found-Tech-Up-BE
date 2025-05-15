@@ -9,7 +9,7 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import java.util.List;
 
 public interface ProductIndexRepository extends ElasticsearchRepository<ProductIndexDocument, Long> {
-    List<ProductIndexDocument> findAllByProductnameContainingIgnoreCase(String productName);
+    Page<ProductIndexDocument> findAllByProductnameContainingIgnoreCase(String productName, Pageable pageable);
     List<ProductIndexDocument> findAllByProductnameContainingIgnoreCaseAndCategory(String name, String category);
     Page<ProductIndexDocument> findAllByProductnameContainingIgnoreCaseAndPriceBetween(String name, Double lower, Double higher, Pageable pageable);
     List<ProductIndexDocument> findAllByProductnameContainingIgnoreCaseAndCategoryIgnoreCaseAndPriceBetween(String name, String category, Double lower, Double higher);
