@@ -76,13 +76,13 @@ public class ProductService {
         return ProductResponseDto.from(product);
     }
 
-    public Page<ReducedProductResponseDto> searchProduct(String keyword, String category, Pageable pageable) {
+    public Page<ProductResponseDto> searchProduct(String keyword, String category, Pageable pageable) {
         if (category == null || category.isBlank()) {
             return productRepository.findByNameContainingIgnoreCase(keyword, pageable)
-                    .map(ReducedProductResponseDto::from);
+                    .map(ProductResponseDto::from);
         }
         return productRepository.findByNameContainingIgnoreCaseAndCategoryContaining(keyword, category, pageable)
-                .map(ReducedProductResponseDto::from);
+                .map(ProductResponseDto::from);
     }
 
     public Page<ProductResponseDto> filterProduct(ProductFilterRequestDto dto, Pageable pageable) {
