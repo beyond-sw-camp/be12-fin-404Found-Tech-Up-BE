@@ -50,12 +50,12 @@ public class UserNotification {
     private Boolean isRead = false;
 
     /** 알림을 받은 사용자 */
-    @ManyToOne( optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_idx", nullable = false)
     private User user;
 
     /** 참조된 일반 알림 템플릿 */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notification_id")
     private Notification template;
 
