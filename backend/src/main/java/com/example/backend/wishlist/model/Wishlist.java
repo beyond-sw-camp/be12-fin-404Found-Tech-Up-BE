@@ -24,7 +24,7 @@ public class Wishlist {
     private User user;
 
     // 제품과 다대일 맵핑
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_idx")
     private Product product;
 
