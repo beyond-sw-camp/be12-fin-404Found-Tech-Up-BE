@@ -24,7 +24,7 @@ public class SearchController {
 
     @Operation(summary = "빠른 검색", description = "엘라스틱서치에 저장된 결과를 가져옵니다")
     @GetMapping
-    public BaseResponse<List<ReducedProductResponseDto>> getSearchResult(@RequestParam String name, @RequestParam String category, @RequestParam Double priceLow, @RequestParam Double priceHigh, @RequestParam Integer page, @RequestParam Integer size) {
+    public BaseResponse<List<ReducedProductResponseDto>> getSearchResult(@RequestParam String name, @RequestParam String category, @RequestParam Integer page, @RequestParam Integer size) {
         if (name == null || name.isEmpty()) {
             return new BaseResponseServiceImpl().getFailureResponse(ProductResponseStatus.PRODUCT_NOT_FOUND);
         }
