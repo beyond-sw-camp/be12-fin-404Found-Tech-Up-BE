@@ -31,7 +31,7 @@ public class SearchController {
         if (page < 0 || size < 0) {
             return new BaseResponseServiceImpl().getFailureResponse(ProductResponseStatus.PRODUCT_NOT_FOUND);
         }
-        return new BaseResponseServiceImpl().getSuccessResponse(searchService.searchByName(name, category, priceLow, priceHigh, page, size), ProductResponseStatus.SUCCESS);
+        return new BaseResponseServiceImpl().getSuccessResponse(searchService.searchByName(name, category, page, size), ProductResponseStatus.SUCCESS);
     }
 
     @Operation(summary="카테고리 없는 기본 검색")
