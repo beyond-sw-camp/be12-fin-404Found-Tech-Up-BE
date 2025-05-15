@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderDetailRequestDto {
     private Long productIdx;
+    private String productName;
     private Integer orderDetailQuantity;
     private int orderDetailPrice;
     private int orderDetailDiscount;
