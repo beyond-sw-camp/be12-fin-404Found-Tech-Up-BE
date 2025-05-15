@@ -35,7 +35,7 @@ public class CustomOAuth2UserService
         String email = "kakao_" + kakaoId + "@example.com";
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
         Map<String, Object> profile = kakaoAccount != null ? (Map<String, Object>) kakaoAccount.get("profile") : null;
-        String nickname = profile != null ? (String) profile.get("nickname") : null;
+        String nickname = profile != null ? (String) profile.get("profile_nickname") : null;
 
         // 닉네임 중복 방지를 위해 고유 닉네임 생성
         String finalNickname = generateUniqueNickname(nickname, kakaoId);
