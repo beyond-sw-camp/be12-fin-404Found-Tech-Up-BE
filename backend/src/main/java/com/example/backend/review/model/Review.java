@@ -37,12 +37,12 @@ public class Review {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime reviewDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_idx")
     @Schema(description = "리뷰 작성자 유저")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "product_idx")
     @Schema(description = "리뷰가 작성된 제품")
     private Product product;
