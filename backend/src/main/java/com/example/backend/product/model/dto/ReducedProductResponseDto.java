@@ -58,6 +58,8 @@ public class ReducedProductResponseDto {
         List<String> imageList = new ArrayList<>();
         if (product.getImages() != null) {
             imageList.add("https:"+ product.getImages().get(0).getImageUrl());
+        } else {
+            imageList.add("");
         }
         return ReducedProductResponseDto.builder()
                 .idx(product.getProductIdx())
