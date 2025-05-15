@@ -54,6 +54,24 @@ public class ProductController {
         }
     }
 
+    @Operation(summary = "상품 리스트 조회 (스펙 포함, paged)", description = "페이지 단위로 스펙을 포함하여 상품 리스트를 조회합니다.")
+    @GetMapping("/list/full")
+    public BaseResponse<Page<ProductResponseDto>> getProductFullSpecList(
+            @RequestParam(defaultValue = "") String category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        log.info("listing category {}", category);
+        if (category == null || category.isBlank() || category.equals("ALL")) {
+            Page<ProductResponseDto> dtos = productService.getProductListWithSpec(pageable);
+            return baseResponseService.getSuccessResponse(dtos, ProductResponseStatus.SUCCESS);
+        } else {
+            Page<ProductResponseDto> dtos = productService.getProductListWithSpec(category, pageable);
+            return baseResponseService.getSuccessResponse(dtos, ProductResponseStatus.SUCCESS);
+        }
+    }
+
     @Operation(summary = "상품 상세 조회", description = "상품 ID로 상세 정보를 조회합니다.")
     @GetMapping("/{productId}")
     public BaseResponse<ProductResponseDto> getProductDetail(@PathVariable Long productId) {

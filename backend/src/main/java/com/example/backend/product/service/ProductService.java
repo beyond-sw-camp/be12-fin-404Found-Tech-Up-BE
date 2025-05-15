@@ -60,6 +60,16 @@ public class ProductService {
                 .map(ReducedProductResponseDto::from);
     }
 
+    public Page<ProductResponseDto> getProductListWithSpec(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(ProductResponseDto::from);
+    }
+
+    public Page<ProductResponseDto> getProductListWithSpec(String category, Pageable pageable) {
+        return productRepository.findAllByCategoryIgnoreCase(category, pageable)
+                .map(ProductResponseDto::from);
+    }
+
     public ProductResponseDto getProductDetail(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductResponseStatus.PRODUCT_NOT_FOUND));
