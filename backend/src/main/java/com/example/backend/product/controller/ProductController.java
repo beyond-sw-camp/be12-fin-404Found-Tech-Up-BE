@@ -79,14 +79,14 @@ public class ProductController {
     )
 
     @GetMapping("/search")
-    public BaseResponse<Page<ProductResponseDto>> searchProduct(
+    public BaseResponse<Page<ReducedProductResponseDto>> searchProduct(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "") String category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "30") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProductResponseDto> results = productService.searchProduct(keyword, category, pageable);
+        Page<ReducedProductResponseDto> results = productService.searchProduct(keyword, category, pageable);
         return baseResponseService.getSuccessResponse(results, ProductResponseStatus.SUCCESS);
     }
 
