@@ -17,11 +17,11 @@ public class UserProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long usersProductIdx;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_idx")
     private Product products;
 }
