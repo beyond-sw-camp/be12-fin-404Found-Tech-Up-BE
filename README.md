@@ -64,7 +64,7 @@
 
 <img src="https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white" style="border-radius: 5px;"> 
 <img src="https://img.shields.io/badge/AmazonS3-e05242?style=for-the-badge&logo=AmazonS3&logoColor=white" style="border-radius: 5px;">
-<!--<img src="https://img.shields.io/badge/elasticsearch-%230377CC.svg?style=for-the-badge&logo=elasticsearch&logoColor=white" style="border-radius: 5px;">-->
+<img src="https://img.shields.io/badge/elasticsearch-%230377CC.svg?style=for-the-badge&logo=elasticsearch&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/redis-E34F26?style=for-the-badge&logo=redis&logoColor=white" style="border-radius: 5px;">
 
 #### &nbsp;　[ CI/CD ]
