@@ -86,7 +86,7 @@ logging:
     org.springframework.web: DEBUG
 springdoc:
   api-docs:
-    path: /v3/api-docs
+    path: /api/v3/api-docs
 management:
   endpoints:
     web:
