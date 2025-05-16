@@ -174,29 +174,29 @@
 <summary>회원가입 & 탈퇴</summary>
 
 - 이메일 중복 확인
-    - 요청
+    - 요청<br>
     ![image](https://github.com/user-attachments/assets/8b53b224-8ce0-44ce-82cd-a1b1824bc4f8)
-    - 응답
+    - 응답<br>
     ![image](https://github.com/user-attachments/assets/c0f089dd-9fd8-4c58-88e2-18bec812387d)
 - 이메일 인증 전송
-    - 요청
+    - 요청<br>
     ![image](https://github.com/user-attachments/assets/bcd1e0b9-8ca4-4baf-9145-535372e1c27f)
-    - 응답
+    - 응답<br>
     ![image](https://github.com/user-attachments/assets/a96038fa-d285-4268-bcc6-7c7c379b3f74)
 - 이메일 인증 확인
-    - 요청
+    - 요청<br>
     ![image](https://github.com/user-attachments/assets/a5283681-0b05-4d30-a705-cbeb75fa0f3e)
-    - 응답
+    - 응답<br>
     ![image](https://github.com/user-attachments/assets/328bab95-4c83-4ff7-8062-15581d65a8d0)
 - 회원가입
-    - 요청
+    - 요청<br>
     ![image](https://github.com/user-attachments/assets/b9c1d7d4-479c-45b4-863d-24ce7b6232f4)
-    - 응답
+    - 응답<br>
     ![image](https://github.com/user-attachments/assets/4661a892-4f9d-4268-9a85-a94e121e780b)
 - 회원탈퇴
-    - 요청
+    - 요청<br>
     ![image](https://github.com/user-attachments/assets/a4570754-7a7a-454b-a7a5-44e450b5f8b1)
-    - 응답
+    - 응답<br>
     ![image](https://github.com/user-attachments/assets/65f75b7e-3612-4a1a-aacc-df4923bcb64d)
 
 > 닉네임, 이메일, 비밀번호로 회원 가입을 한다.  
@@ -208,14 +208,14 @@
 <summary>로그인 & 로그아웃</summary>
 
 - 로그인
-    - 요청
+    - 요청<br>
     ![image](https://github.com/user-attachments/assets/e70aee98-34de-454a-a735-e8b3de0cd02a)
-    - 응답
+    - 응답<br>
     ![image](https://github.com/user-attachments/assets/4ea47b5d-7240-4bdf-96ac-ab00c116eddb)
 - 로그아웃
-    - 요청
+    - 요청<br>
     ![image](https://github.com/user-attachments/assets/9e299e56-16f7-411b-b9db-a6193a0f8fb4)
-    - 응답
+    - 응답<br>
     ![image](https://github.com/user-attachments/assets/7c592003-5438-4eae-b2b1-2a5741ce98bb)
 > 이메일, 비밀번호로 로그인을 한다.
 
@@ -257,22 +257,22 @@
 <summary>제품 추천</summary>
 
 - 사용자 등록 제품과 유사한 제품 추천
-    - 요청
+    - 요청<br>
     ![image](https://github.com/user-attachments/assets/18f4107b-e989-430f-ad28-8d59282383eb)
-    - 응답
+    - 응답<br>
     ![image](https://github.com/user-attachments/assets/1a8e2984-4cef-4ddc-a41d-fe41fbe9399e)
 > 사용자는 마이페이지의 내 기기 등록에서 본인의 제품을 등록할 수 있다.  
 > 사용자가 등록한 제품과 유사한 제품을 콘텐츠 기반 방법으로 추천한다.  
 - 연관 제품 추천
-    - 요청
+    - 요청<br>
     ![image](https://github.com/user-attachments/assets/9df68c97-7f70-4a15-ae3f-f93cd6ce2e6a)
-    - 응답
+    - 응답<br>
     ![image](https://github.com/user-attachments/assets/1309254d-3977-43cd-8823-5793e891f87d)
 > 특정 제품과 함께 구매된 연관 제품을 아이템 기반 협업필터링 방법으로 추천한다. 
 - 유사한 사용자가 관심을 보인 제품 추천
-    - 요청
+    - 요청<br>
     ![image](https://github.com/user-attachments/assets/d170b141-13ae-4260-b7cf-1cfea4f4fa4c)
-    - 응답
+    - 응답<br>
     ![image](https://github.com/user-attachments/assets/5f9f44fa-c658-4056-b91a-0afa76043e21)
 > 사용자와 유사한 행동패턴을 보인 다른 사용자들이 리뷰한 제품을 사용자 기반 협업필터링 방법으로 추천한다.  
 > user_idx를 입력하지 않아도 로그인한 사용자의 정보를 이용하여 추천한다.
