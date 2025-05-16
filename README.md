@@ -42,7 +42,7 @@
 ## 🛠 기술 스택
 
 #### &nbsp;　[ Frontend ]
-&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white" style="border-radius: 5px;"/>
+<img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white" style="border-radius: 5px;"/>
 <img src="https://img.shields.io/badge/css3-1572B6?style=for-the-badge&logo=css3&logoColor=white" style="border-radius: 5px;"/>
 <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white" style="border-radius: 5px;"/>
 <img src="https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D" style="border-radius: 5px;"/>
@@ -51,7 +51,7 @@
 <img src="https://img.shields.io/badge/nuxt-%2300DC82?style=for-the-badge&logo=nuxt&labelColor=%23FFFFFF" style="border-radius: 5px;"/>
 
 #### &nbsp;　[ Backend ]
-&nbsp;&nbsp;&nbsp;&nbsp;
+
 <img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring-Boot&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=Spring-Security&logoColor=white" style="border-radius: 5px;">
@@ -61,20 +61,20 @@
 
 
 #### &nbsp;　[ DB ]
-&nbsp;&nbsp;&nbsp;</a>
+
 <img src="https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white" style="border-radius: 5px;"> 
 <img src="https://img.shields.io/badge/AmazonS3-e05242?style=for-the-badge&logo=AmazonS3&logoColor=white" style="border-radius: 5px;">
-<img src="https://img.shields.io/badge/elasticsearch-%230377CC.svg?style=for-the-badge&logo=elasticsearch&logoColor=white" style="border-radius: 5px;">
+<!--<img src="https://img.shields.io/badge/elasticsearch-%230377CC.svg?style=for-the-badge&logo=elasticsearch&logoColor=white" style="border-radius: 5px;">-->
 <img src="https://img.shields.io/badge/redis-E34F26?style=for-the-badge&logo=redis&logoColor=white" style="border-radius: 5px;">
 
 #### &nbsp;　[ CI/CD ]
-&nbsp;&nbsp;&nbsp;&nbsp;
+
 <img src="https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white" style="border-radius: 5px;">
 
 #### &nbsp;　[ Etc ]
-&nbsp;&nbsp;&nbsp;&nbsp;
+
 <img src="https://img.shields.io/badge/kafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/zookeeper-009639?style=for-the-badge&logo=zookeeper&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/logstash-f3bd19?style=for-the-badge&logo=logstash&logoColor=white" style="border-radius: 5px;">
@@ -162,7 +162,7 @@
 
 ### [3. WBS](https://docs.google.com/spreadsheets/d/1ZyTxJWcncdOwUFm7sC4lPoY8Tqr1N9bT/edit?usp=sharing&ouid=114636369401934471820&rtpof=true&sd=true)
 
-### [4. API 명세서 데이터 보기](https://techup.kro.kr/api/swagger-ui.html)
+### [4. API 명세서 데이터 보기](https://techup.kro.kr/api/swagger-ui/index.html)
 
 ### [5. ERD](https://www.erdcloud.com/d/gWGKoNHQ3a37hbP2Q)
 
@@ -219,7 +219,7 @@
 > 헤더의 **제품** 링크로 들어간 페이지에서 부품 카테고리(CPU, 그래픽 카드, RAM, SSD, 하드디스크) 및 가격대 별로 판매 중인 상품을 조회할 수 있다.
 > 제품 상세보기에서는 제품에 대한 설명과 제품에 대한 리뷰를 볼 수 있다.
 </details>
-
+<details>
 <summary>제품 추천</summary>
 
 ### 사용자가 소유한 제품 정보의 등록
@@ -271,7 +271,9 @@
 관리자 전용 페이지의 API는 백엔드에서 관리자가 실행한 것인지 먼저 검증하고, 그것이 아니라면 실패 응답을 클라이언트에 준다.
 
 ### 판매 제품 관리
-![제품 목록 이미지]()
+
+![제품 목록 이미지](./images/readme/admin_product_list.png)
+![제품 검색 결과 이미지](./images/readme/admin_product_search.png)
 
 > 관리자는 제품 목록 페이지를 볼 수 있다. 페이지 진입시 백엔드에서는 요청 카테고리 파라미터을 빈 값으로 두어 현재 존재하는 제품 목록을 DB에서 전부 불러온다.
 > 제품 목록 상단의 검색 창에 키워드를 넣고 검색 버튼을 누르면 백엔드 필터링이 작동하여 DB에서 해당 키워드를 이름으로 가진 제품 목록이 나타난다.
@@ -279,7 +281,7 @@
 > 각 항목에 대해 회원 전체에게 발급하는 특정 제품 전용 쿠폰을 발급하거나, 제품 정보를 수정하거나 삭제할 수 있다.
 > 제품 목록과 검색 창 사이에 있는 '제품 등록' 버튼을 눌러 제품 등록 페이지로 이동한다.
 
-![제품 등록 이미지]()
+![제품 등록 이미지](./images/readme/admin-product-register-detail.png)
 
 > 제품 등록 페이지에서 제품의 이름, 브랜드, 가격, 설명 등을 적을 수 있다.
 > 제품은 "CPU, GPU, RAM, SSD, HDD" 5개의 카테고리로 나뉘어 카테고리를 선택하면 그에 따른 제품 별 추가 정보를 적을 수 있다.
@@ -288,12 +290,10 @@
 
 ---
 ### 쿠폰과 선착순 쿠폰 발급 이벤트
-![쿠폰 및 이벤트 목록 페이지]()
+
+![쿠폰 이벤트 등록](./images/readme/coupon-register.gif)
 
 > 관리자 쿠폰 목록 페이지에서 쿠폰 정보의 수정/삭제를 백엔드 서버에 요청할 수 있다. 관리자임을 확인하면 서버는 DB 내 지정된 쿠폰 정보를 갱신하거나 삭제하며, 사용자에게 발급한 쿠폰도 연관 관계 따라 정보가 바뀌거나 삭제된다. 단, 사용한 발급 쿠폰이 있는 쿠폰은 DB에서 제거할 수 없다.
-
-![쿠폰 이벤트 등록]()
-
 > 관리자가 특정 사용자 전용 쿠폰을 수동으로 발급하거나 선착순 쿠폰 발급 이벤트를 등록하려면 제품의 등록 번호, 할인율, 쿠폰 이름 및 만료일, 재고를 HTTP 요청의 body로 보내야 한다.
 > 만일 관리자가 특정 사용자 전용 쿠폰을 발송하여 선착순 쿠폰 발급 이벤트를 등록할 필요가 없을 경우 백엔드 서버는 coupon 테이블에 정보를 저장할 때 쿠폰 재고를 -1로 처리하여 제품 목록 조회시 재고 정보를 보내지 않는다.
 > 만일 관리자가 선착순 쿠폰 발급 이벤트를 등록할 경우 백엔드 서버는 쿠폰 정보와 발급 가능한 쿠폰 재고를 coupon 테이블에 등록하여 사용자가 발급할 수 있게 한다.
