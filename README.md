@@ -42,6 +42,7 @@
 ## 🛠 기술 스택
 
 #### &nbsp;　[ Frontend ]
+&nbsp;&nbsp;&nbsp;&nbsp;
 <img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white" style="border-radius: 5px;"/>
 <img src="https://img.shields.io/badge/css3-1572B6?style=for-the-badge&logo=css3&logoColor=white" style="border-radius: 5px;"/>
 <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white" style="border-radius: 5px;"/>
@@ -51,7 +52,7 @@
 <img src="https://img.shields.io/badge/nuxt-%2300DC82?style=for-the-badge&logo=nuxt&labelColor=%23FFFFFF" style="border-radius: 5px;"/>
 
 #### &nbsp;　[ Backend ]
-
+&nbsp;&nbsp;&nbsp;&nbsp;
 <img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring-Boot&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=Spring-Security&logoColor=white" style="border-radius: 5px;">
@@ -61,20 +62,20 @@
 
 
 #### &nbsp;　[ DB ]
-
+&nbsp;&nbsp;&nbsp;&nbsp;
 <img src="https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white" style="border-radius: 5px;"> 
 <img src="https://img.shields.io/badge/AmazonS3-e05242?style=for-the-badge&logo=AmazonS3&logoColor=white" style="border-radius: 5px;">
-<!--<img src="https://img.shields.io/badge/elasticsearch-%230377CC.svg?style=for-the-badge&logo=elasticsearch&logoColor=white" style="border-radius: 5px;">-->
+<img src="https://img.shields.io/badge/elasticsearch-%230377CC.svg?style=for-the-badge&logo=elasticsearch&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/redis-E34F26?style=for-the-badge&logo=redis&logoColor=white" style="border-radius: 5px;">
 
 #### &nbsp;　[ CI/CD ]
-
+&nbsp;&nbsp;&nbsp;&nbsp;
 <img src="https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white" style="border-radius: 5px;">
 
 #### &nbsp;　[ Etc ]
-
+&nbsp;&nbsp;&nbsp;&nbsp;
 <img src="https://img.shields.io/badge/kafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/zookeeper-009639?style=for-the-badge&logo=zookeeper&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/logstash-f3bd19?style=for-the-badge&logo=logstash&logoColor=white" style="border-radius: 5px;">
@@ -136,7 +137,7 @@
   - `기타 지식을 공유하는 커뮤니티`<br>
     사용자가 개인의 경험 및 지식을 공유할 수 있는 공간을 제공하는 기능
   - `어드민`<br>
-    매출, 판매량, TOP위시리스트 등 통계량을 확인할 수 있는 대시보드와 쿠폰 발급, 알림 발행, 사용자/제품 관리 등의 관리 기능 제공공
+    매출, 판매량, TOP위시리스트 등 통계량을 확인할 수 있는 대시보드와 쿠폰 발급, 알림 발행, 사용자/제품 관리 등의 관리 기능 제공
 <br>
 
 ## 🏗️ 시스템 아키텍처
@@ -167,27 +168,59 @@
 ### [5. ERD](https://www.erdcloud.com/d/gWGKoNHQ3a37hbP2Q)
 
 <br><br>
+## ⚙️ 주요 기능 시연
 
 <details>
-<summary>회원가입</summary>
+<summary>회원가입 & 탈퇴</summary>
 
-![회원가입 페이지]()
-> 이메일, 비밀번호, 닉네임로 회원 가입을 한다.  
-> 이메일, 닉네임은 **중복이 불가능**하며, 비밀번호는 8자 이상의 영문 및 숫자여야 한다.
+- 이메일 중복 확인
+    - 요청
+    ![image](https://github.com/user-attachments/assets/8b53b224-8ce0-44ce-82cd-a1b1824bc4f8)
+    - 응답
+    ![image](https://github.com/user-attachments/assets/c0f089dd-9fd8-4c58-88e2-18bec812387d)
+- 이메일 인증 전송
+    - 요청
+    ![image](https://github.com/user-attachments/assets/bcd1e0b9-8ca4-4baf-9145-535372e1c27f)
+    - 응답
+    ![image](https://github.com/user-attachments/assets/a96038fa-d285-4268-bcc6-7c7c379b3f74)
+- 이메일 인증 확인
+    - 요청
+    ![image](https://github.com/user-attachments/assets/a5283681-0b05-4d30-a705-cbeb75fa0f3e)
+    - 응답
+    ![image](https://github.com/user-attachments/assets/328bab95-4c83-4ff7-8062-15581d65a8d0)
+- 회원가입
+    - 요청
+    ![image](https://github.com/user-attachments/assets/b9c1d7d4-479c-45b4-863d-24ce7b6232f4)
+    - 응답
+    ![image](https://github.com/user-attachments/assets/4661a892-4f9d-4268-9a85-a94e121e780b)
+- 회원탈퇴
+    - 요청
+    ![image](https://github.com/user-attachments/assets/a4570754-7a7a-454b-a7a5-44e450b5f8b1)
+    - 응답
+    ![image](https://github.com/user-attachments/assets/65f75b7e-3612-4a1a-aacc-df4923bcb64d)
+
+> 닉네임, 이메일, 비밀번호로 회원 가입을 한다.  
+> 이메일, 닉네임은 **중복이 불가능**하며, 비밀번호는 8자 이상의 영문 및 숫자여야 한다.  
 > 계정 생성 스패밍을 막기 위해 이메일 인증을 해야 가입할 수 있다.
 </details>
 
 <details>
-<summary>로그인</summary>
+<summary>로그인 & 로그아웃</summary>
 
-![image]()
-> 일반 로그인, 소셜(Kakao) 로그인
+- 로그인
+    - 요청
+    ![image](https://github.com/user-attachments/assets/e70aee98-34de-454a-a735-e8b3de0cd02a)
+    - 응답
+    ![image](https://github.com/user-attachments/assets/4ea47b5d-7240-4bdf-96ac-ab00c116eddb)
+- 로그아웃
+    - 요청
+    ![image](https://github.com/user-attachments/assets/9e299e56-16f7-411b-b9db-a6193a0f8fb4)
+    - 응답
+    ![image](https://github.com/user-attachments/assets/7c592003-5438-4eae-b2b1-2a5741ce98bb)
+> 이메일, 비밀번호로 로그인을 한다.
 
-![로그인 페이지]()
-
-> 소셜 로그인은 소셜로 로그인 한 후 로그인한 사용자 계정의 이름 및 이메일을 받아온다.
-> 소셜 로그인 사용자는 소셜 로그인으로만 로그인할 수 있다.
 </details>
+
 
 <details>
 <summary>검색</summary>
@@ -219,8 +252,32 @@
 > 헤더의 **제품** 링크로 들어간 페이지에서 부품 카테고리(CPU, 그래픽 카드, RAM, SSD, 하드디스크) 및 가격대 별로 판매 중인 상품을 조회할 수 있다.
 > 제품 상세보기에서는 제품에 대한 설명과 제품에 대한 리뷰를 볼 수 있다.
 </details>
+
 <details>
 <summary>제품 추천</summary>
+
+- 사용자 등록 제품과 유사한 제품 추천
+    - 요청
+    ![image](https://github.com/user-attachments/assets/18f4107b-e989-430f-ad28-8d59282383eb)
+    - 응답
+    ![image](https://github.com/user-attachments/assets/1a8e2984-4cef-4ddc-a41d-fe41fbe9399e)
+> 사용자는 마이페이지의 내 기기 등록에서 본인의 제품을 등록할 수 있다.  
+> 사용자가 등록한 제품과 유사한 제품을 콘텐츠 기반 방법으로 추천한다.  
+- 연관 제품 추천
+    - 요청
+    ![image](https://github.com/user-attachments/assets/9df68c97-7f70-4a15-ae3f-f93cd6ce2e6a)
+    - 응답
+    ![image](https://github.com/user-attachments/assets/1309254d-3977-43cd-8823-5793e891f87d)
+> 특정 제품과 함께 구매된 연관 제품을 아이템 기반 협업필터링 방법으로 추천한다. 
+- 유사한 사용자가 관심을 보인 제품 추천
+    - 요청
+    ![image](https://github.com/user-attachments/assets/d170b141-13ae-4260-b7cf-1cfea4f4fa4c)
+    - 응답
+    ![image](https://github.com/user-attachments/assets/5f9f44fa-c658-4056-b91a-0afa76043e21)
+> 사용자와 유사한 행동패턴을 보인 다른 사용자들이 리뷰한 제품을 사용자 기반 협업필터링 방법으로 추천한다.  
+> user_idx를 입력하지 않아도 로그인한 사용자의 정보를 이용하여 추천한다.
+
+</details>
 
 ### 사용자가 소유한 제품 정보의 등록
 ![제품 등록 및 내 기기 정보 페이지 이미지]()
