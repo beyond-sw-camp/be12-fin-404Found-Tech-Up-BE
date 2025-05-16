@@ -6,15 +6,16 @@
 <br>
 
 ## 🎁팀원 소개
+
 > **[한화시스템 BEYOND SW캠프 12기] Final Project**<br>
 > **404Fount팀 Tech-Up 프로젝트**
 
 <table align="center">
  <tr>
-    <td align="center"><a href=""></td>
-    <td align="center"><a href=""></td>
-    <td align="center"><a href=""></td>
-    <td align="center"><a href=""></td>
+    <td align="center"><a href=""><img src="" width="150px;" alt=""></td>
+    <td align="center"><a href=""><img src="" width="150px;" alt=""></td>
+    <td align="center"><a href=""><img src="" width="150px;" alt=""></td>
+    <td align="center"><a href=""><img src="" width="150px;" alt=""></td>
   </tr>
   <tr>
     <td align="center">🐥<a href=""><b>김정엽</b></td>
@@ -35,6 +36,7 @@
 - [📈 프로젝트 설계](#-프로젝트-설계)
 - [🚀 핵심 로직 상세 설명](#-핵심-로직-상세-설명)
 - [📂 프로젝트 폴더 바로가기](#-백엔드,-DevOps-프로젝트-폴더-바로가기)
+
 <br><br>
 
 ## 🛠 기술 스택
@@ -53,7 +55,6 @@
 ![Elasticsearch](https://img.shields.io/badge/elasticsearch-%230377CC.svg?style=for-the-badge&logo=elasticsearch&logoColor=white)
 ![Redis](https://img.shields.io/badge/redis-%23FF4438?style=for-the-badge&logo=redis&logoColor=%23ffffff)
 
-
 #### &nbsp;　[ CI/CD ]
 &nbsp;&nbsp;&nbsp;&nbsp;![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white)
 <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" style="border-radius: 5px;">
@@ -62,7 +63,6 @@
 #### &nbsp;　[ Etc ]
 <img src="https://img.shields.io/badge/kafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white">
 <img src="https://img.shields.io/badge/logstash-f3bd19?style=for-the-badge&logo=logstash&logoColor=white" style="border-radius: 5px;">
-
 ![Kibana](https://img.shields.io/badge/kibana-%23005571?style=for-the-badge&logo=kibana&logoColor=%23ffffff)
 
 #### &nbsp;　[ Communication ]
@@ -74,6 +74,7 @@
 
 
 ## 📚 Tech-Up 데모 사이트 바로가기기
+
 ### [공개 버전 링크](https://techup.kro.kr)</a>
 <br><br>
 ## 🎨 Tech-Up 서비스 소개
@@ -124,7 +125,6 @@
 ### [4. API 명세서 바로가기]()
 
 ### [5. ERD]()
-
 
 <br><br>
 
@@ -198,12 +198,14 @@
 > 사용자는 주문 상세 페이지에서 환불 요청을 쉽게 할 수 있다. 백엔드에서는 PAID된 주문으로 환불 요청이 들어오면 주문 상태를 REQUESTED_REFUND로 바꾼다.
 > 관리자는 환불이 요청된 제품에 한해 환불 처리를 할 수 있다.
 > 백엔드 서버는 관리자가 요청한 환불을 처리하는 과정은 아래 관리자 페이지를 설명할 때 같이 설명한다.
+
 </details>
 
 <details>
 <summary>관리자</summary>
 
 관리자만이 들어갈 수 있는 페이지는 `/dashboard` URI를 통해 진입할 수 있으며, 익명 사용자 및 일반 사용자는 진입할 수 없다.
+
 
 관리자 전용 페이지의 API는 백엔드에서 관리자가 실행한 것인지 먼저 검증하고, 그것이 아니라면 실패 응답을 클라이언트에 준다.
 
@@ -260,6 +262,7 @@
 <summary>커뮤니티</summary>
 
 ### 게시글 목록
+
 ![커뮤니티 페이지]()
 
 > ...
@@ -271,7 +274,6 @@
 
 ## 🚀 핵심 로직 상세 설명
 ### [📃 프로젝트 Wiki](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/wiki) <br><br>
-
 
 ## 📂 백엔드, DevOps 프로젝트 폴더 바로가기
 ### [📃 Backend](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-FE) <br>
