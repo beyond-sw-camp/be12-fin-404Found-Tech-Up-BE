@@ -63,7 +63,6 @@ spring:
             client-name: Kakao
             scope:
               - profile_nickname
-              - account_email
             provider: kakao
         provider:
           kakao:
