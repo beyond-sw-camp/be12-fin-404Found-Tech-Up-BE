@@ -2,30 +2,26 @@
 
 <br>
 ![Tech Up 프로젝트 이미지]()
-<!-- <br>
-<div align="center">
-<img src="https://github.com/user-attachments/assets/3f6df515-9e11-4b63-b4e1-c35d22176721" style="width: 60%;">
-</div> -->
 
 <br>
 
 ## 🎁팀원 소개
-> **[한화시스템 BEYOND SW캠프 12기] Final Project** 
 
+> **[한화시스템 BEYOND SW캠프 12기] Final Project**<br>
 > **404Fount팀 Tech-Up 프로젝트**
 
 <table align="center">
  <tr>
-    <td align="center"><a href="https://github.com/dyun23"><img src="https://github.com/user-attachments/assets/99536e16-063c-4785-92d2-44b909ab7c84" width="150px;" alt=""></td>
-    <td align="center"><a href="https://github.com/sue06004"><img src="https://github.com/user-attachments/assets/2dde57cc-aa14-410c-99f7-9d50841fde51" width="150px;" alt=""></td>
-    <td align="center"><a href="https://github.com/jimnyy"><img src="https://github.com/user-attachments/assets/5ff5cb30-f7aa-4ab2-a18d-a31087ab9f80" width="150px;" alt=""></td>
-    <td align="center"><a href="https://github.com/dlrkdms125"><img src="https://github.com/user-attachments/assets/42bed0f6-7d78-4eec-8906-e843495fca4f" width="150px;" alt=""></td>
+    <td align="center"><a href=""><img src="" width="150px;" alt=""></td>
+    <td align="center"><a href=""><img src="" width="150px;" alt=""></td>
+    <td align="center"><a href=""><img src="" width="150px;" alt=""></td>
+    <td align="center"><a href=""><img src="" width="150px;" alt=""></td>
   </tr>
   <tr>
-    <td align="center">🐥<a href="https://github.com/dyun23"><b>김정엽</b></td>
-    <td align="center">🦊<a href="https://github.com/sue06004"><b>김무성</b></td>
-    <td align="center">😼<a href="https://github.com/jimnyy"><b>오건하</b></td>
-    <td align="center">🐰<a href="https://github.com/dlrkdms125"><b>황경윤</b></td>
+    <td align="center">🐥<a href=""><b>김정엽</b></td>
+    <td align="center">🦊<a href=""><b>김무성</b></td>
+    <td align="center">😼<a href=""><b>오건하</b></td>
+    <td align="center">🐰<a href=""><b>황경윤</b></td>
   </tr>
   </table>
 <br>
@@ -39,35 +35,46 @@
 - [📚 프론트엔드 프로젝트 목표](#-프론트엔드-프로젝트-목표)
 - [📈 프로젝트 설계](#-프로젝트-설계)
 - [🚀 핵심 로직 상세 설명](#-핵심-로직-상세-설명)
-- [📂 프로젝트 폴더 바로가기](#-프로젝트-폴더-바로가기)
+- [📂 프로젝트 폴더 바로가기](#-백엔드,-DevOps-프로젝트-폴더-바로가기)
+
 <br><br>
 
 ## 🛠 기술 스택
 
-#### &nbsp;　[ Frontend ]
-&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white" style="border-radius: 5px;"/>
-<img src="https://img.shields.io/badge/css3-1572B6?style=for-the-badge&logo=css3&logoColor=white" style="border-radius: 5px;"/>
-<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white" style="border-radius: 5px;"/>
-![Vue.js](https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D)
-<img src="https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white" style="border-radius: 5px;"/>
-<img src="https://img.shields.io/badge/pinia-gold?style=for-the-badge&logo=Pinia&logoColor=white" style="border-radius: 5px;"/>
-![Nuxt.js]()
+#### &nbsp;　[ Backend ]
+![OpenJDK 17](https://img.shields.io/badge/openjdk-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+<img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=Spring-Security&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/Spring data jpa-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white" style="border-radius: 5px;">
+
+
+#### &nbsp;　[ DB ]
+&nbsp;&nbsp;&nbsp;</a>
+<img src="https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white" style="border-radius: 5px;"> 
+<img src="https://img.shields.io/badge/AmazonS3-e05242?style=for-the-badge&logo=AmazonS3&logoColor=white" style="border-radius: 5px;">
+![Elasticsearch](https://img.shields.io/badge/elasticsearch-%230377CC.svg?style=for-the-badge&logo=elasticsearch&logoColor=white)
+![Redis](https://img.shields.io/badge/redis-%23FF4438?style=for-the-badge&logo=redis&logoColor=%23ffffff)
 
 #### &nbsp;　[ CI/CD ]
 &nbsp;&nbsp;&nbsp;&nbsp;![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white)
 <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white" style="border-radius: 5px;">
 
+#### &nbsp;　[ Etc ]
+<img src="https://img.shields.io/badge/kafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white">
+<img src="https://img.shields.io/badge/logstash-f3bd19?style=for-the-badge&logo=logstash&logoColor=white" style="border-radius: 5px;">
+![Kibana](https://img.shields.io/badge/kibana-%23005571?style=for-the-badge&logo=kibana&logoColor=%23ffffff)
+
 #### &nbsp;　[ Communication ]
 &nbsp;&nbsp;&nbsp;&nbsp;<img src="https://img.shields.io/badge/discord-326CE5?style=for-the-badge&logo=discord&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white" style="border-radius: 5px;">
 <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white" style="border-radius: 5px;">
-![JIRA]()
-![Confluence]()
+
 <br><br><br>
 
 
-## 📚 Tech-Up 데모 사이트 바로가기
+## 📚 Tech-Up 데모 사이트 바로가기기
+
 ### [공개 버전 링크](https://techup.kro.kr)</a>
 <br><br>
 ## 🎨 Tech-Up 서비스 소개
@@ -103,7 +110,7 @@
 - `비즈니스 로직 구현` : 사용자 요청을 처리하고 결과 반환
 - `DB 연동 및 관리` : 데이터베이스 모델 설계, CRUD 기능 구현
 - `보안 및 인증` : 로그인, 권한 관리, JWT/OAuth 등 인증 로직
-- `성능 최적화` : 안정적인 서버 운영을 위한 로직 구성
+- `성능 최적화` : 안정적인 서버 운영을 위한 로직 및 시스템 아키텍처 구성
 - `예외 처리` : 안정적인 서버 운영을 위한 로직 구성
 <br>
 
@@ -111,12 +118,13 @@
 
 ### [1. 기획서 바로가기]()
 
-### [2. 요구사항 정의서]()
+### [2. 요구사항 정의서](https://docs.google.com/spreadsheets/d/1lb-SckwF90w3tpbJPMl18hdyDSESCkCRWy9koUEmFbI/edit?pli=1&gid=0#gid=0)
 
 ### [3. WBS]()
 
 ### [4. API 명세서 바로가기]()
 
+### [5. ERD]()
 
 <br><br>
 
@@ -175,23 +183,22 @@
 
 ### 장바구니
 ![장바구니 캡쳐]()
-> 장바구니에 구매하려는 여러 제품을 모아 한 번에 주문할 수 있다.
+> 장바구니에 구매하려는 여러 제품을 모아 한 번에 주문할 수 있다. 백엔드에서는 이 주문 정보를 redis 서버에 저장한다.
 ---
 ### 주문 및 결제
 ![주문 결제 과정 이미지 예시]()
 
 > 주문 내역을 보고 결제를 할 수 있다.
-> 주문에 사용 가능한 쿠폰을 받았다면 적용하여 할인을 받을 수 있다.
-> 카카오페이가 지원된다.
+> 주문에 사용 가능한 쿠폰을 받았다면 적용하여 할인을 받을 수 있다. 이 경우 주문 정보에 쿠폰 적용 여부가 기록된다.
+> 카카오페이가 지원된다. [포트원 서비스](https://portone.io)를 통해 PG사와 연결하여 주문을 등록한 후 결제 요청이 오면 주문 정보와 대조하여 주문이 올바르게 되었는지 검증한다.
 ---
 ### 주문 취소 및 환불
 ![사용자의 환불 신청 이미지]()
 
-> 사용자는 주문 상세 페이지에서 환불 요청을 쉽게 할 수 있다.
-
-![관리자의 환불 허가 과정 이미지]()
-
+> 사용자는 주문 상세 페이지에서 환불 요청을 쉽게 할 수 있다. 백엔드에서는 PAID된 주문으로 환불 요청이 들어오면 주문 상태를 REQUESTED_REFUND로 바꾼다.
 > 관리자는 환불이 요청된 제품에 한해 환불 처리를 할 수 있다.
+> 백엔드 서버는 관리자가 요청한 환불을 처리하는 과정은 아래 관리자 페이지를 설명할 때 같이 설명한다.
+
 </details>
 
 <details>
@@ -199,27 +206,64 @@
 
 관리자만이 들어갈 수 있는 페이지는 `/dashboard` URI를 통해 진입할 수 있으며, 익명 사용자 및 일반 사용자는 진입할 수 없다.
 
-### 제품 등록과 삭제
-![제품 등록/삭제 이미지]()
 
-> ...
+관리자 전용 페이지의 API는 백엔드에서 관리자가 실행한 것인지 먼저 검증하고, 그것이 아니라면 실패 응답을 클라이언트에 준다.
+
+### 판매 제품 관리
+![제품 목록 이미지]()
+
+> 관리자는 제품 목록 페이지를 볼 수 있다. 페이지 진입시 백엔드에서는 요청 카테고리 파라미터을 빈 값으로 두어 현재 존재하는 제품 목록을 DB에서 전부 불러온다.
+> 제품 목록 상단의 검색 창에 키워드를 넣고 검색 버튼을 누르면 백엔드 필터링이 작동하여 DB에서 해당 키워드를 이름으로 가진 제품 목록이 나타난다.
+> 검색 결과 중 각 항목의 왼쪽 링크를 누르면 제품 정보 페이지로 이동하며 백엔드에서 상세 정보를 불러온다.
+> 각 항목에 대해 회원 전체에게 발급하는 특정 제품 전용 쿠폰을 발급하거나, 제품 정보를 수정하거나 삭제할 수 있다.
+> 제품 목록과 검색 창 사이에 있는 '제품 등록' 버튼을 눌러 제품 등록 페이지로 이동한다.
+
+![제품 등록 이미지]()
+
+> 제품 등록 페이지에서 제품의 이름, 브랜드, 가격, 설명 등을 적을 수 있다.
+> 제품은 "CPU, GPU, RAM, SSD, HDD" 5개의 카테고리로 나뉘어 카테고리를 선택하면 그에 따른 제품 별 추가 정보를 적을 수 있다.
+> 이미지를 최대 5장까지 등록할 수 있으며, 업로드 창이 나타났을 때 여러 파일을 선택하여 업로드하면 아래에 이미지 미리보기 창이 배열된다.
+> 제품 이름부터 카테고리까지는 반드시 빈 정보가 있지 않도록 최하단의 등록 버튼을 눌러 전송하면 백엔드에서는 우선 기본 정보를 product 테이블에 저장한 후 카테고리 문자열에 따라 cpu_spec, gpu_spec, ram_spec, ssd_spec, hdd_spec 테이블 중 하나에 추가 정보를 저장한 후 저장한 정보를 응답으로 반환한다.
+
 ---
 ### 쿠폰과 선착순 쿠폰 발급 이벤트
-![쿠폰 및 이벤트 관리 페이지]()
+![쿠폰 및 이벤트 목록 페이지]()
 
-> ...
+> 관리자 쿠폰 목록 페이지에서 쿠폰 정보의 수정/삭제를 백엔드 서버에 요청할 수 있다. 관리자임을 확인하면 서버는 DB 내 지정된 쿠폰 정보를 갱신하거나 삭제하며, 사용자에게 발급한 쿠폰도 연관 관계 따라 정보가 바뀌거나 삭제된다. 단, 사용한 발급 쿠폰이 있는 쿠폰은 DB에서 제거할 수 없다.
+
+![쿠폰 이벤트 등록]()
+
+> 관리자가 특정 사용자 전용 쿠폰을 수동으로 발급하거나 선착순 쿠폰 발급 이벤트를 등록하려면 제품의 등록 번호, 할인율, 쿠폰 이름 및 만료일, 재고를 HTTP 요청의 body로 보내야 한다.
+> 만일 관리자가 특정 사용자 전용 쿠폰을 발송하여 선착순 쿠폰 발급 이벤트를 등록할 필요가 없을 경우 백엔드 서버는 coupon 테이블에 정보를 저장할 때 쿠폰 재고를 -1로 처리하여 제품 목록 조회시 재고 정보를 보내지 않는다.
+> 만일 관리자가 선착순 쿠폰 발급 이벤트를 등록할 경우 백엔드 서버는 쿠폰 정보와 발급 가능한 쿠폰 재고를 coupon 테이블에 등록하여 사용자가 발급할 수 있게 한다.
+> 많은 사용자가 쿠폰 발급을 위해 동시에 HTTP 요청을 보낼 경우 동시성 문제가 발생할 수 있다. 이 경우를 대비해 Redis 서버에서 락 기능을 사용해 Redis에 캐싱된 정보대로 쿠폰 발급 성공/실패 경우를 분명하게 나눠 처리한다.
 ---
 ### 주문 관리
-![사용자 목록과 주문 목록 페이지]()
+![사용자 목록 페이지]()
 
-> ...
+> 사용자 관리 페이지에서 단순 조회/검색 등으로 사이트에 등록한 사용자 목록을 요청할 경우 백엔드 서버는 전체 목록일 경우 페이지네이션이 된 결과를 반환하고, 검색의 경우 전체 목록을 반환한다.
+
+![사용자 주문 내역 페이지]()
+
+> 특정 사용자의 주문 목록 보기를 요청할 경우 백엔드 서버는 URI 경로로 받은 번호를 가진 사용자의 주문 목록을 전부 반환한다.
+> 주문 상태가 PAID가 아닌 REQUESTED_REFUND인 경우 관리자는 환불 요청을 보낼 수 있으며, 백엔드는 CANCELED 상태로 주문을 바꾸고 PG사에 환불을 요청한다. 이 과정은 트랜잭션으로 처리되어 중도에 실패할 경우 롤백이 이루어진다.
+
+---
+### 알림 관리
+![알림 목록 페이지]()
+
+> 알림 목록에서는 전체 사용자 알림 및 시스템에 스케줄된 알림 목록을 볼 수 있다.
+> 시스템에 스케줄된 첫 4개의 알림은 삭제할 수 없다. 대신 서버 설치 시 이들 알림에 대한 데이터가 DB에 미리 들어가 있다고 가정한다.
+> 그 외의 알림은 관리자가 제목과 내용을 포함한 body 정보를 등록 페이지에서 입력한 뒤 POST 요청을 할 수 있고, 백엔드 서버는 해당 알림 정보를 저장하고 모든 사용자에게 알림을 보낸다.
+
 </details>
 
 <details>
 <summary>커뮤니티</summary>
 
 ### 게시글 목록
-![커뮤니티 페이지지]()
+
+![커뮤니티 페이지]()
 
 > ...
 ### 게시글 작성/수정/삭제
@@ -230,7 +274,6 @@
 
 ## 🚀 핵심 로직 상세 설명
 ### [📃 프로젝트 Wiki](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/wiki) <br><br>
-
 
 ## 📂 백엔드, DevOps 프로젝트 폴더 바로가기
 ### [📃 Backend](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-FE) <br>
