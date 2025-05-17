@@ -28,14 +28,14 @@ public class StatisticController {
 
     @Operation(summary="관리자 대시보드용 통계", description = "접속한 관리자 유저에게 대시보드 통계를 반환합니다.")
     @GetMapping
-    public BaseResponse<StatisticsResponseDto> statistics(@AuthenticationPrincipal User user) {
+    public BaseResponse<StatisticsResponseDto> etcStatistics(@AuthenticationPrincipal User user) {
         if (user == null || !user.getIsAdmin()) {
             return new BaseResponseServiceImpl().getFailureResponse(CommonResponseStatus.BAD_REQUEST);
         }
-        return new BaseResponseServiceImpl().getSuccessResponse(statisticsService.getStatistics(), CommonResponseStatus.SUCCESS);
+        return new BaseResponseServiceImpl().getSuccessResponse(statisticsService.getStatisticsEtc(), CommonResponseStatus.SUCCESS);
     }
 
-    // ---- 이 아래는 테스트용 api로 규칙을 따르지 않음----
+
     @Operation(summary="상위 위시리스트 제품 목록", description = "상위 위시리스트 확인")
     @ApiResponse(responseCode="200", description="가져옴", content= @Content(schema = @Schema(implementation = String.class)))
     @ApiResponse(responseCode="400", description="실패", content= @Content(schema = @Schema(implementation = ErrorResponseDto.class), mediaType = "application/json"))
@@ -44,16 +44,17 @@ public class StatisticController {
     public BaseResponse<List<TopWishlistResponseDto>> getTopWishList() {
         return new BaseResponseServiceImpl().getSuccessResponse( statisticsService.getTopWishList(), CommonResponseStatus.SUCCESS);
     }
-    /*
+
+    @Operation(summary="총 환불 수", description = "총 환불 수를 정수로 반환합니다.")
     @GetMapping("/refund")
-    public ResponseEntity<Integer> getTotalRefund() {
-        return ResponseEntity.ok(statisticsService.getTotalRefunds());
+    public BaseResponse<Integer> getTotalRefund() {
+        return new BaseResponseServiceImpl().getSuccessResponse(statisticsService.getTotalRefunds(), CommonResponseStatus.SUCCESS);
     }
-    */
+
     @Operation(summary="총 주문 수", description = "총 주문 수를 정수로 반환합니다")
     @GetMapping("/order")
-    public ResponseEntity<Integer> getTotalOrder() {
-        return ResponseEntity.ok(statisticsService.getTotalOrders());
+    public BaseResponse<Integer> getTotalOrder() {
+        return new BaseResponseServiceImpl().getSuccessResponse(statisticsService.getTotalOrders(), CommonResponseStatus.SUCCESS);
     }
 
     @Operation(summary="상위 판매량 목록", description = "상위 판매량 목록")

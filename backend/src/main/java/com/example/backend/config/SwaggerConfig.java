@@ -1,10 +1,7 @@
 package com.example.backend.config;
 
 import com.example.backend.config.filter.LoginFilter;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.*;
 import io.swagger.v3.oas.models.parameters.RequestBody;
@@ -18,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.nio.file.Path;
 import java.util.Optional;
 
 @Configuration

@@ -77,9 +77,9 @@ public class HttpClientUtil {
         }
     }
 
-    public static List<ProductIndexDocument> getSearchResults(String elasticHost_static, String category, Double priceLow, Double priceHigh, String searchKeyword, Integer page, Integer size) throws IOException, InterruptedException {
+    public static List<ProductIndexDocument> getSearchResults(String elasticHost_static, String category, String searchKeyword, Integer page, Integer size) throws IOException, InterruptedException {
             String body = "";
-            if (category.isBlank()) {
+            if (category == null || category.isBlank()) {
                 body = """
                     {
                       "from": """+ page + """
@@ -89,15 +89,6 @@ public class HttpClientUtil {
                       "query": {
                         "bool": {
                           "must": [
-                            {
-                              "range": {
-                                "price": {
-                                    "lt": """ + priceHigh + """
-                                    ,
-                                    "gt": """ + priceLow + """
-                                }
-                              }
-                            },
                             {
                               "match_phrase": {
                                 "productname": \"""" + searchKeyword + """
@@ -119,15 +110,6 @@ public class HttpClientUtil {
                       "query": {
                         "bool": {
                           "must": [
-                            {
-                              "range": {
-                                "price": {
-                                    "lt": """ + priceHigh + """
-                                    ,
-                                    "gt": """ + priceLow + """
-                                }
-                              }
-                            },
                             {
                               "match_phrase": {
                                 "productname": \"""" + searchKeyword + """

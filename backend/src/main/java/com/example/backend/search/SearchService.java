@@ -26,9 +26,9 @@ public class SearchService {
     @Value("${elasticsearch.host}")
     private String elasticHost;
 
-    public List<ReducedProductResponseDto> searchByName(String name, String category, Double priceLow, Double priceHigh, Integer page, Integer size) {
+    public List<ReducedProductResponseDto> searchByName(String name, String category, Integer page, Integer size) {
         try {
-            List<ProductIndexDocument> nodes = HttpClientUtil.getSearchResults(elasticHost, category, priceLow, priceHigh, name, page, size);
+            List<ProductIndexDocument> nodes = HttpClientUtil.getSearchResults(elasticHost, category, name, page, size);
             return nodes.stream().map(ReducedProductResponseDto::from).toList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -40,8 +40,8 @@ public class SearchService {
         return productIndexRepository.findAllByProductnameContainingIgnoreCaseAndCategory(name,category).stream().map(ReducedProductResponseDto::from).toList();
     }
 
-    public Page<ReducedProductResponseDto> searchByNameAndPriceRange(String name, Double low, Double high, Pageable pageable) {
-        return productIndexRepository.findAllByProductnameContainingIgnoreCaseAndPriceBetween(name,low,high, pageable).map(ReducedProductResponseDto::from);
+    public Page<ReducedProductResponseDto> searchByName(String name, Pageable pageable) {
+        return productIndexRepository.findAllByProductnameContainingIgnoreCase(name, pageable).map(ReducedProductResponseDto::from);
     }
 
     public List<ReducedProductResponseDto> searchByNameAndCategoryAndPriceRange(String name, String category, Double low, Double high) {

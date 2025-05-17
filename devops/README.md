@@ -1,4 +1,6 @@
-![logo-white](https://github.com/user-attachments/assets/02138cb8-7eb8-4c2a-8564-cbb5a9656e58)
+<div align="center">
+    <img src="../images/readme/techup_header_logo.png" /> <br>
+</div>
 
 ## 🎁 팀원 소개
 
@@ -7,20 +9,22 @@
 
 <table align="center">
  <tr>
-    <td align="center"><a href="https://github.com/dyun23"><img src="https://github.com/user-attachments/assets/99536e16-063c-4785-92d2-44b909ab7c84" width="150px;" alt=""></td>
-    <td align="center"><a href="https://github.com/sue06004"><img src="https://github.com/user-attachments/assets/2dde57cc-aa14-410c-99f7-9d50841fde51" width="150px;" alt=""></td>
-    <td align="center"><a href="https://github.com/jimnyy"><img src="https://github.com/user-attachments/assets/5ff5cb30-f7aa-4ab2-a18d-a31087ab9f80" width="150px;" alt=""></td>
-    <td align="center"><a href="https://github.com/dlrkdms125"><img src="https://github.com/user-attachments/assets/42bed0f6-7d78-4eec-8906-e843495fca4f" width="150px;" alt=""></td>
+    <td align="center"><a href="https://github.com/GoodLeaf"><img src="../images/readme/gpu.png" width="150px;" alt=""></td>
+    <td align="center"><a href="https://github.com/museongkim0"><img src="../images/readme/cpu.png" width="150px;" alt=""></td>
+    <td align="center"><a href="https://github.com/gunha0405"><img src="../images/readme/ssd.png" width="150px;" alt=""></td>
+    <td align="center"><a href="https://github.com/Xen-alpha"><img src="../images/readme/hdd.png" width="150px;" alt=""></td>
   </tr>
   <tr>
-    <td align="center">🐥<b>김정엽</b></td>
-    <td align="center">🦊<b>김무성</b></td>
-    <td align="center">😼<b>오건하</b></td>
-    <td align="center">🐰<b>황경윤</b></td>
+    <td align="center">🐥<a href="https://github.com/GoodLeaf"><b>김정엽</b></td>
+    <td align="center">🦊<a href="https://github.com/museongkim0"><b>김무성</b></td>
+    <td align="center">😼<a href="https://github.com/gunha0405"><b>오건하</b></td>
+    <td align="center">🐰<a href="https://github.com/Xen-alpha"><b>황경윤</b></td>
   </tr>
-</table>
 
----
+  </table>
+<br>
+
+
 
 ### 📑 목차
 
@@ -40,19 +44,52 @@
 
 ## 🛠 기술 스택
 
-### ⚙️ CI/CD
-![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white)
-![Docker](https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Jenkins](https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white)
+#### &nbsp;　[ Frontend ]
+&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white" style="border-radius: 5px;"/>
+<img src="https://img.shields.io/badge/css3-1572B6?style=for-the-badge&logo=css3&logoColor=white" style="border-radius: 5px;"/>
+<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white" style="border-radius: 5px;"/>
+<img src="https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D" style="border-radius: 5px;"/>
+<img src="https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white" style="border-radius: 5px;"/>
+<img src="https://img.shields.io/badge/pinia-gold?style=for-the-badge&logo=Pinia&logoColor=white" style="border-radius: 5px;"/>
+<img src="https://img.shields.io/badge/nuxt-%2300DC82?style=for-the-badge&logo=nuxt&labelColor=%23FFFFFF" style="border-radius: 5px;"/>
 
-### 🧑‍💻 Communication
-![Discord](https://img.shields.io/badge/discord-326CE5?style=for-the-badge&logo=discord&logoColor=white)
-![Git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white)
-![GitHub](https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white)
-![Jira](https://img.shields.io/badge/jira-%230052CC?style=for-the-badge&logo=jira)
-![Confluence](https://img.shields.io/badge/confluence-%23172B4D?style=for-the-badge&logo=confluence)
+#### &nbsp;　[ Backend ]
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=Spring-Boot&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=Spring-Security&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/Spring data jpa-6DB33F?style=for-the-badge&logo=Spring-Boot&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/SMTP-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/python-%230377CC.svg?style=for-the-badge&logo=python&logoColor=white" style="border-radius: 5px;">
 
----
+
+#### &nbsp;　[ DB ]
+&nbsp;&nbsp;&nbsp;</a>
+<img src="https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white" style="border-radius: 5px;"> 
+<img src="https://img.shields.io/badge/AmazonS3-e05242?style=for-the-badge&logo=AmazonS3&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/elasticsearch-%230377CC.svg?style=for-the-badge&logo=elasticsearch&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/redis-E34F26?style=for-the-badge&logo=redis&logoColor=white" style="border-radius: 5px;">
+
+#### &nbsp;　[ CI/CD ]
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white" style="border-radius: 5px;">
+
+#### &nbsp;　[ Etc ]
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="https://img.shields.io/badge/kafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/zookeeper-009639?style=for-the-badge&logo=zookeeper&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/logstash-f3bd19?style=for-the-badge&logo=logstash&logoColor=white" style="border-radius: 5px;">
+
+#### &nbsp;　[ Communication ]
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="https://img.shields.io/badge/discord-326CE5?style=for-the-badge&logo=discord&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/jira-%230052CC?style=for-the-badge&logo=jira" style="border-radius: 5px;">
+<img src="https://img.shields.io/badge/confluence-%23172B4D?style=for-the-badge&logo=confluence" style="border-radius: 5px;">
+<br><br><br>
 
 ## 🎨 서비스 소개
 
@@ -70,8 +107,9 @@
 ---
 
 ## 🏗️ 시스템 아키텍처
-
-> (이미지 추가 예정)
+<div align="center">
+    <img src="../images/readme/테크업_시스템아키텍처.png" /> <br>
+</div>
 
 ---
 
@@ -172,5 +210,5 @@ GitHub `main` 브랜치에 푸시되면 다음 절차가 진행됩니다:
 
 ## 📂 프로젝트 폴더 바로가기
 
-- [📃 Backend Repository](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE)
-- [📃 Frontend Repository](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-FE)
+### [📃 Backend](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/README.md) <br>
+### [📃 Devops](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/devops/README.md)

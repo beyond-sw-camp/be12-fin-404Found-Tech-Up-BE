@@ -18,11 +18,11 @@ public class Likes {
     private Long idx;
     private Boolean likesType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "board_idx")
     private Board board;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_idx")
     private User user;
 

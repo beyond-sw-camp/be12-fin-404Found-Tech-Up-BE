@@ -1,7 +1,6 @@
 spring:
   application:
     name: techup-backend
-
   redis:
     cluster:
       max-redirects: 3
@@ -63,7 +62,6 @@ spring:
             client-name: Kakao
             scope:
               - profile_nickname
-              - account_email
             provider: kakao
         provider:
           kakao:
@@ -86,7 +84,11 @@ logging:
     com.example.backend: trace
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
-
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    url: /api/v3/api-docs
 management:
   endpoints:
     web:

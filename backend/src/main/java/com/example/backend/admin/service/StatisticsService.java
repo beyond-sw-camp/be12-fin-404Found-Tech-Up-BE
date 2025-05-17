@@ -35,7 +35,7 @@ public class StatisticsService {
     private final UserRepository userRepository;
     private final WishlistRepository wishlistRepository;
 
-    public StatisticsResponseDto getStatistics() {
+    public StatisticsResponseDto getStatisticsEtc() {
         LocalDate today = LocalDate.now();
         int month = today.getMonthValue();
         int year = today.getYear();
@@ -45,21 +45,11 @@ public class StatisticsService {
         for (Orders order : totalOrder) {
             totalSales += order.getOrderTotalPrice();
         }
-        List<TopSales> tops = orderDetailRepository.countTopSales(new Date(startDate.toEpochDay()));
-        List<TopWishList> topw = wishlistRepository.countWishlistGroupByProduct();
         Integer newcomers = userRepository.findAllByCreatedAtAfter(startDate.atStartOfDay()).size();
-        Integer totalRefunds = getTotalRefunds();
-        List<Integer> incomeData = getRecentEarningList();
-        List<String> incomeXAxis = getIncomeGraphXAxis(today);
         return StatisticsResponseDto.builder()
-                .totalOrders(totalOrder.size())
                 .totalSales(totalSales)
-                .totalRefunds(totalRefunds)
-                .topSales(tops)
-                .topWishList(topw)
                 .newCustomers(newcomers)
-                .xAxisData(incomeXAxis)
-                .incomeData(incomeData).build();
+                .build();
     }
 
     public Integer getTotalOrders() {

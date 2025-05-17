@@ -19,7 +19,7 @@ public class BoardFiles {
     private String filesType;
     private String filesName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "board_idx")
     private Board board;
 
