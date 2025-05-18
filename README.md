@@ -7,7 +7,7 @@
 ## 🎁팀원 소개
 
 > **[한화시스템 BEYOND SW캠프 12기] Final Project**<br>
-> **404Fount팀 Tech-Up 프로젝트**
+> **404Found팀 Tech-Up 프로젝트**
 
 <table align="center">
  <tr>
