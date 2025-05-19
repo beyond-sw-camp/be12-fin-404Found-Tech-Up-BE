@@ -302,18 +302,22 @@
 <summary>제품 주문 및 환불</summary>
 
 ### 장바구니
-![image](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/images/readme/product_cart_add.gif)
+
+![스크린샷 2025-05-19 175757](https://github.com/user-attachments/assets/a609c1c1-b912-46d4-aa83-a7fceade3d72)
+
 > 장바구니에 구매하려는 여러 제품을 모아 한 번에 주문할 수 있다. 백엔드에서는 이 주문 정보를 redis 서버에 저장한다.
 ---
 ### 주문 및 결제
-![image](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/images/readme/product_order.gif)
+
+![스크린샷 2025-05-19 175728](https://github.com/user-attachments/assets/c35cc2db-43bd-4a0e-93fa-eef9bdc933fb)
 
 > 주문 내역을 보고 결제를 할 수 있다.
 > 주문에 사용 가능한 쿠폰을 받았다면 적용하여 할인을 받을 수 있다. 이 경우 주문 정보에 쿠폰 적용 여부가 기록된다.
 > 카카오페이가 지원된다. [포트원 서비스](https://portone.io)를 통해 PG사와 연결하여 주문을 등록한 후 결제 요청이 오면 주문 정보와 대조하여 주문이 올바르게 되었는지 검증한다.
 ---
 ### 주문 취소 및 환불
-![사용자의 환불 신청 이미지]()
+
+![스크린샷 2025-05-19 175643](https://github.com/user-attachments/assets/8df1b13d-82bc-4033-8363-960417d5979f)
 
 > 사용자는 주문 상세 페이지에서 환불 요청을 쉽게 할 수 있다. 백엔드에서는 PAID된 주문으로 환불 요청이 들어오면 주문 상태를 REQUESTED_REFUND로 바꾼다.
 > 관리자는 환불이 요청된 제품에 한해 환불 처리를 할 수 있다.
