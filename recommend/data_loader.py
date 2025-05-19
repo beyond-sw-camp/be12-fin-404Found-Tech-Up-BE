@@ -12,7 +12,7 @@ def get_db_connection():
     """
     try:
         connection = mysql.connector.connect(
-            host='mariadb',  # 데이터베이스 호스트
+            host='localhost',  # 데이터베이스 호스트
             # host='192.0.44.44',  # 데이터베이스 호스트
             database='techup',  # 데이터베이스 이름
             user='test',  # 데이터베이스 사용자
