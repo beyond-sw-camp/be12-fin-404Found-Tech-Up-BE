@@ -226,14 +226,26 @@
 <summary>검색</summary>
 
 ### 제품 검색
-![image](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/images/readme/product_search.gif)
+
+![스크린샷 2025-05-19 180113](https://github.com/user-attachments/assets/b61127cc-1fd0-4d29-a64b-4cd715c6b9f2)
+
+![스크린샷 2025-05-19 180159](https://github.com/user-attachments/assets/411780a8-55f1-4be6-8b03-640e81e77b2d)
+
+![스크린샷 2025-05-19 180228](https://github.com/user-attachments/assets/bca79a19-8364-41fe-ab58-f00205132f94)
+
 > 헤더에 있는 검색창으로 제품 검색이 가능하다.  
 > 메인 페이지의 검색창은 카테고리별 제품 검색이 가능하다.
 > 검색 결과는 5가지 옵션으로 정렬하며, 페이지네이션을 통해 다음에 올 항목을 받아온다.
 > `/api/product/search`로 RDBMS에서 직접 검색한다.
 ---
 ### 제품 목록 탐색
-![image](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/images/readme/product_list.gif)
+
+![스크린샷 2025-05-19 180142](https://github.com/user-attachments/assets/cec0e905-edfb-4c8a-9980-62f2717df5f7)
+
+![스크린샷 2025-05-19 180159](https://github.com/user-attachments/assets/411780a8-55f1-4be6-8b03-640e81e77b2d)
+
+![스크린샷 2025-05-19 180228](https://github.com/user-attachments/assets/bca79a19-8364-41fe-ab58-f00205132f94)
+
 > 헤더의 **제품** 링크로 들어간 페이지에서 부품 카테고리(CPU, 그래픽 카드, RAM, SSD, 하드디스크) 및 가격대 별로 판매 중인 상품을 조회할 수 있다.
 > 제품 상세보기에서는 제품에 대한 설명과 제품에 대한 리뷰를 볼 수 있다.
 </details>
@@ -242,14 +254,16 @@
 <summary>제품 상세 조회</summary>
 
 ### 제품 정보 및 구매, 장바구니 담기기
-![image](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/images/readme/product_specific.gif)
-> 헤더에 있는 검색창으로 제품 검색이 가능하다.  
-> 메인 페이지의 검색창은 카테고리별 제품 검색이 가능하다.
-> 검색 결과는 5가지 옵션으로 정렬하며, 페이지네이션을 통해 다음 제품 목록을 받아온다.
+
+![스크린샷 2025-05-19 180423](https://github.com/user-attachments/assets/ac60b2ac-7f26-4948-b9f4-8ba78c9d0853)
+
+> 상세페이지에서 가격 정보와 설명을 볼 수 있다.
+> 장바구니에 상품을 담거나 즉시 주문 확인 페이지로 넘어갈 수 있다.
 ---
 ### 제품 리뷰 탐색 및 등록
-![image](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/images/readme/product_review_add.gif)
-![image](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/images/readme/product_review_delete.gif)
+
+![스크린샷 2025-05-19 180506](https://github.com/user-attachments/assets/b382dcda-4471-47ec-9b9e-901fa9060566)
+
 > 헤더의 **제품** 링크로 들어간 페이지에서 부품 카테고리(CPU, 그래픽 카드, RAM, SSD, 하드디스크) 및 가격대 별로 판매 중인 상품을 조회할 수 있다.
 > 제품 상세보기에서는 제품에 대한 설명과 제품에 대한 리뷰를 볼 수 있다.
 </details>
