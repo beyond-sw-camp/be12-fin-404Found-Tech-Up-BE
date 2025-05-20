@@ -8,3 +8,5 @@ mysql-connector-python>=8.0.0
 aiokafka>=0.10.0
 scipy==1.14.1
 elasticsearch==8.14.0
+pyspark==3.5.5
+findspark==2.0.1

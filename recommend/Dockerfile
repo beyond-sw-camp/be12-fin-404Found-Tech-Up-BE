@@ -1,4 +1,15 @@
-FROM python:3.10-slim
+# 기존 ver
+#FROM python:3.10-slim
+
+# spark 적용 ver
+FROM python:3.10-bullseye
+
+# Java 설치
+RUN apt-get update && apt-get install -y openjdk-11-jdk && apt-get install -y procps
+
+# JAVA_HOME 설정
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
 
 WORKDIR /recommend
 
