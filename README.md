@@ -36,7 +36,7 @@
 - [📈 프로젝트 설계](#-프로젝트-설계)
 - [⚙️ 주요 기능 시연](#️-주요-기능-시연)
 - [🚀 핵심 로직 상세 설명](#-핵심-로직-상세-설명)
-- [📂 프로젝트 폴더 바로가기](#-백엔드-devops-프로젝트-폴더-바로가기)
+- [📂 프로젝트 폴더 바로가기](#-프론트엔드-devops-프로젝트-폴더-바로가기)
 
 <br><br>
 
@@ -428,7 +428,7 @@
 ## 🚀 핵심 로직 상세 설명
 ### [📃 프로젝트 Wiki](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/wiki) <br><br>
 
-## 📂 백엔드, DevOps 프로젝트 폴더 바로가기
-### [📃 Backend](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/README.md) <br>
+## 📂 프론트엔드, DevOps 프로젝트 폴더 바로가기
+### [📃 Frontend](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-FE/blob/main/README.md) <br>
 ### [📃 Devops](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/devops/README.md)
 <br>
