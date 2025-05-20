@@ -427,7 +427,7 @@
 - 응답
 ![게시글 작성](./images/readme/board_create_res.png)
 
-> 에디터에 입력한 데이터는 DB에 등록 된다.
+> 에디터에 입력한 데이터는 DB에 등록 된다. <br>
 > 에디터에 입력한 이미지와 첨부파일은 PreSignedUrl을 통해 S3 저장소에 저장된다.
 </details>
 
