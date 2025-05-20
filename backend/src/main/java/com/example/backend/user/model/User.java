@@ -15,6 +15,7 @@ import lombok.Setter;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+import org.hibernate.annotations.BatchSize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -71,31 +72,28 @@ public class User implements UserDetails {
     private List<Wishlist> wishlists;
 
     // Order와 일대다 맵핑
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Orders> orders;
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Board> posts;
 
     // Order와 일대다 맵핑
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<ShippingAddress> shippingAddresses;
 
     // UserCoupon 과 일대다 맵핑
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserCoupon> userCoupons;
 
     // UserCoupon 과 일대다 맵핑
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserProduct> userProducts;
-
-    // User.java
-    public static User of(String email) {
-        return User.builder()
-                .userEmail(email)
-                .build();
-    }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

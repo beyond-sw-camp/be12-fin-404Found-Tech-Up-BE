@@ -1,7 +1,6 @@
 spring:
   application:
     name: techup-backend
-
   mail:
     host: smtp.gmail.com
     port: 587
@@ -21,17 +20,11 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
   jpa:
     hibernate:
       ddl-auto: update
-  elasticsearch:
-    uris: ${ELASTIC_HOST}:9200
-    username: elastic
-    password: changeme
-  data:
-    elasticsearch:
-      repositories:
-        enabled: true
+
   cloud:
     aws:
       credentials:
@@ -54,6 +47,7 @@ spring:
             client-name: Kakao
             scope:
               - profile_nickname
+            provider: kakao
         #              - account_email
         provider:
           kakao:
@@ -74,7 +68,11 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
-
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    url: /api/v3/api-docs
 management:
   endpoints:
     web:
@@ -97,7 +95,7 @@ management:
       enabled: false
 
 kafka:
-   enabled: true
+   enabled: false
 
 server:
   port: 8443
@@ -106,7 +104,3 @@ server:
     key-store-password: qwer1234
     key-store-type: PKCS12
     key-alias: springboot
-elasticsearch:
-  host: ${ELASTIC_HOST}
-  username: elastic
-  password: changeme

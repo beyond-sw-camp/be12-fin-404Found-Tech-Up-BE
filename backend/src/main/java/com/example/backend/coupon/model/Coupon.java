@@ -25,6 +25,7 @@ public class Coupon {
     private int couponDiscountRate;
     private Date couponValidDate;
     private Integer couponQuantity; // 남은 발급 가능 횟수
+
     // 제품과 다대일 맵핑
     @ManyToOne
     @JoinColumn(name = "product_idx")
@@ -32,14 +33,6 @@ public class Coupon {
     // 유저 쿠폰과 일대다 맵핑
     @OneToMany(mappedBy = "coupon")
     private List<UserCoupon> userCoupons;
-    // Coupon.java
-    public static Coupon of(String name, int quantity) {
-        return Coupon.builder()
-                .couponName(name)
-                .couponQuantity(quantity)
-                .build();
-    }
-
 
     public CouponInfoDto toDto() {
         return CouponInfoDto.builder().couponIdx(this.couponIdx).couponName(this.couponName).couponDiscountRate(this.couponDiscountRate).productIdx(product.getProductIdx()).productName(product.getName()).couponStock(couponQuantity).couponValidDate(this.couponValidDate.toInstant().atZone(ZoneId.systemDefault())).build();

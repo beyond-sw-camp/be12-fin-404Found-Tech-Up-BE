@@ -64,7 +64,6 @@ pipeline {
 
         stage('Git Clone') {
             steps {
-                echo "GIT_BRANCH: ${env.GIT_BRANCH}"
                 echo "Cloning Repository"
                 git url: 'https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE.git',
                     branch: "${env.GIT_BRANCH.replace('origin/', '')}"
