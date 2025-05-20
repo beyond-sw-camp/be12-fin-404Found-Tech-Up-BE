@@ -210,5 +210,5 @@ GitHub `main` 브랜치에 푸시되면 다음 절차가 진행됩니다:
 
 ## 📂 프로젝트 폴더 바로가기
 
-### [📃 Backend](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-FE/blob/main/README.md) <br>
+### [📃 Frontend](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-FE/blob/main/README.md) <br>
 ### [📃 Backend](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/README.md)
