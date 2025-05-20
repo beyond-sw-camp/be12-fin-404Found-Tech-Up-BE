@@ -204,9 +204,15 @@ GitHub `main` 브랜치에 푸시되면 다음 절차가 진행됩니다:
 
 ## 🎬 주요 기능 시연
 
-> (GIF 또는 영상 캡처 삽입 예정)
+**프론트 엔드 CICD**
+<div align="center">
+    <img src="../images/readme/front_cicd.gif" /> <br>
+</div>
 
----
+**백엔드 CICD**
+<div align="center">
+    <img src="../images/readme/backend_cicd.gif" /> <br>
+</div>
 
 ## 📂 프로젝트 폴더 바로가기
 
