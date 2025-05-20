@@ -95,7 +95,7 @@
 
 ## 📚 Tech-Up 데모 사이트 바로가기
 
-### [공개 버전 링크](http://www.techup.kro.kr)</a>
+### [공개 버전 링크](http://techup.p-e.kr)</a>
 <br><br>
 
 ## 🎨 Tech-Up 서비스 소개
@@ -172,7 +172,7 @@
 
 ### [3. WBS](https://docs.google.com/spreadsheets/d/1ZyTxJWcncdOwUFm7sC4lPoY8Tqr1N9bT/edit?usp=sharing&ouid=114636369401934471820&rtpof=true&sd=true)
 
-### [4. API 명세서 데이터 보기](https://techup.n-e.kr/api/swagger-ui/index.html)
+### [4. API 명세서 데이터 보기](https://techup.p-e.kr/api/swagger-ui/index.html)
 
 ### [5. ERD](https://www.erdcloud.com/d/gWGKoNHQ3a37hbP2Q)
 
