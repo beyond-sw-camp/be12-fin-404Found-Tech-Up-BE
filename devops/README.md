@@ -108,7 +108,7 @@
 
 ## 🏗️ 시스템 아키텍처
 <div align="center">
-    <img src="../images/readme/테크업_시스템아키텍처.png" /> <br>
+    <img src="../images/readme/techup_final_sys_arch.png" /> <br>
 </div>
 
 ---
@@ -210,5 +210,5 @@ GitHub `main` 브랜치에 푸시되면 다음 절차가 진행됩니다:
 
 ## 📂 프로젝트 폴더 바로가기
 
-### [📃 Backend](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/README.md) <br>
-### [📃 Devops](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/devops/README.md)
+### [📃 Backend](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-FE/blob/main/README.md) <br>
+### [📃 Backend](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/blob/main/README.md)
