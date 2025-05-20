@@ -24,7 +24,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-
   cloud:
     aws:
       credentials:
@@ -68,11 +67,6 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-  swagger-ui:
-    url: /api/v3/api-docs
 management:
   endpoints:
     web:
@@ -104,3 +98,10 @@ server:
     key-store-password: qwer1234
     key-store-type: PKCS12
     key-alias: springboot
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    url: /api/v3/api-docs
+    config-url: /api/v3/api-docs/swagger-config
