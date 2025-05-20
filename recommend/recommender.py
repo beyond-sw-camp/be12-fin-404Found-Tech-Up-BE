@@ -19,6 +19,9 @@ from collaborative_filtering import (
 from es import (
     update_es
 )
+from es_spark import (
+    update_es_with_spark
+)
 import logging
 import traceback
 
@@ -72,6 +75,7 @@ class Recommender:
 
             logger.info("Update user-item elasticsearch index...")
             update_es(self.user_item_matrix)
+            # update_es_with_spark(self.user_item_matrix)
 
             logger.info("Collaborative filtering data successfully reinitialized!")
             return True
