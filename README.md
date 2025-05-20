@@ -34,8 +34,9 @@
 - [🏗️ 시스템 아키텍처](#-시스템-아키텍처)
 - [📚 프론트엔드 프로젝트 목표](#-프론트엔드-프로젝트-목표)
 - [📈 프로젝트 설계](#-프로젝트-설계)
+- [⚙️ 주요 기능 시연](#-https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE?tab=readme-ov-file#%EF%B8%8F-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5-%EC%8B%9C%EC%97%B0)
 - [🚀 핵심 로직 상세 설명](#-핵심-로직-상세-설명)
-- [📂 프로젝트 폴더 바로가기](#-백엔드,-DevOps-프로젝트-폴더-바로가기)
+- [📂 프로젝트 폴더 바로가기](#-https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE?tab=readme-ov-file#-%EB%B0%B1%EC%97%94%EB%93%9C-devops-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%8F%B4%EB%8D%94-%EB%B0%94%EB%A1%9C%EA%B0%80%EA%B8%B0)
 
 <br><br>
 
@@ -92,10 +93,11 @@
 <br><br><br>
 
 
-## 📚 Tech-Up 데모 사이트 바로가기기
+## 📚 Tech-Up 데모 사이트 바로가기
 
 ### [공개 버전 링크](http://www.techup.kro.kr)</a>
 <br><br>
+
 ## 🎨 Tech-Up 서비스 소개
 <div align="center">
     <img src="./images/readme/테크업_이미지.png" /> <br>
