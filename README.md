@@ -412,18 +412,48 @@
 <summary>커뮤니티</summary>
 
 ### 게시글 목록
+- 요청
+![게시글 목록](./images/readme/board_list_req.png)
+- 응답
+![게시글 목록](./images/readme/board_list_res.png)  
+> 커뮤니티 페이지에 진입하여 조회 요청을 하면 백엔드 서버가 현재 등록된 게시글들을 일정한 갯수로 잘라 목록을 가져온다.<br>
+> 아래 페이지 이동 버튼들로 페이지 이동 요청을 하여 보이는 게시글 목록을 바꿀 수 있다.<br>
+> 카테고리별 보기, 좋아요순, 댓글순, 최신순 정렬이 가능하다.<br>
+> 제목, 작성자, 내용으로 게시글을 검색할 수 있다.<br>
 
-![목록 조회 API](https://github.com/user-attachments/assets/343c3bda-41ad-4f17-985e-6df524bd6b39)
+### 게시글 작성
+- 요청
+![게시글 작성](./images/readme/board_create_req.png)
+- 응답
+![게시글 작성](./images/readme/board_create_res.png)
 
-> 커뮤니티 페이지에 진입하여 조회 요청을 하면 백엔드 서버가 현재 등록된 게시글들을 일정한 갯수로 잘라 목록을 가져온다.
-> 아래 페이지 이동 버튼들로 페이지 이동 요청을 하여 보이는 게시글 목록을 바꿀 수 있다.
-
-### 게시글 작성/수정/삭제
-
-![등록 API](https://github.com/user-attachments/assets/f2ff7347-9a9f-45a0-931f-dcc4d1270f39)
-
-> 에디터에 입력한 데이터는 DB에 등록되며, 게시글에서 수정/삭제를 선택하여 수정 또는 삭제가 가능하다.
+> 에디터에 입력한 데이터는 DB에 등록 된다.
+> 에디터에 입력한 이미지와 첨부파일은 PreSignedUrl을 통해 S3 저장소에 저장된다.
 </details>
+
+<details>
+<summary>쿠폰 기능</summary>
+
+### 선착순 쿠폰 발급
+- 요청
+![선착순 쿠폰 발급](./images/readme/event_coupon_req.png)
+- 응답
+![선착순 쿠폰 발급](./images/readme/event_coupon_res.png)  
+> 로그인한 사용자가 특정 이벤트 쿠폰 발급을 요청하면, 해당 요청은 Redis 기반 큐에 등록되어 순차적으로 처리됩니다.<br>
+> 요청 시, 서버는 사용자의 큐 등록 여부를 확인하고 등록 순서(queuePosition) 및 전체 큐 내 등수(queueRank)를 함께 응답합니다.<br>
+
+### 쿠폰 내용 확인
+- 요청
+![쿠폰 내용](./images/readme/coupon_detail_req.png)
+- 응답
+![쿠폰 내용](./images/readme/coupon_detail_res.png)
+
+> 사용자가 특정 쿠폰의 상세 정보를 조회하면, 서버는 해당 쿠폰의 이름, 할인율, 유효기간, 재고 수량, 연결된 상품 정보를 함께 반환합니다.<br>
+> /coupon/details/{idx} 경로를 통해 GET 방식으로 호출되며, idx는 조회하고자 하는 쿠폰의 고유 ID입니다.<br>
+> 반환되는 데이터는 프론트엔드에서 쿠폰 이름 및 할인 정보 표시, 재고 확인, 연결된 상품 정보 노출 등에 활용될 수 있습니다.<br>
+> 주로 이벤트 참여 전, 유저가 쿠폰에 대한 정보를 사전에 파악할 수 있도록 사용됩니다.<br>
+</details>
+
 
 ## 🚀 핵심 로직 상세 설명
 ### [📃 프로젝트 Wiki](https://github.com/beyond-sw-camp/be12-fin-404Found-Tech-Up-BE/wiki) <br><br>
