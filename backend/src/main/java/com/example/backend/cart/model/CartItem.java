@@ -23,13 +23,13 @@ public class CartItem {
     private int cartItemQuantity;
 
     // 카트와 다대일 맵핑
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_idx")
     @Schema(description = "해당 장바구니 항목이 속한 카트")
     private Cart cart;
 
     // 제품과 다대일 맵핑
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_idx")
     @Schema(description = "장바구니 항목에 포함된 제품 정보")
     private Product product;

@@ -23,7 +23,7 @@ public class Comment {
     private LocalDateTime commentCreated;
     private LocalDateTime commentModified;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_idx")
     private Board board;
 
